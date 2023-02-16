@@ -13,12 +13,12 @@ public static class AppDbContextExtansion
     {
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
-        string connectionString = configuration["ConnectionStrings:MsSql"]
-            ?? throw new ArgumentNullException($"{nameof(configuration)} does not contain connectionStrings");
+        string connectionString = configuration["ConnectionStrings:PostgresSQL"]
+            ?? throw new ArgumentNullException(nameof(configuration));
 
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(connectionString);
+            options.UseNpgsql(connectionString);
         });
     }
 }

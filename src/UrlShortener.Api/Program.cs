@@ -1,3 +1,4 @@
+using UrlShortener.Application;
 using UrlShortener.Di;
 
 namespace UrlShortener.Api
@@ -14,6 +15,9 @@ namespace UrlShortener.Api
 
             builder.Services.AddAppDbContext(builder.Configuration);
 
+            builder.Services.AddApplication();
+            //builder.Services.AddMediatR(Assembly.GetEntryAssembly());
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -28,6 +32,7 @@ namespace UrlShortener.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseMiddleware<Mymiddleware>();
 
             //app.UseHttpsRedirection();
 
@@ -38,5 +43,25 @@ namespace UrlShortener.Api
 
             app.Run();
         }
+    }
+}
+
+public class Mymiddleware
+{
+    RequestDelegate next;
+
+    public Mymiddleware(RequestDelegate next)
+    {
+        this.next = next;
+    }
+
+    public async Task Invoke(HttpContext context)
+    {
+        await next.Invoke(context);
+
+        var s = context.Response;
+        var statusCode = context.Response.StatusCode;
+        var c = context.Response.Body;
+
     }
 }

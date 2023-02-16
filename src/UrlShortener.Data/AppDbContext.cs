@@ -6,18 +6,15 @@ namespace UrlShortener.Data;
 
 public class AppDbContext : DbContext, IAppDbContext
 {
-    // public DbSet<Url> Urls => Set<Url>();
-    //public DbSet<Url> Urls { get; set; }
+    public DbSet<Link> Links { get; set; }
+    //public DbSet<LinkInfo> LinkInfos { get; set; }
 
-    //public DbSet<Url> Urls => Set<Url>();
-
-    DbSet<Url> IAppDbContext.Urls { get; set; }
+    //DbSet<Link> IAppDbContext.Links { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         Database.EnsureCreated();
     }
-
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,16 +24,15 @@ public class AppDbContext : DbContext, IAppDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        Url url = new Url("https://code-maze.com/aspnetcore-web-api-return-types/", "https://goo.su/banana") { Id = Guid.NewGuid() };
-
-        modelBuilder.Entity<Url>().HasData(url);
         base.OnModelCreating(modelBuilder);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellation = default)
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return base.SaveChangesAsync(cancellation);
+        return base.SaveChangesAsync(cancellationToken);
     }
+
 }
 
 

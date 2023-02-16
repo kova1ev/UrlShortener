@@ -4,7 +4,8 @@ using UrlShortener.Domain.Entity;
 namespace UrlShortener.Application.Interfaces;
 public interface IAppDbContext
 {
-    DbSet<Url> Urls { get; set; }
+    DbSet<Link> Links { get; set; }
+    //DbSet<LinkInfo> LinkInfos { get; set; }
 
-    Task<int> SaveChangesAsync(CancellationToken cancellation);
+    Task<int> SaveChangesAsync(CancellationToken cancellation = default);
 }

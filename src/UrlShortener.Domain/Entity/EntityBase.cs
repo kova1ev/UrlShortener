@@ -6,8 +6,11 @@ namespace UrlShortener.Domain.Entity;
 public abstract class EntityBase
 {
     [Required]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Guid Id { get; set; }
 
-    public DateTimeOffset DateTimeCreated { get; set; } = DateTime.Now;
+    public EntityBase()
+    {
+        Id = Guid.NewGuid();
+    }
 }

@@ -17,7 +17,7 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Link?>
 
     public async Task<Link?> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await _appDbContext.Links.AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
+        var result = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
 
         return result;
     }

@@ -1,5 +1,6 @@
+using System.Text.Json.Serialization;
 using UrlShortener.Application;
-using UrlShortener.Di;
+using UrlShortener.Data;
 
 namespace UrlShortener.Api
 {
@@ -10,14 +11,17 @@ namespace UrlShortener.Api
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
+
 
 
             builder.Services.AddAppDbContext(builder.Configuration);
 
             builder.Services.AddApplication();
-            //builder.Services.AddMediatR(Assembly.GetEntryAssembly());
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -34,10 +38,9 @@ namespace UrlShortener.Api
             }
             app.UseMiddleware<Mymiddleware>();
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             //app.UseAuthorization();
-
 
             app.MapControllers();
 
@@ -45,6 +48,7 @@ namespace UrlShortener.Api
         }
     }
 }
+
 
 public class Mymiddleware
 {

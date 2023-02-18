@@ -27,13 +27,22 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Guid>
             ShortName = request.CreteLinkDto.Alias;
         }
 
-        Link link = new Link(request.CreteLinkDto.UrlAddress, ShortName);
-
-        //LinkInfo linkInfo = new LinkInfo(DateTime.UtcNow, request.CreteLinkDto.UrlAddress, link);
-
-
+        Link link = new Link()
+        {
+            UrlAddress = request.CreteLinkDto.UrlAddress,
+            ShortName = ShortName,
+        };
         await _appDbContext.Links.AddAsync(link);
-        //await _appDbContext.LinkInfos.AddAsync(linkInfo);
+
+
+        LinkInfo linkInfo = new LinkInfo();
+        linkInfo.DomainName = linkInfo.GetDomainName(link.UrlAddress);
+        linkInfo.LastUse = DateTime.UtcNow;
+        linkInfo.Link = link;
+
+
+
+        await _appDbContext.LinkInfos.AddAsync(linkInfo);
 
         await _appDbContext.SaveChangesAsync();
         return link.Id;

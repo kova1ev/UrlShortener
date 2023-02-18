@@ -1,28 +1,27 @@
-﻿namespace UrlShortener.Domain.Entity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace UrlShortener.Domain.Entity;
+
+[Table("linkinfos")]
 public class LinkInfo : EntityBase
 {
-    public LinkInfo(DateTime lastUse, string domainName, Link link)
-    {
-        Link = link;
-        LinkId = link.Id;
-        LastUse = lastUse;
-        DomainName = domainName; //GetDomainName(urlAddress) ?? throw new ArgumentNullException(nameof(urlAddress));
-    }
-
-    public Guid LinkId { get; set; }
-    public Link Link { get; private set; }
-    public string DomainName { get; set; }
-    public DateTime? LastUse { get; set; } //= DateTime.UtcNow;
-
-    //public LinkInfo(string urlAddress)
+    //public LinkInfo(DateTime lastUse, Link Link)
     //{
-    //    DomainName = GetDomainName(urlAddress);
+    //    LastUse = lastUse;
+    //    this.Link = Link;
+    //    LinkId = Link.Id;
+    //    LastUse = lastUse;
+    //    DomainName = GetDomainName(Link.UrlAddress); //?? throw new ArgumentNullException(nameof(urlAddress));
     //}
 
+    public Guid LinkId { get; set; }
+    public Link Link { get; set; }
+    public string DomainName { get; set; }
+    public DateTime LastUse { get; set; }
 
 
-    private string GetDomainName(string url)
+
+    public string GetDomainName(string url)
     {
         var array = url.Split('/');
         if (array.Length < 3)

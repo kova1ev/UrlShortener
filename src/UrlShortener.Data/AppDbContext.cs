@@ -7,7 +7,7 @@ namespace UrlShortener.Data;
 public class AppDbContext : DbContext, IAppDbContext
 {
     public DbSet<Link> Links { get; set; }
-    //public DbSet<LinkInfo> LinkInfos { get; set; }
+    public DbSet<LinkInfo> LinkInfos { get; set; }
 
     //DbSet<Link> IAppDbContext.Links { get; set; }
 

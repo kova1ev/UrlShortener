@@ -17,10 +17,7 @@ namespace UrlShortener.Api
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
-
-
             builder.Services.AddAppDbContext(builder.Configuration);
-
             builder.Services.AddApplication();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -4,6 +4,7 @@ using UrlShortener.Application.Dto.Link;
 using UrlShortener.Application.Links.Commands.CreateLink;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Application.Links.Queries.GetLinks;
+using UrlShortener.Application.Responses;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Api.Controllers
@@ -53,8 +54,12 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreteLink([FromBody] CreateLinkDto creteLinkDto)
         {
-            Guid id = await _mediator.Send(new CreateLinkCommand(creteLinkDto));
-            return Ok(id);
+            CommandResult<Guid> result = await _mediator.Send(new CreateLinkCommand(creteLinkDto));
+            if (result.IsSuccess == false)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+            return Ok(result.ReturnedObject);
         }
 
 

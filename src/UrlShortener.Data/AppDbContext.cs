@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Domain.Entity;
 
@@ -9,11 +10,12 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Link> Links { get; set; }
     public DbSet<LinkInfo> LinkInfos { get; set; }
 
-    //DbSet<Link> IAppDbContext.Links { get; set; }
+    public override DatabaseFacade Database => base.Database;
+
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+        base.Database.EnsureCreated();
     }
 
 

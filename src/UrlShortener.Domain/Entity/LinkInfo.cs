@@ -10,16 +10,5 @@ public class LinkInfo : EntityBase
     public string DomainName { get; set; }
     public DateTime LastUse { get; set; }
 
-
-    //TODO   CHECK URL? THROW EX?
-    public string GetDomainName(string url)
-    {
-        if (url == null)
-            throw new ArgumentNullException(nameof(url));
-        var array = url.Split('/');
-        if (array.Length < 3)
-            throw new Exception($"invalid url : {url}");
-        return array[2];
-    }
 }
 

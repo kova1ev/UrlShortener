@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Interfaces;
-public interface IAppDbContext
+public interface AIAppDbContext
 {
     DbSet<Link> Links { get; set; }
     DbSet<LinkInfo> LinkInfos { get; set; }

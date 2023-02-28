@@ -1,70 +1,73 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using UrlShortener.Application.Common;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Application.Responses;
+using UrlShortener.Common.Result;
+using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Commands.CreateLink;
 
-public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, CommandResult<Guid>>
+public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkResponse>>
 {
-    private readonly IAppDbContext _appDbContext;
-    private readonly IAliasCteater _shortNameGenerator;
+    private const string PROLOCOL = "https://";
 
-    public CreateLinkCommandHandler(IAppDbContext appDbContext, IAliasCteater shortNameGenerator)
+    private readonly AppDbContext _appDbContext;
+    private readonly IAliasService _aliasService;
+    private readonly AppOptions _options;
+
+    public CreateLinkCommandHandler(AppDbContext appDbContext, IOptions<AppOptions> options, IAliasService aliasService)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
-        _shortNameGenerator = shortNameGenerator ?? throw new ArgumentNullException(nameof(shortNameGenerator));
+        _options = options.Value ?? throw new ArgumentNullException(nameof(options));
+        _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
-    public async Task<CommandResult<Guid>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
+    public async Task<Result<LinkResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
-        CommandResult<Guid> result = new();
-
-        Link? existinglink = await _appDbContext.Links.AsNoTracking()
-                                            .Include(l => l.LinkInfo)
-                                            .FirstOrDefaultAsync(l => l.UrlAddress == request.CreteLinkDto.UrlAddress);
-        if (existinglink != null)
+        /*if alias != null*/
+        // todo replace in validator ?!!!!!  
+        if (string.IsNullOrWhiteSpace(request.Alias) == false && await _aliasService.AliasIsBusy(request.Alias))
         {
-            result.ReturnedObject = existinglink.Id;
-            return result;
+
+            return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
         }
 
-        if (string.IsNullOrWhiteSpace(request.CreteLinkDto.Alias) == false //if alias != null
-            && await AliasIsBusy(request.CreteLinkDto.Alias))
+        if (request.Alias == null)
         {
-            result.IsSuccess = false;
-            result.ErrorMessage = "Alias is taken";
-            return result;
+            Link? existinglink = await _appDbContext.Links
+                                                    .AsNoTracking()
+                                                    .Include(l => l.LinkInfo)
+                                                    .FirstOrDefaultAsync(l => l.UrlAddress == request.UrlAddress);
+            if (existinglink != null)
+            {
+                return Result<LinkResponse>.Success(new LinkResponse(existinglink.Id, existinglink.UrlShort));
+            }
         }
+
+        string alias = request.Alias == null ? await _aliasService.GenerateAlias(request.UrlAddress) : request.Alias;
 
         Link link = new Link()
         {
-            UrlAddress = request.CreteLinkDto.UrlAddress,
-            Alias = request.CreteLinkDto.Alias == null ?
-                        _shortNameGenerator.CreateAlias(request.CreteLinkDto.UrlAddress)
-                        : request.CreteLinkDto.Alias
+            UrlAddress = request.UrlAddress,
+            Alias = alias,
+            //TODO  куда-то вынести
+            UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', alias)
+
         };
-        await _appDbContext.Links.AddAsync(link);
+        _appDbContext.Entry(link).State = EntityState.Added;
 
         LinkInfo linkInfo = new LinkInfo()
         {
-            DomainName = new Uri(request.CreteLinkDto.UrlAddress).Host,
+            DomainName = new Uri(request.UrlAddress).Host,
             LastUse = DateTime.UtcNow,
             Link = link,
         };
-        await _appDbContext.LinkInfos.AddAsync(linkInfo);
+        _appDbContext.Entry(linkInfo).State = EntityState.Added;
 
         await _appDbContext.SaveChangesAsync();
 
-        result.ReturnedObject = link.Id;
-        result.IsSuccess = true;
-        return result;
-    }
-
-
-    private async Task<bool> AliasIsBusy(string alias)
-    {
-        return await _appDbContext.Links.AnyAsync(l => l.Alias == alias);
+        return Result<LinkResponse>.Success(new LinkResponse(link.Id, link.UrlShort));
     }
 }

@@ -4,11 +4,10 @@ namespace UrlShortener.Application.Services;
 
 internal class AliasCreater : IAliasCteater
 {
-    //TODO Implement creater!!
+
     public string CreateAlias(string url)
     {
-        // check generated shortName in DB
-        // generate again ? 
+        //todo Create Normal generate
         int hash = url.GetHashCode();
         return hash.ToString().TrimStart('-');
     }

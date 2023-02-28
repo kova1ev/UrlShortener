@@ -7,8 +7,8 @@ public abstract class EntityBase
 {
     [Required]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    // public Guid Id { get; protected set; }
     public Guid Id { get; protected set; }
-
     public EntityBase()
     {
         Id = Guid.NewGuid();

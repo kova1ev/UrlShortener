@@ -1,47 +1,46 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using UrlShortener.Application.Dto.Link;
 using UrlShortener.Application.Links.Commands.CreateLink;
+using UrlShortener.Application.Links.Commands.DeleteLink;
+using UrlShortener.Application.Links.Commands.UpdateLink;
+using UrlShortener.Application.Links.Queries;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Application.Links.Queries.GetLinks;
-using UrlShortener.Application.Responses;
+using UrlShortener.Common.Result;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Api.Controllers
 {
+    [Route("api/link")]
     public class LinkController : ApiControllerBase<LinkController>
     {
-
         public LinkController(ILogger<LinkController> logger, IMediator mediator) : base(logger, mediator)
         {
 
         }
 
-        [HttpGet("{shortName}", Name = "getLinkByShortName")]
+        [HttpGet("{shortName}")]
         [ProducesResponseType(typeof(Link), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetByShortName([FromRoute] string shortName)
         {
-            Link link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
+            LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
             if (link == null)
                 return NotFound();
             return Ok(link);
         }
 
-        [HttpGet("{id:guid}", Name = "getLinkByID")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(Link), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetById([FromRoute] Guid id)
         {
+            //todo 
 
-            Link link = await _mediator.Send(new GetLinkByIdQuery(id));
-            if (link == null)
-                return NotFound();
+            LinkDto link = await _mediator.Send(new GetLinkByIdQuery(id));
             return Ok(link);
         }
 
-
-        [HttpGet(Name = "getAll")]
+        [HttpGet()]
         [ProducesResponseType(typeof(IEnumerable<Link>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetLinks()
         {
@@ -49,20 +48,49 @@ namespace UrlShortener.Api.Controllers
             return Ok(links);
         }
 
-        [HttpPost(Name = "createLink")]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //  COMMANDS
+        [HttpPost]
+        [ProducesResponseType(typeof(LinkResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreteLink([FromBody] CreateLinkDto creteLinkDto)
         {
-            CommandResult<Guid> result = await _mediator.Send(new CreateLinkCommand(creteLinkDto));
+            Result<LinkResponse> result = await _mediator.Send(new CreateLinkCommand(creteLinkDto));
+
             if (result.IsSuccess == false)
             {
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(ApiError.ToBadRequest(result));
             }
-            return Ok(result.ReturnedObject);
+
+            return Ok(result.Value);
         }
 
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
+        {
+            Result result = await _mediator.Send(new DeleteLinkCommand(id));
 
+            if (result.IsSuccess == false)
+            {
+                return BadRequest(ApiError.ToBadRequest(result));
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateLink([FromBody] UpdateLinkDto updateLinkDto)
+        {
+            Result result = await _mediator.Send(new UpdateLinkCommand(updateLinkDto));
+            if (result.IsSuccess == false)
+            {
+                return BadRequest(ApiError.ToBadRequest(result));
+            }
+            return Ok(result);
+        }
 
 
         // TEST
@@ -71,7 +99,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
         {
-            Link link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
+            LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
             if (link == null) return NotFound();
             return Redirect(link.UrlAddress);
         }

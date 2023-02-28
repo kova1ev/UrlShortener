@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using UrlShortener.Application;
+using UrlShortener.Application.Common;
 using UrlShortener.Data;
 
 namespace UrlShortener.Api
@@ -11,12 +11,21 @@ namespace UrlShortener.Api
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
-            builder.Services.AddControllers().AddJsonOptions(options =>
+            builder.Services.AddControllers()
+            .AddNewtonsoftJson(options =>
             {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+                // options.SuppressMapClientErrors = true;
             });
 
+
+            builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
 
@@ -37,7 +46,7 @@ namespace UrlShortener.Api
 
             app.UseHttpsRedirection();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.MapControllers();
 

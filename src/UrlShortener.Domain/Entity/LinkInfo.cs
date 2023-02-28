@@ -10,5 +10,6 @@ public class LinkInfo : EntityBase
     public string DomainName { get; set; }
     public DateTime LastUse { get; set; }
 
+    // add some prop
 }
 

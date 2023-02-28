@@ -1,15 +1,17 @@
 ﻿using MediatR;
-using UrlShortener.Application.Dto.Link;
-using UrlShortener.Application.Responses;
+using UrlShortener.Common.Result;
 
 namespace UrlShortener.Application.Links.Commands.CreateLink;
 
-public class CreateLinkCommand : IRequest<CommandResult<Guid>>
+public class CreateLinkCommand : IRequest<Result<LinkResponse>>
 {
-    //TODO оставить дто или сделать проперти?
+    public string UrlAddress { get; }
+    public string? Alias { get; }
+
     public CreateLinkCommand(CreateLinkDto creteLinkDto)
     {
-        CreteLinkDto = creteLinkDto;
+        UrlAddress = creteLinkDto.UrlAddress;
+        Alias = creteLinkDto.Alias;
     }
-    public CreateLinkDto CreteLinkDto { get; set; }
+
 }

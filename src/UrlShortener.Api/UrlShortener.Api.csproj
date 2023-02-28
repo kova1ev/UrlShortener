@@ -11,6 +11,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
 		  <PrivateAssets>all</PrivateAssets>
@@ -21,8 +22,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\UrlShortener.Application\UrlShortener.Application.csproj" />
-		<ProjectReference Include="..\UrlShortener.Data\UrlShortener.Data.csproj" />
+		<ProjectReference Include="..\UrlShortener.Common\UrlShortener.Common.csproj" />
 		<ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 </Project>

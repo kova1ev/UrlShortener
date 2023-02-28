@@ -1,24 +1,23 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
-using UrlShortener.Domain.Entity;
+using UrlShortener.Data;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkById;
 
-public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Link?>
+public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, LinkDto>
 {
-    private readonly IAppDbContext _appDbContext;
+    private readonly AppDbContext _appDbContext;
 
-    public GetLinkByIdQueryHandler(IAppDbContext appDbContext)
+    public GetLinkByIdQueryHandler(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Link?> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
+    public async Task<LinkDto> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
+        var link = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
 
-        return result;
+        return new LinkDto(link);
     }
 }

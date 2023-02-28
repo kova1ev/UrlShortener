@@ -15,5 +15,6 @@ public static class ApplicationDependencyInjection
         services.AddMediatR(assemblies);
 
         services.AddTransient<IAliasCteater, AliasCreater>();
+        services.AddTransient<IAliasService, AliasService>();
     }
 }

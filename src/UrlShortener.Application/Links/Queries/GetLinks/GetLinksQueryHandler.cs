@@ -1,15 +1,15 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Interfaces;
+using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Queries.GetLinks;
 
 public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, IEnumerable<Link>>
 {
-    private readonly IAppDbContext _appDbContext;
+    private readonly AppDbContext _appDbContext;
 
-    public GetLinksQueryHandler(IAppDbContext appDbContext)
+    public GetLinksQueryHandler(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }

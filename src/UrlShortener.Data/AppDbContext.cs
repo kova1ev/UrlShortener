@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using UrlShortener.Application.Interfaces;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Data;
 
-public class AppDbContext : DbContext, IAppDbContext
+public class AppDbContext : DbContext
 {
     public DbSet<Link> Links { get; set; }
     public DbSet<LinkInfo> LinkInfos { get; set; }
-
-    public override DatabaseFacade Database => base.Database;
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -29,11 +25,6 @@ public class AppDbContext : DbContext, IAppDbContext
         base.OnModelCreating(modelBuilder);
     }
 
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return base.SaveChangesAsync(cancellationToken);
-    }
 
 }
 

@@ -1,14 +1,13 @@
 ﻿using MediatR;
-using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
-public class GetLinkByShortNameQuery : IRequest<Link>
+public class GetLinkByShortNameQuery : IRequest<LinkDto>
 {
-    public string ShortName { get; set; }
+    public string Alias { get; set; }
 
-    public GetLinkByShortNameQuery(string shortName)
+    public GetLinkByShortNameQuery(string alias)
     {
-        ShortName = shortName;
+        Alias = alias;
     }
 }

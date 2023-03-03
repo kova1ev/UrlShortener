@@ -33,7 +33,6 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
             return Result.Failure(new string[] { $"Link not found id {request.Id}" });
         }
 
-        /*if alias != null*/
         if (request.Alias != null && existingLink.Alias != request.Alias && await _aliasService.AliasIsBusy(request.Alias))
         {
             return Result.Failure(new string[] { "Alias is taken" });

@@ -13,40 +13,31 @@ namespace UrlShortener.Application.Links.Commands.CreateLink;
 public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkResponse>>
 {
     private const string PROLOCOL = "https://";
-
+    public const string SCHEME = "fgfg";
     private readonly AppDbContext _appDbContext;
     private readonly IAliasService _aliasService;
     private readonly AppOptions _options;
 
     public CreateLinkCommandHandler(AppDbContext appDbContext, IOptions<AppOptions> options, IAliasService aliasService)
     {
-        _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
+        this._appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
     public async Task<Result<LinkResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
-
-        //CreateLinkCommandValidator validationRules = new CreateLinkCommandValidator(_aliasService);
-        //var validationResult = await validationRules.ValidateAsync(request);
-        //if (validationResult.IsValid == false)
-        //    throw new ValidationException(validationResult.Errors.Select(fail => fail.ErrorMessage));
-
-        /*if alias != null*/
-        // todo replace in validator ?!!!!!  
-        //if (string.IsNullOrWhiteSpace(request.Alias) == false && await _aliasService.AliasIsBusy(request.Alias))
-        //{
-
-        //    return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
-        //}
+        if (request.Alias != null && await _aliasService.AliasIsBusy(request.Alias))
+        {
+            return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
+        }
 
         if (request.Alias == null)
         {
             Link? existingLink = await _appDbContext.Links
-                                                    .AsNoTracking()
-                                                    .Include(l => l.LinkInfo)
-                                                    .FirstOrDefaultAsync(l => l.UrlAddress == request.UrlAddress);
+                .AsNoTracking()
+                .Include(l => l.LinkInfo)
+                .FirstOrDefaultAsync(l => l.UrlAddress == request.UrlAddress);
             if (existingLink != null)
             {
                 return Result<LinkResponse>.Success(new LinkResponse(existingLink.Id, existingLink.UrlShort));

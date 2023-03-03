@@ -29,4 +29,10 @@
 	  <Folder Include="Models\" />
 	</ItemGroup>
 
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
+	<ItemGroup>
+	  <EditorConfigFiles Remove="C:\Users\andrey\Documents\Projects\UrlShortener\src\UrlShortener.Api\.editorconfig" />
+	</ItemGroup>
+
 </Project>

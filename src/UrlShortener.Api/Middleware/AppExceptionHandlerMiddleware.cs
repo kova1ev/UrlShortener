@@ -4,8 +4,6 @@ using UrlShortener.Application.Common.Exceptions;
 
 namespace UrlShortener.Api.Middleware;
 
-
-
 public class AppExceptionHandlerMiddleware
 {
     private readonly JsonSerializerSettings options = new JsonSerializerSettings()

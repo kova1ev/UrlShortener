@@ -10,8 +10,8 @@ public class ApiErrors
     }
 
     public int StatusCode { get; protected set; }
-    public string? Message { get; protected set; }
-    public int? ErrorCount => Errors == null ? null : Errors.ToList().Count;
+    public string Message { get; protected set; }
+    public int? ErrorCount => Errors?.ToList().Count;
     public IEnumerable<string>? Errors { get; protected set; }
 
     public static ApiErrors ToBadRequest(Application.Common.Result.Result result)

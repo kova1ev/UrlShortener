@@ -14,7 +14,6 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         _validators = validators;
     }
 
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
@@ -23,23 +22,14 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         }
 
         ValidationContext<TRequest> context = new ValidationContext<TRequest>(request);
-
-        //ValidationResult[] resultList = await Task.WhenAll(_validators.Select(async x => await x.ValidateAsync(context, cancellationToken)));
-
         ValidationResult[] resultList = _validators.Select(v => v.Validate(context)).ToArray();
-
         IEnumerable<string> errorsMessage = resultList.SelectMany(x => x.Errors).Where(v => v != null)
                                               .Select(e => e.ErrorMessage)
                                               .ToList();
-
-
-        if (errorsMessage.Count() != 0)
+        if (errorsMessage.Any())
         {
             throw new Common.Exceptions.ValidationException(errorsMessage);
         }
-
         return await next();
-
-
     }
 }

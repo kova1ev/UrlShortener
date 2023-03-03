@@ -2,13 +2,15 @@
 
 public class CreateLinkDto
 {
-    //[Required]
-    // [Url]
-    //[MinLength(10)]
+    public CreateLinkDto(string urlAddress, string? alias)
+    {
+        UrlAddress = urlAddress;
+        Alias = alias;
+    }
+
     public string UrlAddress { get; set; }
 
-    //[MinLength(3)]
-    //[MaxLength(10)]
     public string? Alias { get; set; }
+
 }
 

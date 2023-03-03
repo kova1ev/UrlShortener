@@ -8,8 +8,6 @@ public static class AppDbContextDependencyInjection
 {
     public static void AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        //services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
-
         string connectionString = configuration["ConnectionStrings:PostgresSQL"]
             ?? throw new ArgumentNullException(nameof(configuration));
 

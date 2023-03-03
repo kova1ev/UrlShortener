@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Middleware;
 using UrlShortener.Application;
 using UrlShortener.Application.Common;
 using UrlShortener.Data;
@@ -17,13 +19,19 @@ namespace UrlShortener.Api
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-            })
-            .ConfigureApiBehaviorOptions(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-                // options.SuppressMapClientErrors = true;
             });
 
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                //todo
+                options.SuppressModelStateInvalidFilter = true;
+                //options.InvalidModelStateResponseFactory = (context) =>
+                //{
+                //    ApiError bad = new ApiError(400, "bedrequest", context.ModelState.SelectMany(k => k.Value.Errors.Select(e => e.ErrorMessage)));
+                //    return new BadRequestObjectResult(bad);
+                //};
+            });
 
             builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
             builder.Services.AddAppDbContext(builder.Configuration);
@@ -42,7 +50,8 @@ namespace UrlShortener.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseMiddleware<Mymiddleware>();
+
+            app.UseMiddleware<AppExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
 
@@ -55,23 +64,3 @@ namespace UrlShortener.Api
     }
 }
 
-
-public class Mymiddleware
-{
-    RequestDelegate next;
-
-    public Mymiddleware(RequestDelegate next)
-    {
-        this.next = next;
-    }
-
-    public async Task Invoke(HttpContext context)
-    {
-        await next.Invoke(context);
-
-        var s = context.Response;
-        var statusCode = context.Response.StatusCode;
-        var c = context.Response.Body;
-
-    }
-}

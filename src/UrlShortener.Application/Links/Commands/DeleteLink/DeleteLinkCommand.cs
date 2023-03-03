@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UrlShortener.Common.Result;
+using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Commands.DeleteLink;
 

@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using UrlShortener.Application.Common;
+using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Common.Result;
 using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
@@ -27,26 +27,27 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
 
     public async Task<Result> Handle(UpdateLinkCommand request, CancellationToken cancellationToken)
     {
-        Link? link = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id);
-        if (link == null)
+        Link? existingLink = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id);
+        if (existingLink == null)
         {
             return Result.Failure(new string[] { $"Link not found id {request.Id}" });
         }
 
         /*if alias != null*/
-        // todo move in validator ?!!!!!  
-        if (string.IsNullOrWhiteSpace(request.Alias) == false && link.Alias != request.Alias
-            && await _aliasService.AliasIsBusy(request.Alias))
+        if (request.Alias != null && existingLink.Alias != request.Alias && await _aliasService.AliasIsBusy(request.Alias))
         {
             return Result.Failure(new string[] { "Alias is taken" });
         }
 
-        link.Alias = request.Alias ?? link.Alias;
-        link.UrlAddress = request.UrlAddress ?? link.UrlAddress;
+        //todo remove ??
+        existingLink.Alias = request.Alias ?? existingLink.Alias;
+        existingLink.UrlAddress = request.UrlAddress ?? existingLink.UrlAddress;
         //todo
-        link.UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', link.Alias);
+        existingLink.UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', existingLink.Alias);
 
-        _appDbContext.Entry<Link>(link).State = EntityState.Modified;
+
+
+        _appDbContext.Entry<Link>(existingLink).State = EntityState.Modified;
         await _appDbContext.SaveChangesAsync();
         return Result.Success();
     }

@@ -1,9 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using UrlShortener.Application.Commands.Links;
 using UrlShortener.Application.Common;
+using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Common.Result;
 using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
@@ -26,23 +27,29 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
     public async Task<Result<LinkResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
+
+        //CreateLinkCommandValidator validationRules = new CreateLinkCommandValidator(_aliasService);
+        //var validationResult = await validationRules.ValidateAsync(request);
+        //if (validationResult.IsValid == false)
+        //    throw new ValidationException(validationResult.Errors.Select(fail => fail.ErrorMessage));
+
         /*if alias != null*/
         // todo replace in validator ?!!!!!  
-        if (string.IsNullOrWhiteSpace(request.Alias) == false && await _aliasService.AliasIsBusy(request.Alias))
-        {
+        //if (string.IsNullOrWhiteSpace(request.Alias) == false && await _aliasService.AliasIsBusy(request.Alias))
+        //{
 
-            return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
-        }
+        //    return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
+        //}
 
         if (request.Alias == null)
         {
-            Link? existinglink = await _appDbContext.Links
+            Link? existingLink = await _appDbContext.Links
                                                     .AsNoTracking()
                                                     .Include(l => l.LinkInfo)
                                                     .FirstOrDefaultAsync(l => l.UrlAddress == request.UrlAddress);
-            if (existinglink != null)
+            if (existingLink != null)
             {
-                return Result<LinkResponse>.Success(new LinkResponse(existinglink.Id, existinglink.UrlShort));
+                return Result<LinkResponse>.Success(new LinkResponse(existingLink.Id, existingLink.UrlShort));
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace UrlShortener.Application.Exceptions;
+namespace UrlShortener.Application.Common.Exceptions;
 
 [Serializable]
 public class ObjectExistingException : Exception

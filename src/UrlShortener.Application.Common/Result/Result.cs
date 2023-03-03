@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Common.Result;
+﻿namespace UrlShortener.Application.Common.Result;
 
 
 public class Result
@@ -7,10 +7,10 @@ public class Result
     public virtual string Message { get; protected set; }
     public virtual IEnumerable<string>? Errors { get; protected set; }
 
-    protected Result(bool issuccess, string? message, IEnumerable<string> errors)
+    protected Result(bool isSuccess, string? message, IEnumerable<string> errors)
     {
-        IsSuccess = issuccess;
-        Message = message == null && issuccess ? "Success" : "Failure";
+        IsSuccess = isSuccess;
+        Message = message == null && isSuccess ? "Success" : "Failure";
         Errors = errors ?? throw new InvalidOperationException(nameof(errors));
     }
 
@@ -29,9 +29,9 @@ public class Result
 
 public sealed class Result<TEntity> : Result
 {
-    private TEntity _value;
-    private Result(TEntity value, bool issuccess, string? message, IEnumerable<string> errors)
-        : base(issuccess, message, errors)
+    private readonly TEntity _value;
+    private Result(TEntity value, bool isSuccess, string? message, IEnumerable<string> errors)
+        : base(isSuccess, message, errors)
     {
         _value = value;
     }

@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Common.Result;
+﻿namespace UrlShortener.Application.Common.Result;
 
 public class QueryResult<Tentity, Tdto>
     where Tentity : class

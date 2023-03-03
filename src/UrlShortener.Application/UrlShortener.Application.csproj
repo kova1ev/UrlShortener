@@ -8,11 +8,13 @@
 
 
 	<ItemGroup>
+	  <PackageReference Include="FluentValidation" Version="11.5.1" />
+	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
 	  <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\UrlShortener.Common\UrlShortener.Common.csproj" />
+	  <ProjectReference Include="..\UrlShortener.Application.Common\UrlShortener.Application.Common.csproj" />
 	  <ProjectReference Include="..\UrlShortener.Data\UrlShortener.Data.csproj" />
 	  <ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
 	</ItemGroup>

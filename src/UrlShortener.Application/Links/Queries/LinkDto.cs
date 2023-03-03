@@ -6,8 +6,8 @@ namespace UrlShortener.Application.Links.Queries;
 public class LinkDto
 {
     public Guid Id { get; set; }
-    public string UrlAddress { get; set; }
-    public string UrlShort { get; set; }
+    public string? UrlAddress { get; set; }
+    public string? UrlShort { get; set; }
 
     public DateTime DateTimeCreated { get; set; }
 
@@ -17,6 +17,7 @@ public class LinkDto
     {
         if (link != null)
         {
+            Id = link.Id;
             UrlAddress = link.UrlAddress;
             DateTimeCreated = link.DateTimeCreated;
             UrlShort = link.UrlShort;
@@ -36,7 +37,7 @@ public class LinkDto
 public class LinkInfoDto
 {
     public Guid Id { get; set; }
-    public string DomainName { get; set; }
+    public string? DomainName { get; set; }
     public DateTime LastUse { get; set; }
 
 }

@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UrlShortener.Application.Links.Commands.UpdateLink;
+namespace UrlShortener.Application.Commands.Links;
 
 public class UpdateLinkDto
 {
-    [Required]
-    public Guid Id { get; set; }
 
     [Required]
     [MaxLength(10)]
@@ -17,10 +15,9 @@ public class UpdateLinkDto
     [MinLength(10)]
     public string? UrlAddress { get; set; }
 
-    public UpdateLinkDto(string? alias, string? urlAddress, Guid id)
+    public UpdateLinkDto(string? alias, string? urlAddress)
     {
         Alias = alias;
         UrlAddress = urlAddress;
-        Id = id;
     }
 }

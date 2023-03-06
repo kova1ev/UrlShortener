@@ -25,7 +25,7 @@ public class DeleteLinkCommandHandler : IRequestHandler<DeleteLinkCommand, Resul
         }
         _appDbContext.Entry(link).State = EntityState.Deleted;
 
-        int count = await _appDbContext.SaveChangesAsync();
+        await _appDbContext.SaveChangesAsync();
 
         return Result.Success();
     }

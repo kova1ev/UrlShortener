@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Filters;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application;
 using UrlShortener.Application.Common;
@@ -21,6 +22,10 @@ namespace UrlShortener.Api
                 //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
 
+            builder.Services.Configure<MvcOptions>(options =>
+                {
+                    options.Filters.Add(typeof(ValidateModelStateFilter));
+                });
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {

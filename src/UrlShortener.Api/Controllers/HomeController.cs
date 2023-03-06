@@ -6,7 +6,6 @@ namespace UrlShortener.Api.Controllers
     [Route("api/home")]
     public class HomeController : ApiControllerBase<HomeController>
     {
-
         public HomeController(ILogger<HomeController> logger, IMediator mediator) : base(logger, mediator)
         {
 

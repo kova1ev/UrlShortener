@@ -13,7 +13,7 @@ namespace UrlShortener.Application.Links.Commands.CreateLink;
 public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkResponse>>
 {
     private const string PROLOCOL = "https://";
-    public const string SCHEME = "fgfg";
+
     private readonly AppDbContext _appDbContext;
     private readonly IAliasService _aliasService;
     private readonly AppOptions _options;
@@ -44,13 +44,15 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             }
         }
 
-        string alias = request.Alias == null ? await _aliasService.GenerateAlias(request.UrlAddress) : request.Alias;
+        string alias = request.Alias == null ? await _aliasService.GenerateAlias(request.UrlAddress!) : request.Alias;
+
 
         Link link = new Link()
         {
-            UrlAddress = request.UrlAddress,
+            UrlAddress = request.UrlAddress!,
             Alias = alias,
-            //TODO  куда-то вынести
+            //TODO: куда-то вынести
+
             UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', alias)
 
         };
@@ -58,7 +60,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
         LinkInfo linkInfo = new LinkInfo()
         {
-            DomainName = new Uri(request.UrlAddress).Host,
+            DomainName = new Uri(request.UrlAddress!).Host,
             LastUse = DateTime.UtcNow,
             Link = link,
         };

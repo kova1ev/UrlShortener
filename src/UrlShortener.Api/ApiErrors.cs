@@ -1,4 +1,6 @@
-﻿namespace UrlShortener.Api;
+﻿using UrlShortener.Application.Common.Constants;
+
+namespace UrlShortener.Api;
 
 public class ApiErrors
 {
@@ -11,11 +13,10 @@ public class ApiErrors
 
     public int StatusCode { get; protected set; }
     public string Message { get; protected set; }
-    public int? ErrorCount => Errors?.ToList().Count;
     public IEnumerable<string>? Errors { get; protected set; }
 
     public static ApiErrors ToBadRequest(Application.Common.Result.Result result)
     {
-        return new ApiErrors(StatusCodes.Status400BadRequest, result.Message, result.Errors);
+        return new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeMessage.BAD_REQUEST_MESSAGE, result.Errors);
     }
 }

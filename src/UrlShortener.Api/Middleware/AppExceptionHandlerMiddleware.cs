@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Exceptions;
 
 namespace UrlShortener.Api.Middleware;
@@ -42,15 +43,18 @@ public class AppExceptionHandlerMiddleware
         {
             case ValidationException validation:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                ApiErrors apiError = new ApiErrors(StatusCodes.Status400BadRequest, validation.Message, validation.Errors);
+                ApiErrors apiError = new ApiErrors(StatusCodes.Status400BadRequest,
+                    StatusCodeMessage.BAD_REQUEST_MESSAGE,
+                    validation.Errors);
                 resultJsonString = JsonConvert.SerializeObject(apiError, options);
                 break;
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 //TODO  log error
                 _logger.LogCritical("{0} \n {1} \n {2}", exception.Source, exception.StackTrace, exception.Message);
-                string message = "Internal Server Error";
-                ApiErrors apiErrors = new ApiErrors(StatusCodes.Status500InternalServerError, message, null);
+                ApiErrors apiErrors = new ApiErrors(StatusCodes.Status500InternalServerError,
+                    StatusCodeMessage.INTERNAL_SERVER_ERROR,
+                    new[] { exception.Message }); // todo
                 resultJsonString = JsonConvert.SerializeObject(apiErrors, options);
                 break;
         }

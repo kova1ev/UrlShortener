@@ -23,9 +23,12 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
         ValidationContext<TRequest> context = new ValidationContext<TRequest>(request);
         ValidationResult[] resultList = _validators.Select(v => v.Validate(context)).ToArray();
-        IEnumerable<string> errorsMessage = resultList.SelectMany(x => x.Errors).Where(v => v != null)
-                                              .Select(e => e.ErrorMessage)
-                                              .ToList();
+        IEnumerable<string> errorsMessage = resultList
+            .SelectMany(x => x.Errors)
+            .Where(v => v != null)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
         if (errorsMessage.Any())
         {
             throw new Common.Exceptions.ValidationException(errorsMessage);

@@ -10,7 +10,7 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
         RuleFor(c => c.UrlAddress).NotEmpty().WithMessage("{PropertyName} is required.");
 
         RuleFor(c => c.UrlAddress)
-            .Must(url => url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            .Must(url => url!.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
                       || url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
                       || url.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase))
             .When(c => c.UrlAddress != null)

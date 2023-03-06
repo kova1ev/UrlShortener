@@ -2,10 +2,9 @@
 
 namespace UrlShortener.Application.Services;
 
-internal class AliasCreater : IAliasCteater
+internal class AliasGenerator : IAliasGenerator
 {
-
-    public string CreateAlias(string url)
+    public string GenerateAlias(string url)
     {
         //todo Create Normal generate
         int hash = url.GetHashCode();

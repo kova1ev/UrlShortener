@@ -1,8 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using UrlShortener.Application.Commands.Links;
-using UrlShortener.Application.Common;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Data;
@@ -12,24 +11,20 @@ namespace UrlShortener.Application.Links.Commands.CreateLink;
 
 public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkResponse>>
 {
-    private const string PROLOCOL = "https://";
-
     private readonly AppDbContext _appDbContext;
-    private readonly IAliasService _aliasService;
-    private readonly AppOptions _options;
+    private readonly ILinkService _linkService;
 
-    public CreateLinkCommandHandler(AppDbContext appDbContext, IOptions<AppOptions> options, IAliasService aliasService)
+    public CreateLinkCommandHandler(AppDbContext appDbContext, ILinkService aliasService)
     {
         this._appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
-        _options = options.Value ?? throw new ArgumentNullException(nameof(options));
-        _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
+        _linkService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
     public async Task<Result<LinkResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
-        if (request.Alias != null && await _aliasService.AliasIsBusy(request.Alias))
+        if (request.Alias != null && await _linkService.AliasIsBusy(request.Alias))
         {
-            return Result<LinkResponse>.Failure(new string[] { "Alias is taken" });
+            return Result<LinkResponse>.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
         }
 
         if (request.Alias == null)
@@ -37,24 +32,33 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             Link? existingLink = await _appDbContext.Links
                 .AsNoTracking()
                 .Include(l => l.LinkInfo)
-                .FirstOrDefaultAsync(l => l.UrlAddress == request.UrlAddress);
+                .FirstOrDefaultAsync(l => EF.Functions.ILike(l.UrlAddress, request.UrlAddress!));
+
             if (existingLink != null)
             {
                 return Result<LinkResponse>.Success(new LinkResponse(existingLink.Id, existingLink.UrlShort));
             }
+
+            //todo   ???
+            Console.WriteLine("*******************************************************");
+            LinkResponse? linkResponse = await (from l in _appDbContext.Links
+                                                where l.UrlAddress == request.UrlAddress
+                                                select new LinkResponse(l.Id, l.UrlShort)).FirstOrDefaultAsync();
+
+            if (linkResponse != null)
+            {
+                return Result<LinkResponse>.Success(linkResponse);
+            }
+
         }
 
-        string alias = request.Alias == null ? await _aliasService.GenerateAlias(request.UrlAddress!) : request.Alias;
-
+        string alias = request.Alias ?? await _linkService.GenerateAlias(request.UrlAddress!);
 
         Link link = new Link()
         {
             UrlAddress = request.UrlAddress!,
             Alias = alias,
-            //TODO: куда-то вынести
-
-            UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', alias)
-
+            UrlShort = _linkService.CreateShortUrl(alias)
         };
         _appDbContext.Entry(link).State = EntityState.Added;
 

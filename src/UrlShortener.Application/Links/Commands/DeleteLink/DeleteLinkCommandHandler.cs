@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
@@ -21,7 +22,7 @@ public class DeleteLinkCommandHandler : IRequestHandler<DeleteLinkCommand, Resul
         Link? link = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id);
         if (link == null)
         {
-            return Result.Failure(new[] { $"Link with id '{request.Id}' is not existing" });
+            return Result.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
         _appDbContext.Entry(link).State = EntityState.Deleted;
 

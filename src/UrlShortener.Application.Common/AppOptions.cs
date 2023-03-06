@@ -2,5 +2,5 @@
 
 public class AppOptions
 {
-    public string HostName { get; set; }
+    public string AppUrl { get; set; }
 }

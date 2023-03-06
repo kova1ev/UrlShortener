@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace UrlShortener.Domain.Entity;
 
-namespace UrlShortener.Domain.Entity;
 
-[Table("linkinfos")]
 public class LinkInfo : EntityBase
 {
     public Guid LinkId { get; set; }

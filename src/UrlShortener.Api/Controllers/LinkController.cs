@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Models;
 using UrlShortener.Application.Commands.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.CreateLink;
@@ -8,7 +9,6 @@ using UrlShortener.Application.Links.Commands.UpdateLink;
 using UrlShortener.Application.Links.Queries;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Application.Links.Queries.GetLinks;
-using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Api.Controllers
 {
@@ -21,30 +21,26 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpGet("{shortName}")]
-        [ProducesResponseType(typeof(Link), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(LinkDto), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetByShortName([FromRoute] string shortName)
         {
             LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            if (link == null)
-                return NotFound();
             return Ok(link);
         }
 
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(Link), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LinkDto), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetById([FromRoute] Guid id)
         {
-            //todo 
-
             LinkDto link = await _mediator.Send(new GetLinkByIdQuery(id));
             return Ok(link);
         }
 
         [HttpGet()]
-        [ProducesResponseType(typeof(IEnumerable<Link>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<LinkDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetLinks()
         {
+            //TODO  PAGINATIONS!
             var links = await _mediator.Send(new GetLinksQuery());
             return Ok(links);
         }
@@ -66,7 +62,7 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
         {
@@ -77,11 +73,11 @@ namespace UrlShortener.Api.Controllers
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
 
-            return Ok(result);
+            return Ok(new ResultResponse(result.IsSuccess, "Success"));
         }
 
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkDto updateLinkDto)
         {
@@ -90,28 +86,8 @@ namespace UrlShortener.Api.Controllers
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-            return Ok(result);
-        }
 
-
-        // TEST
-
-        [HttpGet("redirect/{shortName}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
-        {
-            LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            if (link == null) return NotFound();
-            return Redirect(link.UrlAddress);
-        }
-
-        [HttpGet("headers")]
-        public ActionResult TestHeaders()
-        {
-            var s = HttpContext.Request.Headers["user-agent"];
-
-            var headers = HttpContext.Request.Headers;
-            return Ok(headers);
+            return Ok(new ResultResponse(result.IsSuccess, "Success"));
         }
 
     }

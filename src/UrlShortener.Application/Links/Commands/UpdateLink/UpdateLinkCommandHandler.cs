@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using UrlShortener.Application.Common;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Data;
@@ -11,18 +10,13 @@ namespace UrlShortener.Application.Links.Commands.UpdateLink;
 
 public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Result>
 {
-    //todo
-    private const string PROLOCOL = "https://";
-
     private readonly AppDbContext _appDbContext;
-    private readonly IAliasService _aliasService;
-    private readonly AppOptions _options;
+    private readonly ILinkService _linkService;
 
-    public UpdateLinkCommandHandler(AppDbContext appDbContext, IAliasService aliasService, IOptions<AppOptions> options)
+    public UpdateLinkCommandHandler(AppDbContext appDbContext, ILinkService aliasService)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
-        _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
-        _options = options.Value ?? throw new ArgumentException(nameof(options));
+        _linkService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
     public async Task<Result> Handle(UpdateLinkCommand request, CancellationToken cancellationToken)
@@ -30,21 +24,18 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
         Link? existingLink = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id);
         if (existingLink == null)
         {
-            return Result.Failure(new string[] { $"Link not found id {request.Id}" });
+            return Result.Failure(new string[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
 
-        if (request.Alias != null && existingLink.Alias != request.Alias && await _aliasService.AliasIsBusy(request.Alias))
+        if (request.Alias != null && existingLink.Alias != request.Alias && await _linkService.AliasIsBusy(request.Alias))
         {
-            return Result.Failure(new string[] { "Alias is taken" });
+            return Result.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
         }
 
         //todo remove ??
-        existingLink.Alias = request.Alias ?? existingLink.Alias;
         existingLink.UrlAddress = request.UrlAddress ?? existingLink.UrlAddress;
-        //todo
-        existingLink.UrlShort = string.Concat(PROLOCOL, _options.HostName, '/', existingLink.Alias);
-
-
+        existingLink.Alias = request.Alias ?? existingLink.Alias;
+        existingLink.UrlShort = _linkService.CreateShortUrl(existingLink.Alias);
 
         _appDbContext.Entry<Link>(existingLink).State = EntityState.Modified;
         await _appDbContext.SaveChangesAsync();

@@ -1,7 +1,8 @@
 ﻿namespace UrlShortener.Application.Interfaces;
 
-public interface IAliasService
+public interface ILinkService
 {
     Task<bool> AliasIsBusy(string alias);
     Task<string> GenerateAlias(string urlAddress);
+    string CreateShortUrl(string alias);
 }

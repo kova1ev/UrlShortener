@@ -13,7 +13,7 @@ public class UpdateLinkCommand : IRequest<Result>
     public UpdateLinkCommand(Guid id, UpdateLinkDto updateLinkDto)
     {
         Id = id;
-        Alias = updateLinkDto.Alias;
-        UrlAddress = updateLinkDto.UrlAddress;
+        UrlAddress = updateLinkDto.UrlAddress?.Trim();
+        Alias = updateLinkDto.Alias?.Trim();
     }
 }

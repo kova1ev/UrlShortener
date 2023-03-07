@@ -38,9 +38,11 @@ public sealed class Result<TEntity> : Result
     {
         get
         {
-            return IsSuccess ? _value : throw new InvalidOperationException();
+            return IsSuccess ? _value : throw new InvalidOperationException($"{nameof(Value)} is null");
         }
     }
+
+    public bool HasValue => IsSuccess;
 
     public static Result<TEntity> Success(TEntity entity)
     {

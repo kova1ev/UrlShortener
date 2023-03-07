@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Data", "src\Ur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Application.Common", "src\UrlShortener.Application.Common\UrlShortener.Application.Common.csproj", "{218AD0F7-4142-4A1C-AC10-67191D228013}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BC59D664-7A8F-436F-9FBF-A3C4A0AFB68B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "tests\Application.UnitTests\Application.UnitTests.csproj", "{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +43,16 @@ Global
 		{218AD0F7-4142-4A1C-AC10-67191D228013}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{218AD0F7-4142-4A1C-AC10-67191D228013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{218AD0F7-4142-4A1C-AC10-67191D228013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FAA57B7C-5E0A-41C8-B635-9B20DDB80D96} = {BC59D664-7A8F-436F-9FBF-A3C4A0AFB68B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6132DD6F-E01F-415E-A650-4C4993DD35B9}

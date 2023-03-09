@@ -25,16 +25,16 @@ public class Result
     }
 }
 
-public sealed class Result<TEntity> : Result
+public sealed class Result<TValue> : Result
 {
-    private readonly TEntity _value;
-    private Result(TEntity value, bool isSuccess, IEnumerable<string> errors)
+    private readonly TValue _value;
+    private Result(TValue value, bool isSuccess, IEnumerable<string> errors)
         : base(isSuccess, errors)
     {
         _value = value;
     }
 
-    public TEntity Value
+    public TValue Value
     {
         get
         {
@@ -44,17 +44,17 @@ public sealed class Result<TEntity> : Result
 
     public bool HasValue => IsSuccess;
 
-    public static Result<TEntity> Success(TEntity entity)
+    public static Result<TValue> Success(TValue entity)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
-        return new Result<TEntity>(entity, true, Enumerable.Empty<string>());
+        return new Result<TValue>(entity, true, Enumerable.Empty<string>());
     }
 
-    public new static Result<TEntity> Failure(IEnumerable<string> errors)
+    public new static Result<TValue> Failure(IEnumerable<string> errors)
     {
         if (errors == null)
             throw new ArgumentNullException(nameof(errors));
-        return new Result<TEntity>(default!, false, errors);
+        return new Result<TValue>(default!, false, errors);
     }
 }

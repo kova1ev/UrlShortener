@@ -30,7 +30,6 @@ public class AppExceptionHandlerMiddleware
         catch (Exception ex)
         {
             await ExceptionHandler(context, ex);
-
         }
     }
 

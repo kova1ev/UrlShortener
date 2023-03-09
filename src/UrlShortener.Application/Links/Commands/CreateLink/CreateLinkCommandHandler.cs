@@ -29,27 +29,16 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
         if (request.Alias == null)
         {
-            Link? existingLink = await _appDbContext.Links
+            LinkResponse? existingLink = await _appDbContext.Links
                 .AsNoTracking()
-                .Include(l => l.LinkInfo)
-                .FirstOrDefaultAsync(l => EF.Functions.ILike(l.UrlAddress, request.UrlAddress!));
+                .Where(l => l.UrlAddress == request.UrlAddress)
+                .Select(l => new LinkResponse(l.Id, l.UrlShort))
+                .FirstOrDefaultAsync();
 
             if (existingLink != null)
             {
-                return Result<LinkResponse>.Success(new LinkResponse(existingLink.Id, existingLink.UrlShort));
+                return Result<LinkResponse>.Success(existingLink);
             }
-
-            //todo   ???
-            Console.WriteLine("*******************************************************");
-            LinkResponse? linkResponse = await (from l in _appDbContext.Links
-                                                where l.UrlAddress == request.UrlAddress
-                                                select new LinkResponse(l.Id, l.UrlShort)).FirstOrDefaultAsync();
-
-            if (linkResponse != null)
-            {
-                return Result<LinkResponse>.Success(linkResponse);
-            }
-
         }
 
         string alias = request.Alias ?? await _linkService.GenerateAlias(request.UrlAddress!);

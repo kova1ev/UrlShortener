@@ -51,7 +51,7 @@ public class ResultGenericTests
         // act          
         // assert
 
-        Assert.Throws<ArgumentNullException>(() => Result.Failure(errors!));
+        Assert.Throws<ArgumentNullException>(() => Result<string>.Failure(errors!));
 
     }
 }

@@ -12,8 +12,11 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
         builder.HasKey(l => l.Id);
         builder.Property(l => l.Id).ValueGeneratedNever();
         builder.Property(l => l.UrlAddress).IsRequired();
-        builder.Property(l => l.Alias).HasMaxLength(30).IsRequired();
+        builder.Property(l => l.Alias).HasMaxLength(50).IsRequired();
         builder.HasIndex(l => l.Alias).IsUnique();
-        builder.Property(l => l.UrlShort).IsRequired();
+        builder.Property(l => l.UrlShort).HasMaxLength(75).IsRequired();
+
+        builder.Property(l => l.UrlAddress).UseCollation("case_insensitivity");
+
     }
 }

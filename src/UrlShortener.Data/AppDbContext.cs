@@ -22,6 +22,8 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasCollation("case_insensitivity", locale: "en-u-ks-level2", provider: "icu", deterministic: false);
+
         modelBuilder.ApplyConfiguration(new LinkConfiguration());
         modelBuilder.ApplyConfiguration(new LinkInfoConfiguration());
         base.OnModelCreating(modelBuilder);

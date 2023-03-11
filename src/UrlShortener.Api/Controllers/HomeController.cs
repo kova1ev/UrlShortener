@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
 namespace UrlShortener.Api.Controllers
@@ -19,10 +20,12 @@ namespace UrlShortener.Api.Controllers
         //   [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
         {
-            LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            if (link == null)
-                return NotFound();
-            return Redirect(link.UrlAddress);
+            Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
+            if (result.IsSuccess == false)
+                return NoContent();
+            //return Ok(result.Value);
+
+            return Redirect(result.Value.UrlShort);
         }
 
         [HttpGet("headers")]

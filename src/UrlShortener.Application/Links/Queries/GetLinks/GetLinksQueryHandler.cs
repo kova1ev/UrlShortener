@@ -16,9 +16,11 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, IEnumerable<L
 
     public async Task<IEnumerable<LinkDto>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
     {
-        var links = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking()
-            .Select(link => LinkDto.MapToLInkDto(link))
-            .ToArrayAsync();
+        IEnumerable<LinkDto> links = await _appDbContext.Links
+             .Include(l => l.LinkInfo)
+             .AsNoTracking()
+             .Select(link => LinkDto.MapToLInkDto(link))
+             .ToArrayAsync();
         return links;
     }
 }

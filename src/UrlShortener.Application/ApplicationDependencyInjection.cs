@@ -10,7 +10,7 @@ namespace UrlShortener.Application;
 
 public static class ApplicationDependencyInjection
 {
-
+    // TODO : clear! 
     public static void AddApplication(this IServiceCollection services)
     {
         services.AddTransient<IAliasGenerator, AliasGenerator>();

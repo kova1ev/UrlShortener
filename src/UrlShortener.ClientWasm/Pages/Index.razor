@@ -1,0 +1,73 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+
+<PageTitle>UrlShortener</PageTitle>
+
+<div class="col-6">
+    <h1 class="">Create short url address</h1>
+
+    <div class="input-group input-group-lg mb-3">
+        <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress" type="text" />
+        <button class="btn btn-primary" @onclick="Send">Cut</button>
+    </div>
+    <span>Optional</span>
+    <div class="input-group input-group-sm mb-3">
+        <span class="input-group-text">Alias</span>
+        <input type="text" placeholder="alias" class="form-control" autocomplete="off" @bind="Alias" />
+    </div>
+    <br />
+    @if(link != null)
+    {
+        <div>
+            <div class="input-group input-group-lg" role="alert">
+                <div class="alert alert-success form-control" role="alert">
+                    <span>@link.ShortUrl</span>
+                </div>
+                <button class="btn btn-outline-success" type="button" @onclick="Copy">Copy</button>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+@code {
+
+    public string? UrlAddress { get; set; }
+
+    public string? Alias { get; set; }
+
+    private LinkResponse? link;
+
+    private async Task Send()
+    {
+        UrlAddress = UrlAddress?.Trim();
+        Alias = Alias?.Trim();
+        if (string.IsNullOrEmpty(UrlAddress) == false)
+        {
+            Console.WriteLine(UrlAddress);
+            Console.WriteLine(Alias);
+
+            var result =await Http.PostAsJsonAsync<CreateLinkDto>("api/link", new CreateLinkDto(UrlAddress, Alias));
+            if(result.IsSuccessStatusCode)
+            {
+                var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+                string jsonString = await result.Content.ReadAsStringAsync();
+                Console.WriteLine(jsonString);
+                link = JsonSerializer.Deserialize<LinkResponse>(jsonString,options);
+            }
+
+        }
+    }
+
+
+    private async Task Copy()
+    {
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", link?.ShortUrl);
+    }
+}

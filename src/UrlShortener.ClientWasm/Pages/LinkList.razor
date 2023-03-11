@@ -1,0 +1,54 @@
+﻿@page "/links"
+@using UrlShortener.Application.Common.Links;
+@inject HttpClient Http
+
+<PageTitle>Likns</PageTitle>
+
+<h1>Likns</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (links == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Url Addres</th>
+                <th>Short  Url</th>
+                <th>Date Create</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var link in links)
+            {
+                <tr>
+                    <td>@link.Id</td>
+                    <td>@link.UrlAddress</td>
+                    <td>@link.UrlShort</td>
+                    <td>@link.DateTimeCreated</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<LinkDto>? links;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var jsonString = await Http.GetStringAsync("api/link");
+        Console.WriteLine(jsonString);
+
+        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        links = JsonSerializer.Deserialize<IEnumerable<LinkDto>>(jsonString,options);
+
+    }
+
+
+}

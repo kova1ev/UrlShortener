@@ -17,7 +17,7 @@ namespace UrlShortener.Api
             builder.Services.AddControllers()
             .AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
+                options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss";
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
@@ -52,20 +52,37 @@ namespace UrlShortener.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseWebAssemblyDebugging();
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+            else
+            {
+                // app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
 
             app.UseMiddleware<AppExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseAuthorization();
+
+            app.UseRouting();
 
             app.MapControllers();
 
+
+            // WASM 
+            app.UseBlazorFrameworkFiles();
+            app.MapFallbackToFile("index.html");
+
             app.Run();
         }
+
     }
+
 }
 

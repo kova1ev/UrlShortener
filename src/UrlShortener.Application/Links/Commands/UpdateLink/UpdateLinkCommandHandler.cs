@@ -32,10 +32,9 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
             return Result.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
         }
 
-        //todo remove ??
         existingLink.UrlAddress = request.UrlAddress ?? existingLink.UrlAddress;
         existingLink.Alias = request.Alias ?? existingLink.Alias;
-        existingLink.UrlShort = _linkService.CreateShortUrl(existingLink.Alias);
+        existingLink.UrlShort = _linkService.CreateShortUrl(existingLink.Alias!);
 
         _appDbContext.Entry<Link>(existingLink).State = EntityState.Modified;
         await _appDbContext.SaveChangesAsync();

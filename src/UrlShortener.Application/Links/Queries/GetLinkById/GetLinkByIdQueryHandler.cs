@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Links;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Data;
 
@@ -18,6 +19,6 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, LinkDto
     {
         var link = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
 
-        return new LinkDto(link);
+        return LinkDto.MapToLInkDto(link);
     }
 }

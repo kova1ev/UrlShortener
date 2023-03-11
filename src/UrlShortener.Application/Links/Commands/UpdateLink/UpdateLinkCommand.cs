@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UrlShortener.Application.Commands.Links;
+using UrlShortener.Application.Common.Links;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Commands.UpdateLink;

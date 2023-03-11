@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Models;
-using UrlShortener.Application.Commands.Links;
+using UrlShortener.Application.Common.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.CreateLink;
 using UrlShortener.Application.Links.Commands.DeleteLink;
 using UrlShortener.Application.Links.Commands.UpdateLink;
-using UrlShortener.Application.Links.Queries;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Application.Links.Queries.GetLinks;
 
@@ -40,7 +39,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<LinkDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetLinks()
         {
-            //TODO  PAGINATIONS!
+            // TODO:  PAGINATIONS!
             var links = await _mediator.Send(new GetLinksQuery());
             return Ok(links);
         }

@@ -31,5 +31,6 @@ public class ValidateModelStateFilter : IActionFilter
 
         context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Result = new ObjectResult(apiErrors);
+
     }
 }

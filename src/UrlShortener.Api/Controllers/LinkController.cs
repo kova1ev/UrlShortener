@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
 using UrlShortener.Application.Common.Links;
 using UrlShortener.Application.Common.Result;
@@ -11,6 +12,7 @@ using UrlShortener.Application.Links.Queries.GetLinks;
 
 namespace UrlShortener.Api.Controllers
 {
+    [ApiKeyAuthorize]
     [Route("api/link")]
     public class LinkController : ApiControllerBase<LinkController>
     {
@@ -26,7 +28,9 @@ namespace UrlShortener.Api.Controllers
         {
             Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
             if (result.IsSuccess == false)
+            {
                 return NoContent();
+            }
             return Ok(result.Value);
         }
 
@@ -37,7 +41,9 @@ namespace UrlShortener.Api.Controllers
         {
             Result<LinkDto> result = await _mediator.Send(new GetLinkByIdQuery(id));
             if (result.IsSuccess == false)
+            {
                 return NoContent();
+            }
             return Ok(result.Value);
         }
 
@@ -57,12 +63,10 @@ namespace UrlShortener.Api.Controllers
         public async Task<IActionResult> CreteLink([FromBody] CreateLinkDto createLinkDto)
         {
             Result<LinkResponse> result = await _mediator.Send(new CreateLinkCommand(createLinkDto));
-
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-
             return Ok(result.Value);
         }
 
@@ -72,12 +76,10 @@ namespace UrlShortener.Api.Controllers
         public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
         {
             Result result = await _mediator.Send(new DeleteLinkCommand(id));
-
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-
             return Ok(new ResultResponse(result.IsSuccess, "Success"));
         }
 
@@ -91,9 +93,7 @@ namespace UrlShortener.Api.Controllers
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-
             return Ok(new ResultResponse(result.IsSuccess, "Success"));
         }
-
     }
 }

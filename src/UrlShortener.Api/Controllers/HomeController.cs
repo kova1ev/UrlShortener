@@ -16,16 +16,19 @@ namespace UrlShortener.Api.Controllers
 
 
         // TEST features
-        [HttpGet("redirect/{shortName}")]
-        //   [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{shortName}")]
         public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
         {
+            throw new DivideByZeroException();
             Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
+            // string urlForreedirect = "https://github.com/kova1ev";
+            // return Redirect(urlForreedirect);
+
             if (result.IsSuccess == false)
                 return NoContent();
             //return Ok(result.Value);
 
-            return Redirect(result.Value.UrlShort);
+            return Redirect(result.Value.UrlAddress);
         }
 
         [HttpGet("headers")]

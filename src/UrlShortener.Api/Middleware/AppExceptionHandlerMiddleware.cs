@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Exceptions;
 
@@ -7,10 +7,10 @@ namespace UrlShortener.Api.Middleware;
 
 public class AppExceptionHandlerMiddleware
 {
-    private readonly JsonSerializerSettings options = new JsonSerializerSettings()
+    private readonly JsonSerializerOptions options = new JsonSerializerOptions()
     {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
     private readonly RequestDelegate _next;
@@ -36,15 +36,16 @@ public class AppExceptionHandlerMiddleware
     public async Task ExceptionHandler(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
+        ApiErrors apiError;
         string resultJsonString = string.Empty;
         switch (exception)
         {
             case ValidationException validation:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                ApiErrors apiError = new ApiErrors(StatusCodes.Status400BadRequest,
-                    StatusCodeMessage.BAD_REQUEST_MESSAGE,
-                    validation.Errors);
-                resultJsonString = JsonConvert.SerializeObject(apiError, options);
+                apiError = new ApiErrors(StatusCodes.Status400BadRequest,
+                   StatusCodeMessage.BAD_REQUEST_MESSAGE,
+                   validation.Errors);
+                resultJsonString = JsonSerializer.Serialize(apiError, options);
                 break;
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -52,19 +53,16 @@ public class AppExceptionHandlerMiddleware
                 // using (_logger.BeginScope(new Dictionary<string, object>
                 //{
                 //    ["source"] = exception.Source,
-
                 //}))
                 _logger.LogError("{0} \n {1} \n {2}", exception.Source, exception.StackTrace, exception.Message);
-                ApiErrors apiErrors = new ApiErrors(StatusCodes.Status500InternalServerError,
+                apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
                     StatusCodeMessage.INTERNAL_SERVER_ERROR,
                     new[] { exception.Message }); // todo : remove 
-                resultJsonString = JsonConvert.SerializeObject(apiErrors, options);
+                resultJsonString = JsonSerializer.Serialize(apiError, options);
                 break;
         }
-
         await context.Response.WriteAsync(resultJsonString);
     }
-
 }
 
 public static class AppExceptionHandlerExtension

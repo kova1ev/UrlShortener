@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 using UrlShortener.Api.Filters;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application;
@@ -14,17 +15,17 @@ namespace UrlShortener.Api
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
-            builder.Services.AddControllers()
-            .AddNewtonsoftJson(options =>
+            builder.Services.AddControllers();
+
+            builder.Services.Configure<JsonOptions>(options =>
             {
-                options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss";
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
             builder.Services.Configure<MvcOptions>(options =>
                 {
                     options.Filters.Add(typeof(ValidateModelStateFilter));
+                    //options.Filters.Add(typeof(ApiKeyAuthorizeAttribute));
                 });
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -62,7 +63,7 @@ namespace UrlShortener.Api
                 app.UseHsts();
             }
 
-            app.UseMiddleware<AppExceptionHandlerMiddleware>();
+            app.UseAppExceptionMiddleware();
 
             app.UseHttpsRedirection();
 
@@ -70,14 +71,11 @@ namespace UrlShortener.Api
 
             app.UseAuthorization();
 
-            app.UseRouting();
-
-            app.MapControllers();
-
-
             // WASM 
             app.UseBlazorFrameworkFiles();
             app.MapFallbackToFile("index.html");
+
+            app.MapControllers();
 
             app.Run();
         }

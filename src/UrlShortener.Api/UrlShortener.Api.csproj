@@ -23,7 +23,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\UrlShortener.Application\UrlShortener.Application.csproj" />
 		<ProjectReference Include="..\UrlShortener.ClientWasm\UrlShortener.ClientWasm.csproj" />
-		<ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

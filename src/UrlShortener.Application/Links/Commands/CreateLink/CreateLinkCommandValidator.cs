@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using UrlShortener.Application.Common.Constants;
+using UrlShortener.Application.ValidationRules;
 
 namespace UrlShortener.Application.Links.Commands.CreateLink;
 
@@ -10,9 +11,7 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
         RuleFor(c => c.UrlAddress).NotEmpty().WithMessage(LinkValidationErrorMessage.URL_ADDRESS_REQUIRED);
 
         RuleFor(c => c.UrlAddress)
-            .Must(url => url!.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-                      || url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                      || url.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase))
+            .MustUrlAddress()
             .When(c => c.UrlAddress != null)
             .WithMessage(LinkValidationErrorMessage.URL_ADDRESS_IS_NOT_URL);
 

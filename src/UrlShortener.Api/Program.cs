@@ -71,11 +71,10 @@ namespace UrlShortener.Api
 
             app.UseAuthorization();
 
+            app.MapControllers();
             // WASM 
             app.UseBlazorFrameworkFiles();
             app.MapFallbackToFile("index.html");
-
-            app.MapControllers();
 
             app.Run();
         }

@@ -71,7 +71,7 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
         {
@@ -80,11 +80,11 @@ namespace UrlShortener.Api.Controllers
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-            return Ok(new ResultResponse(result.IsSuccess, "Success"));
+            return NoContent();
         }
 
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkDto updateLinkDto)
         {
@@ -93,7 +93,7 @@ namespace UrlShortener.Api.Controllers
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
             }
-            return Ok(new ResultResponse(result.IsSuccess, "Success"));
+            return NoContent();
         }
     }
 }

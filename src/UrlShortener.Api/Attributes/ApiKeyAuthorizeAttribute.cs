@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using UrlShortener.Api.Authentication;
+using UrlShortener.Api.Models;
 
 namespace UrlShortener.Api.Attributes;
 

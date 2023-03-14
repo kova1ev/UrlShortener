@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using UrlShortener.Api.Models;
 using UrlShortener.Application.Common.Constants;
 
 namespace UrlShortener.Api.Filters;

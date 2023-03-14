@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using UrlShortener.Api.Models;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Exceptions;
 

@@ -1,6 +1,6 @@
 ﻿using UrlShortener.Application.Common.Constants;
 
-namespace UrlShortener.Api;
+namespace UrlShortener.Api.Models;
 
 public class ApiErrors
 {

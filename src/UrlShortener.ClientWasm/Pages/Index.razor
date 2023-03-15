@@ -1,11 +1,19 @@
 ﻿@page "/"
-@inject HttpClient Http
+@inject ILinkHttpClient LinkClient
 @inject IJSRuntime JsRuntime
 
 <PageTitle>UrlShortener</PageTitle>
 
 <div class="col-6">
+
     <h1 class="">Create short url address</h1>
+    @if(_apiErrors!=null)
+    {
+        foreach (var item in _apiErrors.Errors ?? Enumerable.Empty<string>())
+        {
+            <span>@item</span>
+        }
+    }
 
     <div class="input-group input-group-lg mb-3">
         <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress" type="text" />
@@ -17,12 +25,12 @@
         <input type="text" placeholder="alias" class="form-control" autocomplete="off" @bind="Alias" />
     </div>
     <br />
-    @if(link != null)
+    @if (_link != null)
     {
         <div>
             <div class="input-group input-group-lg" role="alert">
                 <div class="alert alert-success form-control" role="alert">
-                    <span>@link.ShortUrl</span>
+                    <span>@_link.ShortUrl</span>
                 </div>
                 <button class="btn btn-outline-success" type="button" @onclick="Copy">Copy</button>
             </div>
@@ -37,37 +45,47 @@
 
 
 @code {
+    private IEnumerable<string>? errors;
 
     public string? UrlAddress { get; set; }
 
     public string? Alias { get; set; }
+    private ApiErrors? _apiErrors;
 
-    private LinkResponse? link;
+    private LinkResponse? _link;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
 
     private async Task Send()
     {
-        UrlAddress = UrlAddress?.Trim();
-        Alias = Alias?.Trim();
+        Validate();
         if (string.IsNullOrEmpty(UrlAddress) == false)
         {
-            Console.WriteLine(UrlAddress);
-            Console.WriteLine(Alias);
+            CreateLinkDto content = new CreateLinkDto(UrlAddress, Alias);
 
-            var result =await Http.PostAsJsonAsync<CreateLinkDto>("api/link", new CreateLinkDto(UrlAddress, Alias));
-            if(result.IsSuccessStatusCode)
-            {
-                var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-                string jsonString = await result.Content.ReadAsStringAsync();
-                Console.WriteLine(jsonString);
-                link = JsonSerializer.Deserialize<LinkResponse>(jsonString,options);
-            }
+            HttpResponseResult<LinkResponse> responseResult = await LinkClient.PostAsync<LinkResponse>("api/link", content);
+            if (responseResult.Success)
+                _link = responseResult.Value;
+            else
+                _apiErrors = responseResult.ApiErrors;
 
         }
+        Console.WriteLine("try render ");
     }
-
 
     private async Task Copy()
     {
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", link?.ShortUrl);
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _link?.ShortUrl);
+    }
+
+    private void Validate()
+    {
+        UrlAddress = UrlAddress?.Trim();
+        Alias = Alias?.Trim();
+        Alias = Alias?.Length == 0 ? null : Alias;
+
     }
 }

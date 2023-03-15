@@ -1,0 +1,24 @@
+﻿@page "/red/{alias}"
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+
+@if (fail == false)
+{
+    <h1>wait a sec </h1>
+}
+else
+{
+    <h1> NOT FOUND </h1>
+}
+
+@code {
+    [Parameter]
+    public string? Alias { get; set; }
+    private bool fail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(Alias);
+
+    }
+}

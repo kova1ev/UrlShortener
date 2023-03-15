@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavigationManager
+
+<h3>NonFound</h3>
+<button @onclick="BackToMainPage" >Return to main page</button>
+
+@code {
+
+
+    private void BackToMainPage()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

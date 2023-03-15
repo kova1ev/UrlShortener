@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.ClientWasm.Constant;
+﻿namespace UrlShortener.ClientWasm.Constants;
 
 public class AuthConstant
 {

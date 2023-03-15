@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@attribute [Route(Routes.HOME)]
+@page "/h"
 @inject ILinkHttpClient LinkClient
 @inject IJSRuntime JsRuntime
 
@@ -71,9 +72,7 @@
                 _link = responseResult.Value;
             else
                 _apiErrors = responseResult.ApiErrors;
-
         }
-        Console.WriteLine("try render ");
     }
 
     private async Task Copy()

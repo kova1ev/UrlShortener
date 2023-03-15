@@ -1,24 +1,39 @@
-﻿@page "/red/{alias}"
+﻿@page "/{alias}"
 @inject NavigationManager NavigationManager
-@inject HttpClient HttpClient
+@inject ILinkHttpClient LinkClient
 
-@if (fail == false)
+@if (_notFound)
 {
-    <h1>wait a sec </h1>
+    <CustomNotFound></CustomNotFound>
 }
 else
 {
-    <h1> NOT FOUND </h1>
+    <h1> please wait .. </h1>
 }
 
 @code {
     [Parameter]
     public string? Alias { get; set; }
-    private bool fail;
+
+    private bool _notFound;
 
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine(Alias);
+        await TryRedirect();
 
+    }
+
+    private async Task TryRedirect()
+    {
+        HttpResponseResult<LinkDto> result = await LinkClient.GetAsync<LinkDto>($"api/link/{Alias}");
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo(result.Value.UrlAddress);
+        }
+        else
+        {
+            _notFound = true;
+        }
     }
 }

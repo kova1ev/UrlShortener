@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
 using System.Text.Json;
-using UrlShortener.ClientWasm.Constant;
+using UrlShortener.ClientWasm.Constants;
 
 namespace UrlShortener.ClientWasm.ApiHttpClient
 {

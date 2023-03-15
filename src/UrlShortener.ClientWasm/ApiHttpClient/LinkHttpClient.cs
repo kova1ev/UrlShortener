@@ -29,15 +29,9 @@ namespace UrlShortener.ClientWasm.ApiHttpClient
                 {
                     return HttpResponseResult<T>.NoContentResult(httpResponse.StatusCode);
                 }
-                string jsonString = await httpResponse.Content.ReadAsStringAsync();
-                T value = JsonSerializer.Deserialize<T>(jsonString, _options)!;
-                return HttpResponseResult<T>.SuccessResult(value, httpResponse.StatusCode);
+                return await HandleSuccessResult<T>(httpResponse);
             }
-
-            string errorJsonString = await httpResponse.Content.ReadAsStringAsync();
-            ApiErrors apiErrors = JsonSerializer.Deserialize<ApiErrors>(errorJsonString, _options)!;
-
-            return HttpResponseResult<T>.FailureResult(apiErrors, httpResponse.StatusCode);
+            return await HandleFailureResult<T>(httpResponse);
         }
 
 
@@ -50,15 +44,9 @@ namespace UrlShortener.ClientWasm.ApiHttpClient
                 {
                     return HttpResponseResult<T>.SuccessResult(default!, httpResponse.StatusCode);
                 }
-                string jsonString = await httpResponse.Content.ReadAsStringAsync();
-                T value = JsonSerializer.Deserialize<T>(jsonString, _options)!;
-                return HttpResponseResult<T>.SuccessResult(value, httpResponse.StatusCode);
+                return await HandleSuccessResult<T>(httpResponse);
             }
-
-            string errorJsonString = await httpResponse.Content.ReadAsStringAsync();
-            ApiErrors apiErrors = JsonSerializer.Deserialize<ApiErrors>(errorJsonString, _options)!;
-
-            return HttpResponseResult<T>.FailureResult(apiErrors, httpResponse.StatusCode);
+            return await HandleFailureResult<T>(httpResponse);
         }
 
 
@@ -71,15 +59,27 @@ namespace UrlShortener.ClientWasm.ApiHttpClient
                 {
                     return HttpResponseResult<T>.SuccessResult(default!, httpResponse.StatusCode);
                 }
-                string jsonString = await httpResponse.Content.ReadAsStringAsync();
-                T value = JsonSerializer.Deserialize<T>(jsonString, _options)!;
-                return HttpResponseResult<T>.SuccessResult(value, httpResponse.StatusCode);
+                return await HandleSuccessResult<T>(httpResponse);
             }
+            return await HandleFailureResult<T>(httpResponse);
+        }
 
+
+
+        public async Task<HttpResponseResult<T>> HandleFailureResult<T>(HttpResponseMessage httpResponse)
+        {
             string errorJsonString = await httpResponse.Content.ReadAsStringAsync();
             ApiErrors apiErrors = JsonSerializer.Deserialize<ApiErrors>(errorJsonString, _options)!;
 
             return HttpResponseResult<T>.FailureResult(apiErrors, httpResponse.StatusCode);
+        }
+
+        public async Task<HttpResponseResult<T>> HandleSuccessResult<T>(HttpResponseMessage httpResponse)
+        {
+            string jsonString = await httpResponse.Content.ReadAsStringAsync();
+            T value = JsonSerializer.Deserialize<T>(jsonString, _options)!;
+
+            return HttpResponseResult<T>.SuccessResult(value, httpResponse.StatusCode);
         }
     }
 }

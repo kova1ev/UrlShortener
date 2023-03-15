@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using UrlShortener.Api.Filters;
 using UrlShortener.Api.Middleware;
@@ -45,7 +46,32 @@ namespace UrlShortener.Api
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShortener Api", Version = "v1" });
+                    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+                    {
+                        Description = "ApiKey authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        Name = "x-api-key",
+                        In = ParameterLocation.Header,
+                        Scheme = "ApiKeyScheme"
+                    });
+                    var scheme = new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "ApiKey"
+                        },
+                        In = ParameterLocation.Header
+                    };
+                    var requirement = new OpenApiSecurityRequirement
+                    {
+                        { scheme,new List<string>()}
+                    };
+                    options.AddSecurityRequirement(requirement);
+                });
 
             var app = builder.Build();
 
@@ -55,7 +81,10 @@ namespace UrlShortener.Api
             {
                 app.UseWebAssemblyDebugging();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "UrlShortener API V1");
+                });
             }
             else
             {
@@ -78,6 +107,12 @@ namespace UrlShortener.Api
 
             app.Run();
         }
+
+
+
+
+
+
 
     }
 

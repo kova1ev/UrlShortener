@@ -44,6 +44,8 @@ namespace UrlShortener.Api
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
 
+            builder.Services.AddCors();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -92,6 +94,10 @@ namespace UrlShortener.Api
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
             app.UseAppExceptionMiddleware();
 
             app.UseHttpsRedirection();

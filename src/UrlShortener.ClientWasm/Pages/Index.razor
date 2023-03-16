@@ -1,14 +1,14 @@
-﻿@attribute [Route(Routes.HOME)]
-@page "/h"
+﻿@page "/"
 @inject ILinkHttpClient LinkClient
 @inject IJSRuntime JsRuntime
+
 
 <PageTitle>UrlShortener</PageTitle>
 
 <div class="col-6">
 
     <h1 class="">Create short url address</h1>
-    @if(_apiErrors!=null)
+    @if (_apiErrors != null)
     {
         foreach (var item in _apiErrors.Errors ?? Enumerable.Empty<string>())
         {
@@ -17,8 +17,9 @@
     }
 
     <div class="input-group input-group-lg mb-3">
-        <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress" type="text" />
-        <button class="btn btn-primary" @onclick="Send">Cut</button>
+        <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress"
+            type="text" />
+        <button class="btn btn-dark" @onclick="Send">Cut</button>
     </div>
     <span>Optional</span>
     <div class="input-group input-group-sm mb-3">

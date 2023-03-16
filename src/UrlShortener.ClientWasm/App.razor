@@ -1,24 +1,12 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-<Found Context="routeData">
-    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-</Found>
-<NotFound>
-    <PageTitle>Not found</PageTitle>
-    <LayoutView Layout="@typeof(MainLayout)">
-        <CustomNotFound></CustomNotFound>
-    </LayoutView>
-</NotFound>
-</Router>
-
-
-
-
-@*<CascadingAuthenticationState>
+﻿
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                @*<FocusOnNavigate RouteData="@routeData" Selector="h1" />*@
+                <NotAuthorized>
+                    <Login />
+                </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
         <NotFound>
@@ -28,4 +16,4 @@
             </LayoutView>
         </NotFound>
     </Router>
-</CascadingAuthenticationState>*@
+</CascadingAuthenticationState>

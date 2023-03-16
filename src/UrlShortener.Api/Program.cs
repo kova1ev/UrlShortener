@@ -26,18 +26,12 @@ namespace UrlShortener.Api
             builder.Services.Configure<MvcOptions>(options =>
                 {
                     options.Filters.Add(typeof(ValidateModelStateFilter));
-                    //options.Filters.Add(typeof(ApiKeyAuthorizeAttribute));
                 });
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 //todo
                 options.SuppressModelStateInvalidFilter = true;
-                //options.InvalidModelStateResponseFactory = (context) =>
-                //{
-                //    ApiError bad = new ApiError(400, "bedrequest", context.ModelState.SelectMany(k => k.Value.Errors.Select(e => e.ErrorMessage)));
-                //    return new BadRequestObjectResult(bad);
-                //};
             });
 
             builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
@@ -99,16 +93,16 @@ namespace UrlShortener.Api
                 .AllowAnyHeader()
                 .AllowAnyMethod());
             app.UseAppExceptionMiddleware();
-
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-            // WASM 
+            // WASM
             app.UseBlazorFrameworkFiles();
+
+            app.UseStaticFiles();
+            app.UseAuthorization();
+            app.MapControllers();
+
+            // WASM 
             app.MapFallbackToFile("index.html");
 
             app.Run();

@@ -1,4 +1,4 @@
-﻿
+﻿<AuthorizeView>
     <div class="top-row ps-3 navbar navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="">UrlShortener.ClientWasm</a>
@@ -25,9 +25,19 @@
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
                 </NavLink>
             </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/swagger/index.html">
+                    <span class="oi oi-aperture" aria-hidden="true"></span> Swagger
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/auth">
+                    <span class="oi oi-aperture" aria-hidden="true"></span> Auth
+                </NavLink>
+            </div>
         </nav>
     </div>
-
+</AuthorizeView>
 
 @code {
     private bool collapseNavMenu = true;
@@ -38,4 +48,4 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-        }
+}

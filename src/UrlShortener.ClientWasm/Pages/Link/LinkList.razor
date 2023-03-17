@@ -30,8 +30,8 @@ else
             {
                 <tr>
                     <td>
-                        <span @onclick="@(()=>OpenArticle(link.Id.ToString()))">
-                            @link.Id
+                        <span>
+                            <a href="/link/@link.Id">@link.Id</a>
                         </span>
                     </td>
                     <td>@link.UrlAddress</td>
@@ -58,9 +58,4 @@ else
         links = result.Value;
     }
 
-
-    private void OpenArticle(string id)
-    {
-        NavigationManager.NavigateTo($"/link/{id}");
-    }
 }

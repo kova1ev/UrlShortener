@@ -2,48 +2,55 @@
 @inject ILinkHttpClient LinkClient
 @inject IJSRuntime JsRuntime
 
+<style>
+    #short__link
+    {
+        margin:0;
+    }
+</style>
 
 <PageTitle>UrlShortener</PageTitle>
 
-<div class="col-6">
+<div class="row">
 
     <h1 class="">Create short url address</h1>
     @if (_apiErrors != null)
     {
         foreach (var item in _apiErrors.Errors ?? Enumerable.Empty<string>())
         {
-            <span>@item</span>
+            @*  <span>@item</span>*@
+            <div class="alert alert-danger" role="alert">@item</div>
         }
     }
-
-    <div class="input-group input-group-lg mb-3">
-        <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress"
-            type="text" />
-        <button class="btn btn-primary" @onclick="Send">Cut</button>
-    </div>
-    <span>Optional</span>
-    <div class="input-group input-group-sm mb-3">
-        <span class="input-group-text">Alias</span>
-        <input type="text" placeholder="alias" class="form-control" autocomplete="off" @bind="Alias" />
-    </div>
-    <br />
     @if (_link != null)
     {
-        <div>
-            <div class="input-group input-group-lg" role="alert">
-                <div class="alert alert-success form-control" role="alert">
-                    <span>@_link.ShortUrl</span>
-                </div>
+        <div class="row">
+            <div class="d-flex" role="alert">
                 <button class="btn btn-outline-success" type="button" @onclick="Copy">Copy</button>
+                <div id="short__link" class="alert alert-success col-md-6" role="alert">
+                    <span>@_link.ShortUrl</span>
+                </div>               
             </div>
         </div>
     }
+
+    <from class="col-md-6 my-4">
+        <div class="input-group input-group-lg mb-3">
+            <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress"
+                   type="text" />
+            <button class="btn btn-primary" @onclick="Send">Cut</button>
+        </div>
+        <span>Optional</span>
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text">Alias</span>
+            <input type="text" placeholder="alias" class="form-control" autocomplete="off" @bind="Alias" />
+        </div>
+    </from>
+    <br />
+
 </div>
 
 
-
-
-<SurveyPrompt Title="How is Blazor working for you?" />
 
 
 @code {
@@ -63,6 +70,7 @@
 
     private async Task Send()
     {
+
         Validate();
         if (string.IsNullOrEmpty(UrlAddress) == false)
         {
@@ -70,7 +78,10 @@
 
             HttpResponseResult<LinkResponse> responseResult = await LinkClient.PostAsync<LinkResponse>("api/link", content);
             if (responseResult.Success)
+            {
                 _link = responseResult.Value;
+                _apiErrors = null;
+            }
             else
                 _apiErrors = responseResult.ApiErrors;
         }

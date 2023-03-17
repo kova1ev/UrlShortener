@@ -1,38 +1,49 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    </AuthorizeView>
 
-    <main>
+
+    <main class="d-flex flex-column">
         <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <p>Hello, @context.User.Identity.Name</p>
-                    <button class="btn btn-secondary" @onclick="LogOut">LogOut</button>
-                </Authorized>
-                <Authorizing>
-                    <a href="/admin/login" target="_blank">Login</a>
-                </Authorizing>
-            </AuthorizeView>
-
+            <div class="container">
+                <AuthorizeView>
+                    <Authorized>
+                        <p>Hello, @context.User.Identity.Name</p>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/">Home</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>          
         </div>
 
-        <article class="content px-4">
+        <content class="container my-5 flex-fill">
             @Body
-        </article>
+        </content>
+        <footer class="">
+            <div class="container px-4">
+                <div class="col text-center">
+                    <p>2023(c)</p>
+                    <div class="col row">
+                    <p class="">
+                        <a href="#">About</a>
+                    </p>
+                    <p class="">
+                        <a href="#">Links</a>
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
 </div>
 
-@code{
+@code {
 
-
-    private async Task LogOut()
-    {
-        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogOut();
-        NavigationManager.NavigateTo("/");
-    }
 }
+

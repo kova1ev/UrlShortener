@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Commands.Links;
 using UrlShortener.Application.Common.Constants;
+using UrlShortener.Application.Common.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Data;

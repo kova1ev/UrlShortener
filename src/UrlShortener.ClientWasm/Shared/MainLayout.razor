@@ -1,0 +1,45 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <AuthorizeView>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    </AuthorizeView>
+
+
+    <main class="d-flex flex-column">
+        <div class="top-row px-4">
+            <div class="container">
+                <AuthorizeView>
+                    <Authorized>
+                        <p>Hello, @context.User.Identity.Name</p>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/">Home</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>          
+        </div>
+
+        <content class="container my-5 flex-fill">
+            @Body
+        </content>
+        <footer class="">
+            <div class="container px-4">
+                <div class="col text-center">
+                    <p>2023(c)</p>
+                    <div class="col row">
+                    <p class="">
+                        <a href="#">About</a>
+                    </p>
+                    <p class="">
+                        <a href="#">Links</a>
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>
+

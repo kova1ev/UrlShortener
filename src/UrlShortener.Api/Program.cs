@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 using UrlShortener.Api.Filters;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application;
@@ -14,12 +16,11 @@ namespace UrlShortener.Api
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
-            builder.Services.AddControllers()
-            .AddNewtonsoftJson(options =>
+            builder.Services.AddControllers();
+
+            builder.Services.Configure<JsonOptions>(options =>
             {
-                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                //  options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
             builder.Services.Configure<MvcOptions>(options =>
@@ -31,20 +32,42 @@ namespace UrlShortener.Api
             {
                 //todo
                 options.SuppressModelStateInvalidFilter = true;
-                //options.InvalidModelStateResponseFactory = (context) =>
-                //{
-                //    ApiError bad = new ApiError(400, "bedrequest", context.ModelState.SelectMany(k => k.Value.Errors.Select(e => e.ErrorMessage)));
-                //    return new BadRequestObjectResult(bad);
-                //};
             });
 
             builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
 
+            builder.Services.AddCors();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShortener Api", Version = "v1" });
+                    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+                    {
+                        Description = "ApiKey authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        Name = "x-api-key",
+                        In = ParameterLocation.Header,
+                        Scheme = "ApiKeyScheme"
+                    });
+                    var scheme = new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "ApiKey"
+                        },
+                        In = ParameterLocation.Header
+                    };
+                    var requirement = new OpenApiSecurityRequirement
+                    {
+                        { scheme,new List<string>()}
+                    };
+                    options.AddSecurityRequirement(requirement);
+                });
 
             var app = builder.Build();
 
@@ -52,20 +75,46 @@ namespace UrlShortener.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseWebAssemblyDebugging();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "UrlShortener API V1");
+                });
+            }
+            else
+            {
+                // app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
 
-            app.UseMiddleware<AppExceptionHandlerMiddleware>();
-
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+            app.UseAppExceptionMiddleware();
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // WASM
+            app.UseBlazorFrameworkFiles();
 
+            app.UseStaticFiles();
+            app.UseAuthorization();
             app.MapControllers();
+
+            // WASM 
+            app.MapFallbackToFile("index.html");
 
             app.Run();
         }
+
+
+
+
+
+
+
     }
+
 }
 

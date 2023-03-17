@@ -1,0 +1,40 @@
+﻿@page "/{alias}"
+@attribute [AllowAnonymous]
+@inject NavigationManager NavigationManager
+@inject ILinkHttpClient LinkClient
+
+@if (_notFound)
+{
+    <CustomNotFound></CustomNotFound>
+}
+else
+{
+    <h1> please wait .. </h1>
+}
+
+@code {
+    [Parameter]
+    public string? Alias { get; set; }
+
+    private bool _notFound;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(Alias);
+        await TryRedirect();
+
+    }
+
+    private async Task TryRedirect()
+    {
+        HttpResponseResult<LinkDto> result = await LinkClient.GetAsync<LinkDto>($"api/link/{Alias}");
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo(result.Value.UrlAddress);
+        }
+        else
+        {
+            _notFound = true;
+        }
+    }
+}

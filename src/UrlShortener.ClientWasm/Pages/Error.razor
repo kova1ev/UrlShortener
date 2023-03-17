@@ -1,0 +1,16 @@
+﻿@page "/error"
+@attribute [AllowAnonymous]
+@inject NavigationManager NavigationManager
+
+<h3>Somethings gone wrong</h3>
+<h4>Come back later</h4>
+<button @onclick="BackToMainPage">Return to main page</button>
+
+@code {
+
+
+    private void BackToMainPage()
+    {
+        NavigationManager.NavigateTo("/",true);
+    }
+}

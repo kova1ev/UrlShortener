@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Commands.Links;
+﻿namespace UrlShortener.Application.Common.Links;
 
 public class UpdateLinkDto
 {

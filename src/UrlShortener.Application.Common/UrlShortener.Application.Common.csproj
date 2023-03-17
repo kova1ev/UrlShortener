@@ -4,6 +4,11 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
+  </ItemGroup>
 
 </Project>

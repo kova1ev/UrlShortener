@@ -1,9 +1,11 @@
 using MediatR;
+using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
 
-public class GetLinkByIdQuery : IRequest<LinkDto>
+public class GetLinkByIdQuery : IRequest<Result<LinkDto>>
 {
     public Guid Id { get; set; }
 

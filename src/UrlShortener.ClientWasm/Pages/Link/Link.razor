@@ -1,0 +1,67 @@
+﻿@page "/link/{id}"
+@inject ILinkHttpClient LinkClient
+@inject NavigationManager NavigationManager
+
+@if (_notFount)
+{
+    <CustomNotFound></CustomNotFound>
+}
+else
+{
+    <h3>Link</h3>
+    @if (_linkDto != null)
+    {
+        <h4>@_linkDto.UrlAddress</h4>
+        <br />
+        <h4>@_linkDto.UrlShort</h4>
+        <br />
+        <h4>@_linkDto.DateTimeCreated</h4>
+        <br />
+        <h4>@_linkDto.LinkInfo.DomainName</h4>
+        <br />
+        <h4>@_linkDto.LinkInfo.LastUse</h4>
+        <br />
+        <button class="btn btn-danger" @onclick="Delete">Delete</button>
+    }
+}
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private bool _notFount;
+
+    private LinkDto? _linkDto;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Console.WriteLine(Id);
+
+        await GetLink();
+    }
+
+    private async Task GetLink()
+    {
+        HttpResponseResult<LinkDto> result = await LinkClient.GetAsync<LinkDto>($"api/link/{Id}");
+        if (result.Success)
+        {
+            _linkDto = result.Value;
+            return;
+        }
+        if (result.StatusCode == System.Net.HttpStatusCode.NoContent)
+        {
+            _notFount = true;
+            return;
+        }
+        if ((int)result.StatusCode >= 500)
+        {
+            NavigationManager.NavigateTo("/error");
+        }
+    }
+
+
+    private async Task Delete()
+    {
+        HttpResponseResult<Unit> res = await LinkClient.DeleteAsync<Unit>($"api/link/{Id}");
+        NavigationManager.NavigateTo("/links");
+    }
+}

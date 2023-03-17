@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using UrlShortener.Application.Links.Queries;
+using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
 namespace UrlShortener.Api.Controllers
@@ -15,14 +16,19 @@ namespace UrlShortener.Api.Controllers
 
 
         // TEST features
-        [HttpGet("redirect/{shortName}")]
-        //   [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{shortName}")]
         public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
         {
-            LinkDto link = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            if (link == null)
-                return NotFound();
-            return Redirect(link.UrlAddress);
+            throw new DivideByZeroException();
+            Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
+            // string urlForreedirect = "https://github.com/kova1ev";
+            // return Redirect(urlForreedirect);
+
+            if (result.IsSuccess == false)
+                return NoContent();
+            //return Ok(result.Value);
+
+            return Redirect(result.Value.UrlAddress);
         }
 
         [HttpGet("headers")]

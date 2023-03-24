@@ -1,11 +1,11 @@
 ﻿@page "/"
+@using System.ComponentModel.DataAnnotations;
 @inject ILinkHttpClient LinkClient
 @inject IJSRuntime JsRuntime
 
 <style>
-    #short__link
-    {
-        margin:0;
+    #short__link {
+        margin: 0;
     }
 </style>
 
@@ -14,38 +14,36 @@
 <div class="row">
 
     <h1 class="">Create short url address</h1>
-    @if (_apiErrors != null)
+    @foreach (var item in _apiErrors?.Errors ?? Enumerable.Empty<string>())
     {
-        foreach (var item in _apiErrors.Errors ?? Enumerable.Empty<string>())
-        {
-            @*  <span>@item</span>*@
-            <div class="alert alert-danger" role="alert">@item</div>
-        }
+        <div class="alert alert-danger" role="alert">@item</div>
     }
     @if (_link != null)
     {
         <div class="row">
+            <p name="">@nameof(_link.ShortUrl)</p>
             <div class="d-flex" role="alert">
                 <button class="btn btn-outline-success" type="button" @onclick="Copy">Copy</button>
                 <div id="short__link" class="alert alert-success col-md-6" role="alert">
                     <span>@_link.ShortUrl</span>
-                </div>               
+                </div>
             </div>
         </div>
     }
 
-    <from class="col-md-6 my-4">
+    <EditForm class="col-lg-6 my-4" Model="_createLinkDto" OnSubmit="@CreateLink">
         <div class="input-group input-group-lg mb-3">
-            <input class="form-control" placeholder="Input url" autocomplete="off" autofocus @bind="UrlAddress"
+            <input class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="_createLinkDto.UrlAddress"
                    type="text" />
-            <button class="btn btn-primary" @onclick="Send">Cut</button>
+            <button class="btn btn-primary" type="submit">Cut</button>
         </div>
+        <span class="oi oi-cog" aria-hidden="true"></span>
         <span>Optional</span>
         <div class="input-group input-group-sm mb-3">
-            <span class="input-group-text">Alias</span>
-            <input type="text" placeholder="alias" class="form-control" autocomplete="off" @bind="Alias" />
+            <span class="input-group-text bg-warning">Alias</span>
+            <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="_createLinkDto.Alias" />
         </div>
-    </from>
+    </EditForm>
     <br />
 
 </div>
@@ -54,13 +52,8 @@
 
 
 @code {
-    private IEnumerable<string>? errors;
-
-    public string? UrlAddress { get; set; }
-
-    public string? Alias { get; set; }
+    private CreateLinkModel _createLinkDto = new();
     private ApiErrors? _apiErrors;
-
     private LinkResponse? _link;
 
     protected async override Task OnInitializedAsync()
@@ -68,22 +61,21 @@
         await Task.CompletedTask;
     }
 
-    private async Task Send()
+    private async Task CreateLink()
     {
-
-        Validate();
-        if (string.IsNullOrEmpty(UrlAddress) == false)
+        if (ValidateCreateLinkDto())
         {
-            CreateLinkDto content = new CreateLinkDto(UrlAddress, Alias);
-
-            HttpResponseResult<LinkResponse> responseResult = await LinkClient.PostAsync<LinkResponse>("api/link", content);
+            HttpResponseResult<LinkResponse> responseResult = await LinkClient.PostAsync<LinkResponse>("api/link", _createLinkDto);
             if (responseResult.Success)
             {
                 _link = responseResult.Value;
                 _apiErrors = null;
             }
             else
+            {
                 _apiErrors = responseResult.ApiErrors;
+            }
+            StateHasChanged();
         }
     }
 
@@ -92,11 +84,11 @@
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _link?.ShortUrl);
     }
 
-    private void Validate()
+    private bool ValidateCreateLinkDto()
     {
-        UrlAddress = UrlAddress?.Trim();
-        Alias = Alias?.Trim();
-        Alias = Alias?.Length == 0 ? null : Alias;
-
+        // вынести в отдельный метод  и возвращаить из него ApiErrors?
+        var results = new List<ValidationResult>();
+        var context = new ValidationContext(_createLinkDto);
+        return Validator.TryValidateObject(_createLinkDto, context, results, true);
     }
 }

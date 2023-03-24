@@ -1,9 +1,10 @@
 ﻿@inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IWebAssemblyHostEnvironment IHostEnvironment
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">UrlShortener.ClientWasm</a>
+        <a class="navbar-brand" href="">UrlShortener</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -22,11 +23,14 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Links
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/swagger/index.html">
-                <span class="oi oi-aperture" aria-hidden="true"></span> Swagger
-            </NavLink>
-        </div>
+        @if (IHostEnvironment.IsDevelopment())
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/swagger/index.html">
+                    <span class="oi oi-aperture" aria-hidden="true"></span> Swagger
+                </NavLink>
+            </div>
+        }
     </nav>
     <div class="nav-item px-3">
         <NavLink class="nav-link text-warning" @onclick="LogOut" type="button">

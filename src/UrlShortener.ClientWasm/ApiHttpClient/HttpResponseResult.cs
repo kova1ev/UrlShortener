@@ -21,7 +21,7 @@ public sealed class HttpResponseResult<TValue>
     {
         get
         {
-            return Success ? _value : throw new InvalidOperationException("can not be null!!^_^");
+            return Success ? _value : throw new InvalidOperationException("Value is null.");
         }
     }
 

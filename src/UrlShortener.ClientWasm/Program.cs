@@ -17,9 +17,7 @@ builder.Services.AddAuthorizationCore();
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddHttpClient<ILinkHttpClient, LinkHttpClient>(client =>
-    //  client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-    client.BaseAddress = new Uri("https://localhost:7072")
+     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     );
-
-
-await builder.Build().RunAsync();
+var webHost = builder.Build();
+await webHost.RunAsync();

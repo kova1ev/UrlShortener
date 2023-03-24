@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
-using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.CreateLink;
 using UrlShortener.Application.Links.Commands.DeleteLink;
@@ -60,7 +60,7 @@ namespace UrlShortener.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(LinkResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreteLink([FromBody] CreateLinkDto createLinkDto)
+        public async Task<IActionResult> CreteLink([FromBody] CreateLinkModel createLinkDto)
         {
             Result<LinkResponse> result = await _mediator.Send(new CreateLinkCommand(createLinkDto));
             if (result.IsSuccess == false)
@@ -86,7 +86,7 @@ namespace UrlShortener.Api.Controllers
         [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkDto updateLinkDto)
+        public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkModel updateLinkDto)
         {
             Result result = await _mediator.Send(new UpdateLinkCommand(id, updateLinkDto));
             if (result.IsSuccess == false)

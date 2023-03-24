@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Commands.UpdateLink;
@@ -10,10 +10,10 @@ public class UpdateLinkCommand : IRequest<Result>
     public string? Alias { get; set; }
     public string? UrlAddress { get; set; }
 
-    public UpdateLinkCommand(Guid id, UpdateLinkDto updateLinkDto)
+    public UpdateLinkCommand(Guid id, UpdateLinkModel updateLinkDto)
     {
         Id = id;
-        UrlAddress = updateLinkDto.UrlAddress?.Trim();
-        Alias = updateLinkDto.Alias?.Trim();
+        UrlAddress = updateLinkDto.UrlAddress;
+        Alias = updateLinkDto.Alias;
     }
 }

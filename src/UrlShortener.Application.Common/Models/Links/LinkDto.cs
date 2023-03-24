@@ -1,6 +1,6 @@
 ﻿using UrlShortener.Domain.Entity;
 
-namespace UrlShortener.Application.Common.Links;
+namespace UrlShortener.Application.Common.Models.Links;
 
 public class LinkDto
 {

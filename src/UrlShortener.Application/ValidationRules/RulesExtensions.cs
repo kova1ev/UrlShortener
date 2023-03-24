@@ -2,7 +2,7 @@
 #nullable disable
 namespace UrlShortener.Application.ValidationRules
 {
-    public static class UrlAddress
+    public static class RulesExtensions
     {
         public static IRuleBuilderOptions<T, string> MustUrlAddress<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
@@ -13,5 +13,4 @@ namespace UrlShortener.Application.ValidationRules
                 .WithMessage("Not Url.");
         }
     }
-
 }

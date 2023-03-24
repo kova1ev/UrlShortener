@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Data;
 
 namespace UrlShortener.Application.Links.Queries.GetLinks;

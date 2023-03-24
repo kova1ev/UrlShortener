@@ -18,8 +18,6 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
         RuleFor(c => c.Alias)
             .Length(3, 30)
             .When(c => c.Alias != null)
-            .WithMessage("{PropertyName} length must be in range {MinLength} - {MaxLength}");
+            .WithMessage(LinkValidationErrorMessage.ALIAS_BAD_RANGE);
     }
 }
-
-

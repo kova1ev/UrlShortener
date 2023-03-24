@@ -85,7 +85,7 @@ namespace UrlShortener.Api
             else
             {
                 // app.UseExceptionHandler("/Error");
-                app.UseHsts();
+                // app.UseHsts();
             }
 
             app.UseCors(builder => builder
@@ -93,7 +93,7 @@ namespace UrlShortener.Api
                 .AllowAnyHeader()
                 .AllowAnyMethod());
             app.UseAppExceptionMiddleware();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             // WASM
             app.UseBlazorFrameworkFiles();

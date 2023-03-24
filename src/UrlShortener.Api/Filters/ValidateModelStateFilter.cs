@@ -18,15 +18,6 @@ public class ValidateModelStateFilter : IActionFilter
         {
             return;
         }
-        //Dictionary<string, IEnumerable<string>> errors = new Dictionary<string, IEnumerable<string>>();
-        //foreach (var item in context.ModelState)
-        //{
-        //    string key = item.Key;
-        //    ModelErrorCollection errorsCollections = item.Value.Errors;
-        //    if (errorsCollections != null && errorsCollections.Count > 0)
-        //        errors[key] = errorsCollections.Select(e => e.ErrorMessage).ToArray();
-        //}
-
         var errors = context.ModelState.SelectMany(e => e.Value.Errors.Select(m => m?.ErrorMessage));
         ApiErrors apiErrors = new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeMessage.BAD_REQUEST_MESSAGE, errors);
 

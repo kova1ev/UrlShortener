@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UrlShortener.Application.Common.Links;
+using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;

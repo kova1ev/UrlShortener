@@ -41,7 +41,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             }
         }
 
-        string alias = request.Alias ?? await _linkService.GenerateAlias(request.UrlAddress!);
+        string alias = request.Alias ?? await _linkService.GenerateAlias();
 
         Link link = new Link()
         {

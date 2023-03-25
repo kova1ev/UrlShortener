@@ -25,12 +25,12 @@ public class LinkService : ILinkService
         return await _appDbContext.Links.AnyAsync(l => l.Alias == alias);
     }
 
-    public async Task<string> GenerateAlias(string urlAddress)
+    public async Task<string> GenerateAlias()
     {
         string alias;
         do
         {
-            alias = _aliasGenerator.GenerateAlias(urlAddress);
+            alias = _aliasGenerator.GenerateAlias();
 
         } while (await AliasIsBusy(alias));
 

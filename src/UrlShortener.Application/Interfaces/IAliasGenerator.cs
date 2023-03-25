@@ -2,5 +2,5 @@
 
 public interface IAliasGenerator
 {
-    string GenerateAlias(string url);
+    string GenerateAlias(int minLength = 4, int maxLength = 10);
 }

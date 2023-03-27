@@ -7,7 +7,7 @@ namespace UrlShortener.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<Link> Links { get; set; }
-    public DbSet<LinkInfo> LinkInfos { get; set; }
+    public DbSet<LinkStatistic> LinkStatistics { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -25,7 +25,7 @@ public class AppDbContext : DbContext
         modelBuilder.HasCollation("case_insensitivity", locale: "en-u-ks-level2", provider: "icu", deterministic: false);
 
         modelBuilder.ApplyConfiguration(new LinkConfiguration());
-        modelBuilder.ApplyConfiguration(new LinkInfoConfiguration());
+        modelBuilder.ApplyConfiguration(new LinkStatisticConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

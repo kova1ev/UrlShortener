@@ -18,7 +18,7 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
 
     public async Task<Result<LinkDto>> Handle(GetLinkByShortNameQuery request, CancellationToken cancellationToken)
     {
-        Link? link = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias);
+        Link? link = await _appDbContext.Links.Include(l => l.LinkStatistic).AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias);
         if (link == null)
         {
             return Result<LinkDto>.Failure(new[] { "Link Not Found" });

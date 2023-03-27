@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
@@ -18,11 +19,11 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<
 
     public async Task<Result<LinkDto>> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
     {
-        var link = await _appDbContext.Links.Include(l => l.LinkInfo).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
+        var link = await _appDbContext.Links.Include(l => l.LinkStatistic).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
 
         if (link == null)
         {
-            return Result<LinkDto>.Failure(new[] { "Link not found" });
+            return Result<LinkDto>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
 
         return Result<LinkDto>.Success(LinkDto.MapToLInkDto(link));

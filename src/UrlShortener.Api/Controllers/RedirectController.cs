@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
+using UrlShortener.Application.Statistic.Commands;
 
 namespace UrlShortener.Api.Controllers
 {
@@ -22,6 +23,7 @@ namespace UrlShortener.Api.Controllers
             {
                 return RedirectToPage("/NotFound");
             }
+            _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id)).ConfigureAwait(false);
             return Redirect(result.Value.UrlAddress);
         }
     }

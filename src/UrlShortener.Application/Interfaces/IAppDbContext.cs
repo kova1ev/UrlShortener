@@ -8,7 +8,7 @@ namespace UrlShortener.Application.Interfaces;
 public interface IAppDbContext
 {
     DbSet<Link> Links { get; set; }
-    DbSet<LinkInfo> LinkInfos { get; set; }
+    DbSet<LinkStatistic> LinkStatistics { get; set; }
 
     DatabaseFacade Database { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellation = default);

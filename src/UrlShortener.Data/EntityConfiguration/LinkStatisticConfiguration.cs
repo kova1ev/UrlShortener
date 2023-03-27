@@ -4,13 +4,13 @@ using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Data.EntityConfiguration;
 
-internal class LinkInfoConfiguration : IEntityTypeConfiguration<LinkInfo>
+internal class LinkStatisticConfiguration : IEntityTypeConfiguration<LinkStatistic>
 {
-    public void Configure(EntityTypeBuilder<LinkInfo> builder)
+    public void Configure(EntityTypeBuilder<LinkStatistic> builder)
     {
         builder.ToTable("linkinfos")
             .HasOne(i => i.Link)
-            .WithOne(l => l.LinkInfo)
+            .WithOne(l => l.LinkStatistic)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).ValueGeneratedNever();

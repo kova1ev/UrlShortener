@@ -23,10 +23,13 @@ else
         <h4>@_linkDto.DateTimeCreated</h4>
         <br />
         <p>DomainName</p>
-        <h4>@_linkDto.LinkInfo.DomainName</h4>
+        <h4>@_linkDto.LinkStatistic.DomainName</h4>
         <br />
         <p>LastUse</p>
-        <h4>@_linkDto.LinkInfo.LastUse</h4>
+        <h4>@_linkDto.LinkStatistic.LastUse</h4>
+        <br />
+        <p>Clicks</p>
+        <h4>@_linkDto.LinkStatistic.Clicks</h4>
         <br />
         <div>
             <button class="btn btn-danger" @onclick="Delete">Delete</button>

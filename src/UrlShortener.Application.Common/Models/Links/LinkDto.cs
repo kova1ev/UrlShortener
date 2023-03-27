@@ -10,7 +10,7 @@ public class LinkDto
 
     public DateTime DateTimeCreated { get; set; }
 
-    public LinkInfoDto LinkInfo { get; set; } = new LinkInfoDto();
+    public LinkStatisticDto LinkStatistic { get; set; } = new LinkStatisticDto();
     public LinkDto() { }
 
     public static LinkDto? MapToLInkDto(Link? link)
@@ -24,11 +24,12 @@ public class LinkDto
                 DateTimeCreated = link.DateTimeCreated,
                 UrlShort = link.UrlShort,
 
-                LinkInfo = new LinkInfoDto()
+                LinkStatistic = new LinkStatisticDto()
                 {
-                    DomainName = link.LinkInfo.DomainName,
-                    Id = link.LinkInfo.Id,
-                    LastUse = link.LinkInfo.LastUse
+                    DomainName = link.LinkStatistic.DomainName,
+                    Id = link.LinkStatistic.Id,
+                    LastUse = link.LinkStatistic.LastUse,
+                    Clicks = link.LinkStatistic.Clicks
                 }
             };
         }
@@ -36,10 +37,10 @@ public class LinkDto
     }
 }
 
-public class LinkInfoDto
+public class LinkStatisticDto
 {
     public Guid Id { get; set; }
     public string? DomainName { get; set; }
     public DateTime LastUse { get; set; }
-
+    public int Clicks { get; set; }
 }

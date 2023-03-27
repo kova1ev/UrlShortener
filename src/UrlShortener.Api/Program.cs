@@ -30,7 +30,6 @@ namespace UrlShortener.Api
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
-                //todo
                 options.SuppressModelStateInvalidFilter = true;
             });
 
@@ -38,7 +37,7 @@ namespace UrlShortener.Api
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
 
-            builder.Services.AddCors();
+            builder.Services.AddRazorPages();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -84,15 +83,11 @@ namespace UrlShortener.Api
             }
             else
             {
-                // app.UseExceptionHandler("/Error");
                 // app.UseHsts();
             }
 
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
             app.UseAppExceptionMiddleware();
+
             //app.UseHttpsRedirection();
 
             // WASM
@@ -101,7 +96,7 @@ namespace UrlShortener.Api
             app.UseStaticFiles();
             app.UseAuthorization();
             app.MapControllers();
-
+            app.MapRazorPages();
             // WASM 
             app.MapFallbackToFile("index.html");
 

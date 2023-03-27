@@ -7,10 +7,8 @@ using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 namespace UrlShortener.Api.Controllers
 {
     [Route("/r")]
-    [ApiController]
     public class RedirectController : ApiControllerBase<RedirectController>
     {
-
         public RedirectController(ILogger<RedirectController> logger, IMediator mediator) : base(logger, mediator)
         {
 

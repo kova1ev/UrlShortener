@@ -8,6 +8,7 @@ namespace UrlShortener.Application.Services;
 
 public class LinkService : ILinkService
 {
+    private const string RedirectRoute = "/r/";
     private readonly AppDbContext _appDbContext;
     private readonly IAliasGenerator _aliasGenerator;
     private readonly AppOptions _appOptions;
@@ -39,6 +40,6 @@ public class LinkService : ILinkService
 
     public string CreateShortUrl(string alias)
     {
-        return string.Concat(_appOptions.AppUrl, alias);
+        return string.Concat(_appOptions.AppUrl, RedirectRoute, alias);
     }
 }

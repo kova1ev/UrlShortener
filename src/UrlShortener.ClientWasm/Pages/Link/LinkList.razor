@@ -1,14 +1,18 @@
 ﻿@page "/links"
 @attribute [Authorize]
 
-@inject ILinkHttpClient LinkClient
+@inject ILinkHttpService LinkHttpService
 @inject NavigationManager NavigationManager
 
+<style>
+    .th {
+        max-height: 600px;
+    }
+</style>
 <PageTitle>Likns</PageTitle>
 
-<h1>Likns</h1>
+<h1 class="mb-4">Likns</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
 
 @if (links == null)
 {
@@ -16,31 +20,31 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Url Addres</th>
-                <th>Short  Url</th>
-                <th>Date Create</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var link in links)
-            {
+    <div class="overflow-scroll th">
+        <table class="table table-hover table-bordered border-dark">
+            <thead>
                 <tr>
-                    <td>
-                        <span>
-                            <a href="/link/@link.Id">@link.Id</a>
-                        </span>
-                    </td>
-                    <td>@link.UrlAddress</td>
-                    <td>@link.UrlShort</td>
-                    <td>@link.DateTimeCreated</td>
+                    <th>Id</th>
+                    <th>Url Addres</th>
+                    <th>Short  Url</th>
+                    <th>Date Create UTC</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var link in links)
+                {
+                    <tr>
+                        <td>
+                            <a href="/link/@link.Id">@link.Id</a>
+                        </td>
+                        <td>@link.UrlAddress</td>
+                        <td>@link.UrlShort</td>
+                        <td>@link.DateTimeCreated</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
@@ -54,7 +58,7 @@ else
     private async Task GetLinks()
     {
 
-        HttpResponseResult<IEnumerable<LinkDto>> result = await LinkClient.GetAsync<IEnumerable<LinkDto>>("api/link");
+        HttpResponseResult<IEnumerable<LinkDto>> result = await LinkHttpService.GetLinksAsync();
         links = result.Value;
     }
 

@@ -21,19 +21,6 @@ namespace UrlShortener.Api.Controllers
 
         }
 
-        [HttpGet("{shortName}")]
-        [ProducesResponseType(typeof(LinkDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> GetByShortName([FromRoute] string shortName)
-        {
-            Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            if (result.IsSuccess == false)
-            {
-                return NoContent();
-            }
-            return Ok(result.Value);
-        }
-
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(LinkDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

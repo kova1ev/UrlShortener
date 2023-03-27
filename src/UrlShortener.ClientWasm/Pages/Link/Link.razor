@@ -1,8 +1,10 @@
-﻿@page "/link/{id}"
-@inject ILinkHttpClient LinkClient
+﻿@page "/link/{id:guid}"
+@inject ILinkHttpService LinkHttpService
 @inject NavigationManager NavigationManager
 
-@if (_notFount)
+<PageTitle>About</PageTitle>
+
+@if (fail)
 {
     <CustomNotFound></CustomNotFound>
 }
@@ -11,24 +13,33 @@ else
     <h3>Link</h3>
     @if (_linkDto != null)
     {
+        <p>UrlAddress</p>
         <h4>@_linkDto.UrlAddress</h4>
         <br />
+        <p>UrlShort</p>
         <h4>@_linkDto.UrlShort</h4>
         <br />
+        <p>DateTimeCreated</p>
         <h4>@_linkDto.DateTimeCreated</h4>
         <br />
+        <p>DomainName</p>
         <h4>@_linkDto.LinkInfo.DomainName</h4>
         <br />
+        <p>LastUse</p>
         <h4>@_linkDto.LinkInfo.LastUse</h4>
         <br />
-        <button class="btn btn-danger" @onclick="Delete">Delete</button>
+        <div>
+            <button class="btn btn-danger" @onclick="Delete">Delete</button>
+            <button class="btn btn-warning" @onclick="NavToUpdate">Update</button>
+        </div>
     }
 }
+
 @code {
     [Parameter]
-    public string? Id { get; set; }
+    public Guid Id { get; set; }
 
-    private bool _notFount;
+    private bool fail;
 
     private LinkDto? _linkDto;
 
@@ -41,27 +52,32 @@ else
 
     private async Task GetLink()
     {
-        HttpResponseResult<LinkDto> result = await LinkClient.GetAsync<LinkDto>($"api/link/{Id}");
-        if (result.Success)
+
+        HttpResponseResult<LinkDto> responseResult = await LinkHttpService.GetLinkByIdAsync(Id);
+        if (responseResult.Status == ResultStatus.Success)
         {
-            _linkDto = result.Value;
-            return;
+            fail = default;
+            _linkDto = responseResult.Value;
         }
-        if (result.StatusCode == System.Net.HttpStatusCode.NoContent)
+        else
         {
-            _notFount = true;
-            return;
-        }
-        if ((int)result.StatusCode >= 500)
-        {
-            NavigationManager.NavigateTo("/error");
+            fail = true;
         }
     }
 
 
     private async Task Delete()
     {
-        HttpResponseResult<Unit> res = await LinkClient.DeleteAsync<Unit>($"api/link/{Id}");
-        NavigationManager.NavigateTo("/links");
+        HttpResponseResult res = await LinkHttpService.DeleteLinkAsync(Id);
+        if (res.Status == ResultStatus.Success)
+            NavigationManager.NavigateTo("/links");
+        else
+            fail = true;
+
+    }
+
+    private void NavToUpdate()
+    {
+        NavigationManager.NavigateTo($"/link/update/{Id}");
     }
 }

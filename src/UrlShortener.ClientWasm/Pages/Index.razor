@@ -1,53 +1,49 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations;
-@inject ILinkHttpClient LinkClient
+@inject ILinkHttpService LinkHttpService
 @inject IJSRuntime JsRuntime
 
-<style>
-    #short__link {
-        margin: 0;
-    }
-</style>
-
 <PageTitle>UrlShortener</PageTitle>
+@if (fail )
+{
+    <ServerError></ServerError>
+}
+else
+{
+    <div class="flex-column d-flex flex-wrap align-content-center">
 
-<div class="row">
-
-    <h1 class="">Create short url address</h1>
-    @foreach (var item in _apiErrors?.Errors ?? Enumerable.Empty<string>())
-    {
-        <div class="alert alert-danger" role="alert">@item</div>
-    }
-    @if (_link != null)
-    {
-        <div class="row">
-            <p name="">@nameof(_link.ShortUrl)</p>
-            <div class="d-flex" role="alert">
-                <button class="btn btn-outline-success" type="button" @onclick="Copy">Copy</button>
-                <div id="short__link" class="alert alert-success col-md-6" role="alert">
-                    <span>@_link.ShortUrl</span>
+        <h1 class="text-center">Just shorten your link!</h1>
+        @foreach (var item in _apiErrors?.Errors ?? Enumerable.Empty<string>())
+        {
+            <div class="alert alert-danger" role="alert">@item</div>
+        }
+        @if (_link != null)
+        {
+            <div class="d-flex justify-content-between col-lg-6">
+                <div id="short__link" class="alert alert-success col-lg" role="alert">
+                    <span>@_link.ShortUrl</span>                    
                 </div>
+                <button class="btn btn-outline-success ms-2 " type="button" @onclick="Copy">Copy</button>
             </div>
-        </div>
-    }
+        }
 
-    <EditForm class="col-lg-6 my-4" Model="_createLinkDto" OnSubmit="@CreateLink">
-        <div class="input-group input-group-lg mb-3">
-            <input class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="_createLinkDto.UrlAddress"
-                   type="text" />
-            <button class="btn btn-primary" type="submit">Cut</button>
-        </div>
-        <span class="oi oi-cog" aria-hidden="true"></span>
-        <span>Optional</span>
-        <div class="input-group input-group-sm mb-3">
-            <span class="input-group-text bg-warning">Alias</span>
-            <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="_createLinkDto.Alias" />
-        </div>
-    </EditForm>
-    <br />
+        <EditForm class="col-lg-6 my-4" Model="_createLinkDto" OnSubmit="@CreateLink">
+            <div class="input-group input-group-lg mb-3">
+                <input class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="_createLinkDto.UrlAddress"
+                       type="text" />
+                <button class="btn btn-primary" type="submit">Cut</button>
+            </div>
+            <span class="oi oi-cog" aria-hidden="true"></span>
+            <span>Optional</span>
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text bg-warning">Alias</span>
+                <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="_createLinkDto.Alias" />
+            </div>
+        </EditForm>
+        <br />
 
-</div>
-
+    </div>
+}
 
 
 
@@ -55,6 +51,7 @@
     private CreateLinkModel _createLinkDto = new();
     private ApiErrors? _apiErrors;
     private LinkResponse? _link;
+    private bool fail ;
 
     protected async override Task OnInitializedAsync()
     {
@@ -65,14 +62,19 @@
     {
         if (ValidateCreateLinkDto())
         {
-            HttpResponseResult<LinkResponse> responseResult = await LinkClient.PostAsync<LinkResponse>("api/link", _createLinkDto);
-            if (responseResult.Success)
+            HttpResponseResult<LinkResponse> responseResult = await LinkHttpService.CreateLinkAsync(_createLinkDto);
+            if (responseResult.Status == ResultStatus.Success)
             {
                 _link = responseResult.Value;
                 _apiErrors = null;
             }
             else
             {
+                if (responseResult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    fail = true;
+                }
+                _link = null;
                 _apiErrors = responseResult.ApiErrors;
             }
             StateHasChanged();
@@ -86,7 +88,7 @@
 
     private bool ValidateCreateLinkDto()
     {
-        // вынести в отдельный метод  и возвращаить из него ApiErrors?
+        // ?
         var results = new List<ValidationResult>();
         var context = new ValidationContext(_createLinkDto);
         return Validator.TryValidateObject(_createLinkDto, context, results, true);

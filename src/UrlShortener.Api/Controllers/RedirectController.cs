@@ -23,7 +23,7 @@ namespace UrlShortener.Api.Controllers
             {
                 return RedirectToPage("/NotFound");
             }
-            _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id)).ConfigureAwait(false);
+            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id));
             return Redirect(result.Value.UrlAddress);
         }
     }

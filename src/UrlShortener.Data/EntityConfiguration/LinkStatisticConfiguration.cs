@@ -8,7 +8,7 @@ internal class LinkStatisticConfiguration : IEntityTypeConfiguration<LinkStatist
 {
     public void Configure(EntityTypeBuilder<LinkStatistic> builder)
     {
-        builder.ToTable("linkinfos")
+        builder.ToTable("linkstatistics")
             .HasOne(i => i.Link)
             .WithOne(l => l.LinkStatistic)
             .OnDelete(DeleteBehavior.Cascade);

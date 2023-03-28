@@ -51,13 +51,13 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
         };
         _appDbContext.Entry(link).State = EntityState.Added;
 
-        LinkStatistic linkInfo = new LinkStatistic()
+        LinkStatistic linkStatistic = new LinkStatistic()
         {
             DomainName = new Uri(request.UrlAddress!).Host,
             LastUse = DateTime.UtcNow,
             Link = link,
         };
-        _appDbContext.Entry(linkInfo).State = EntityState.Added;
+        _appDbContext.Entry(linkStatistic).State = EntityState.Added;
 
         await _appDbContext.SaveChangesAsync();
 

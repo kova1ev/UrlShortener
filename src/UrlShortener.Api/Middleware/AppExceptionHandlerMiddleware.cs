@@ -55,7 +55,10 @@ public class AppExceptionHandlerMiddleware
                 //{
                 //    ["source"] = exception.Source,
                 //}))
-                _logger.LogError("{0} \n {1} \n {2}", exception.Source, exception.StackTrace, exception.Message);
+                _logger.LogError("Source: {0} .Message:  {1} \nStackTrace: {2}",
+                    exception.Source,
+                    exception.Message,
+                    exception.StackTrace);
                 apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
                     StatusCodeMessage.INTERNAL_SERVER_ERROR,
                     new[] { exception.Message }); // todo : remove 

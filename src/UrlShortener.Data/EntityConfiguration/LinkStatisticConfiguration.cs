@@ -8,12 +8,13 @@ internal class LinkStatisticConfiguration : IEntityTypeConfiguration<LinkStatist
 {
     public void Configure(EntityTypeBuilder<LinkStatistic> builder)
     {
-        builder.ToTable("linkstatistics")
-            .HasOne(i => i.Link)
-            .WithOne(l => l.LinkStatistic)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(i => i.Link)
+         .WithOne(l => l.LinkStatistic)
+         .OnDelete(DeleteBehavior.Cascade);
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).ValueGeneratedNever();
         builder.Property(i => i.DomainName).HasMaxLength(50);
+        builder.Property(i => i.Browser).HasMaxLength(50);
+        builder.Property(i => i.Os).HasMaxLength(50);
     }
 }

@@ -29,7 +29,9 @@ public class LinkDto
                     DomainName = link.LinkStatistic.DomainName,
                     Id = link.LinkStatistic.Id,
                     LastUse = link.LinkStatistic.LastUse,
-                    Clicks = link.LinkStatistic.Clicks
+                    Clicks = link.LinkStatistic.Clicks,
+                    Browser = link.LinkStatistic.Browser,
+                    Os = link.LinkStatistic.Os
                 }
             };
         }
@@ -41,6 +43,8 @@ public class LinkStatisticDto
 {
     public Guid Id { get; set; }
     public string? DomainName { get; set; }
-    public DateTime LastUse { get; set; }
+    public DateTime? LastUse { get; set; }
     public int Clicks { get; set; }
+    public string? Browser { get; set; }
+    public string? Os { get; set; }
 }

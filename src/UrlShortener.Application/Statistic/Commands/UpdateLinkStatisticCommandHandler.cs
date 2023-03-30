@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Constants;
+using UrlShortener.Application.Common.Exceptions;
 using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
@@ -19,10 +21,13 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
         LinkStatistic? linkStatistic = await _appDbContext.LinkStatistics.FirstOrDefaultAsync(s => s.Id == request.Id);
 
         if (linkStatistic == null)
-            throw new NullReferenceException("LinkStatistic is null");
+            throw new ObjectNotFoundException(LinkStatisticsErrorMessage.NOT_FOUND);
 
+        linkStatistic.Browser = request.AgentInfo.Browser;
+        linkStatistic.Os = request.AgentInfo.Os;
         linkStatistic.Clicks++;
         linkStatistic.LastUse = DateTime.UtcNow;
+
 
         await _appDbContext.SaveChangesAsync();
         return Unit.Value;

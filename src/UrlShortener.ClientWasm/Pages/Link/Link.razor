@@ -10,32 +10,25 @@
 }
 else
 {
-    <h3>Link</h3>
-    @if (_linkDto != null)
-    {
-        <p>UrlAddress</p>
-        <h4>@_linkDto.UrlAddress</h4>
-        <br />
-        <p>UrlShort</p>
-        <h4>@_linkDto.UrlShort</h4>
-        <br />
-        <p>DateTimeCreated</p>
-        <h4>@_linkDto.DateTimeCreated</h4>
-        <br />
-        <p>DomainName</p>
-        <h4>@_linkDto.LinkStatistic.DomainName</h4>
-        <br />
-        <p>LastUse</p>
-        <h4>@_linkDto.LinkStatistic.LastUse</h4>
-        <br />
-        <p>Clicks</p>
-        <h4>@_linkDto.LinkStatistic.Clicks</h4>
-        <br />
-        <div>
-            <button class="btn btn-danger" @onclick="Delete">Delete</button>
-            <button class="btn btn-warning" @onclick="NavToUpdate">Update</button>
-        </div>
-    }
+    <div class="row">
+        <h3>Link</h3>
+        @if (_linkDto != null)
+        {
+            <p class="fw-bold">UrlAddress : <span class="fw-lighter">@_linkDto.UrlAddress</span> </p>
+            <p class="fw-bold">UrlShort : <span class="fw-lighter">@_linkDto.UrlShort</span> </p>
+            <p class="fw-bold">DateTimeCreated : <span class="fw-lighter">@_linkDto.DateTimeCreated</span> </p>
+            <p class="fw-bold">DomainName : <span class="fw-lighter">@_linkDto.LinkStatistic.DomainName</span> </p>
+            <p class="fw-bold">LastUse : <span class="fw-lighter">@_linkDto.LinkStatistic.LastUse</span> </p>
+            <p class="fw-bold">Clicks : <span class="fw-lighter">@_linkDto.LinkStatistic.Clicks</span> </p>
+            <p class="fw-bold">Browser : <span class="fw-lighter">@_linkDto.LinkStatistic.Browser</span> </p>
+            <p class="fw-bold">Os : <span class="fw-lighter">@_linkDto.LinkStatistic.Os</span> </p>
+
+            <div>
+                <button class="btn btn-danger" @onclick="Delete">Delete</button>
+                <button class="btn btn-warning" @onclick="NavToUpdate">Update</button>
+            </div>
+        }
+    </div>
 }
 
 @code {

@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Utility;
+using UrlShortener.Application.Common.Models;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
@@ -23,7 +25,13 @@ namespace UrlShortener.Api.Controllers
             {
                 return RedirectToPage("/NotFound");
             }
-            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id));
+
+            var agent = HttpContext.Request.Headers["user-agent"];
+            UserAgentHelper agentHelper = new();
+            UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
+
+            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo));
+
             return Redirect(result.Value.UrlAddress);
         }
     }

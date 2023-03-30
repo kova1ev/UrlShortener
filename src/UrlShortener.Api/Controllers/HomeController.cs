@@ -1,44 +1,49 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Application.Common.Result;
-using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
 namespace UrlShortener.Api.Controllers
 {
     [Route("api/home")]
     public class HomeController : ApiControllerBase<HomeController>
     {
-        public HomeController(ILogger<HomeController> logger, IMediator mediator) : base(logger, mediator)
-        {
 
-        }
+        public HomeController(ILogger<HomeController> logger, IMediator mediator)
+            : base(logger, mediator)
+        { }
 
-
-        // TEST features
-        [HttpGet("{shortName}")]
-        public async Task<ActionResult> RedirectByLink([FromRoute] string shortName)
-        {
-            throw new DivideByZeroException();
-            Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(shortName));
-            // string urlForreedirect = "https://github.com/kova1ev";
-            // return Redirect(urlForreedirect);
-
-            if (result.IsSuccess == false)
-                return NoContent();
-            //return Ok(result.Value);
-
-            return Redirect(result.Value.UrlAddress);
-        }
 
         [HttpGet("headers")]
         public ActionResult TestHeaders()
         {
+            var CF_Connecting_IP = HttpContext.Request.Headers["CF-Connecting-IP"];
             var headers = HttpContext.Request.Headers;
-
             var agent = HttpContext.Request.Headers["user-agent"];
 
-            return Ok(headers);
+            var a = HttpContext.Connection.LocalIpAddress.ToString();
+            var p = HttpContext.Connection.LocalPort.ToString();
+
+
+            return Ok(agent);
+        }
+
+        [HttpGet("geo")]
+        public async Task<ActionResult> GetGeo()
+        {
+            string ipAddress = "89.189.103.132";
+            string result = string.Empty;
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://ip-api.com/json/");
+
+                HttpResponseMessage httpResponse = await client.GetAsync(ipAddress);
+                httpResponse.EnsureSuccessStatusCode();
+
+                result = await httpResponse.Content.ReadAsStringAsync();
+
+            }
+
+
+            return Ok(result);
         }
     }
 }

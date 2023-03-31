@@ -8,6 +8,7 @@ public class AppDbContext : DbContext
 {
     public DbSet<Link> Links { get; set; }
     public DbSet<LinkStatistic> LinkStatistics { get; set; }
+    public DbSet<Geolocation> Geolocations { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -26,6 +27,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new LinkConfiguration());
         modelBuilder.ApplyConfiguration(new LinkStatisticConfiguration());
+        modelBuilder.ApplyConfiguration(new GeolocationConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

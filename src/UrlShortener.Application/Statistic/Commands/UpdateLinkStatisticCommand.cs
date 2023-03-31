@@ -7,9 +7,11 @@ public class UpdateLinkStatisticCommand : IRequest
 {
     public Guid Id { get; }
     public UserAgentInfo AgentInfo { get; set; }
-    public UpdateLinkStatisticCommand(Guid id, UserAgentInfo agentInfo)
+    public Geolocation Geolocation { get; set; }
+    public UpdateLinkStatisticCommand(Guid id, UserAgentInfo agentInfo, Geolocation geolocation)
     {
         Id = id;
         AgentInfo = agentInfo;
+        Geolocation = geolocation;
     }
 }

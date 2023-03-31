@@ -18,7 +18,9 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
 
     public async Task<Unit> Handle(UpdateLinkStatisticCommand request, CancellationToken cancellationToken)
     {
-        LinkStatistic? linkStatistic = await _appDbContext.LinkStatistics.FirstOrDefaultAsync(s => s.Id == request.Id);
+        LinkStatistic? linkStatistic = await _appDbContext.LinkStatistics
+            .Include(st => st.Geolocation)
+            .FirstOrDefaultAsync(s => s.Id == request.Id);
 
         if (linkStatistic == null)
             throw new ObjectNotFoundException(LinkStatisticsErrorMessage.NOT_FOUND);
@@ -27,6 +29,10 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
         linkStatistic.Os = request.AgentInfo.Os;
         linkStatistic.Clicks++;
         linkStatistic.LastUse = DateTime.UtcNow;
+
+        linkStatistic.Geolocation.Country = request.Geolocation.Country;
+        linkStatistic.Geolocation.Region = request.Geolocation.Region;
+        linkStatistic.Geolocation.City = request.Geolocation.City;
 
 
         await _appDbContext.SaveChangesAsync();

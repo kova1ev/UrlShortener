@@ -22,7 +22,10 @@ else
             <p class="fw-bold">Clicks : <span class="fw-lighter">@_linkDto.LinkStatistic.Clicks</span> </p>
             <p class="fw-bold">Browser : <span class="fw-lighter">@_linkDto.LinkStatistic.Browser</span> </p>
             <p class="fw-bold">Os : <span class="fw-lighter">@_linkDto.LinkStatistic.Os</span> </p>
-
+            <h6>Geolocation</h6>
+            <p class="fw-bold">Country : <span class="fw-lighter">@_linkDto.LinkStatistic.Country</span> </p>
+            <p class="fw-bold">Region : <span class="fw-lighter">@_linkDto.LinkStatistic.Region</span> </p>
+            <p class="fw-bold">City : <span class="fw-lighter">@_linkDto.LinkStatistic.City</span> </p>
             <div>
                 <button class="btn btn-danger" @onclick="Delete">Delete</button>
                 <button class="btn btn-warning" @onclick="NavToUpdate">Update</button>

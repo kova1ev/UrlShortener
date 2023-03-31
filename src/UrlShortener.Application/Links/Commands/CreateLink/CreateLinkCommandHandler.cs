@@ -59,7 +59,11 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             Os = null,
             Link = link,
         };
+
         _appDbContext.Entry(linkStatistic).State = EntityState.Added;
+
+        Geolocation geolocation = new Geolocation() { LinkStatistic = linkStatistic };
+        _appDbContext.Entry(geolocation).State = EntityState.Added;
 
         await _appDbContext.SaveChangesAsync();
 

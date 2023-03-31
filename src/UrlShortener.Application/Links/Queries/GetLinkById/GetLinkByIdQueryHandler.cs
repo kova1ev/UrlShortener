@@ -19,7 +19,10 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<
 
     public async Task<Result<LinkDto>> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
     {
-        var link = await _appDbContext.Links.Include(l => l.LinkStatistic).AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
+        var link = await _appDbContext.Links
+            .Include(l => l.LinkStatistic)
+                .ThenInclude(st => st.Geolocation)
+            .AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
 
         if (link == null)
         {

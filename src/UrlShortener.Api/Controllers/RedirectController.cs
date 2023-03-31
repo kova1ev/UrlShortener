@@ -14,9 +14,9 @@ namespace UrlShortener.Api.Controllers
     public class RedirectController : ApiControllerBase<RedirectController>
     {
         private readonly IConfiguration _configuration;
-        private readonly GeolocationService _geolocationService;
+        private readonly IGeolocationService _geolocationService;
         public RedirectController(ILogger<RedirectController> logger, IMediator mediator,
-            GeolocationService geolocationService, IConfiguration configuration)
+            IGeolocationService geolocationService, IConfiguration configuration)
             : base(logger, mediator)
         {
             _geolocationService = geolocationService;

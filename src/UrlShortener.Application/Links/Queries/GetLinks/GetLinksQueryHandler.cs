@@ -18,6 +18,7 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, IEnumerable<L
     {
         IEnumerable<LinkDto> links = await _appDbContext.Links
              .Include(l => l.LinkStatistic)
+                .ThenInclude(st => st.Geolocation)
              .AsNoTracking()
              .Select(link => LinkDto.MapToLInkDto(link))
              .ToArrayAsync();

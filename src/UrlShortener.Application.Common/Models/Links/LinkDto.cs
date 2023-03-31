@@ -31,7 +31,11 @@ public class LinkDto
                     LastUse = link.LinkStatistic.LastUse,
                     Clicks = link.LinkStatistic.Clicks,
                     Browser = link.LinkStatistic.Browser,
-                    Os = link.LinkStatistic.Os
+                    Os = link.LinkStatistic.Os,
+
+                    City = link.LinkStatistic.Geolocation.City,
+                    Country = link.LinkStatistic.Geolocation.Country,
+                    Region = link.LinkStatistic.Geolocation.Region
                 }
             };
         }
@@ -47,4 +51,7 @@ public class LinkStatisticDto
     public int Clicks { get; set; }
     public string? Browser { get; set; }
     public string? Os { get; set; }
+    public string? Country { get; set; }
+    public string? Region { get; set; }
+    public string? City { get; set; }
 }

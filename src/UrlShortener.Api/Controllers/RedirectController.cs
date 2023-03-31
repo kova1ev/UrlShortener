@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Utility;
 using UrlShortener.Application.Common.Models;
 using UrlShortener.Application.Common.Models.Links;
@@ -12,9 +13,14 @@ namespace UrlShortener.Api.Controllers
     [Route("/r")]
     public class RedirectController : ApiControllerBase<RedirectController>
     {
-        public RedirectController(ILogger<RedirectController> logger, IMediator mediator) : base(logger, mediator)
+        private readonly IConfiguration _configuration;
+        private readonly GeolocationService _geolocationService;
+        public RedirectController(ILogger<RedirectController> logger, IMediator mediator,
+            GeolocationService geolocationService, IConfiguration configuration)
+            : base(logger, mediator)
         {
-
+            _geolocationService = geolocationService;
+            _configuration = configuration;
         }
 
         [HttpGet("{alias}")]
@@ -26,11 +32,20 @@ namespace UrlShortener.Api.Controllers
                 return RedirectToPage("/NotFound");
             }
 
+            ClientIpHelper clientIpHelper = new ClientIpHelper();
+            string? clientIp = clientIpHelper.GetClientIpByCloudFlare(HttpContext);
+
+#if DEBUG
+            if (clientIp == null)
+                clientIp = _configuration.GetValue<string>("ApiAddress");
+#endif
+            var data = await _geolocationService.GetData(clientIp);
+
             var agent = HttpContext.Request.Headers["user-agent"];
             UserAgentHelper agentHelper = new();
             UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
 
-            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo));
+            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
 
             return Redirect(result.Value.UrlAddress);
         }

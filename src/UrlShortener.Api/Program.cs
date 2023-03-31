@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using UrlShortener.Api.Filters;
+using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application;
 using UrlShortener.Application.Common;
@@ -73,6 +74,8 @@ namespace UrlShortener.Api
                 opts.RespectBrowserAcceptHeader = true;
                 opts.ReturnHttpNotAcceptable = true;
             });
+
+            builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
 
             var app = builder.Build();
 

@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace UrlShortener.Api.Controllers
 {
     [Route("api/home")]
-    public class HomeController : ApiControllerBase<HomeController>
+    public class HomeController : ApiControllerBase
     {
 
-        public HomeController(ILogger<HomeController> logger, IMediator mediator)
-            : base(logger, mediator)
+        public HomeController(IMediator mediator)
+            : base(mediator)
         { }
 
 

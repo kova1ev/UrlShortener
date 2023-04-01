@@ -11,13 +11,12 @@ using UrlShortener.Application.Statistic.Commands;
 namespace UrlShortener.Api.Controllers
 {
     [Route("/r")]
-    public class RedirectController : ApiControllerBase<RedirectController>
+    public class RedirectController : ApiControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly IGeolocationService _geolocationService;
-        public RedirectController(ILogger<RedirectController> logger, IMediator mediator,
-            IGeolocationService geolocationService, IConfiguration configuration)
-            : base(logger, mediator)
+        public RedirectController(IMediator mediator, IGeolocationService geolocationService, IConfiguration configuration)
+            : base(mediator)
         {
             _geolocationService = geolocationService;
             _configuration = configuration;
@@ -26,7 +25,7 @@ namespace UrlShortener.Api.Controllers
         [HttpGet("{alias}")]
         public async Task<IActionResult> RedirectTo([FromRoute] string alias)
         {
-            Result<LinkDto> result = await _mediator.Send(new GetLinkByShortNameQuery(alias));
+            Result<LinkDto> result = await Mediator.Send(new GetLinkByShortNameQuery(alias));
             if (result.IsSuccess == false)
             {
                 return RedirectToPage("/NotFound");
@@ -39,13 +38,13 @@ namespace UrlShortener.Api.Controllers
             if (clientIp == null)
                 clientIp = _configuration.GetValue<string>("ApiAddress");
 #endif
-            var data = await _geolocationService.GetData(clientIp);
+            Geolocation data = await _geolocationService.GetData(clientIp);
 
-            var agent = HttpContext.Request.Headers["user-agent"];
+            string? agent = HttpContext.Request.Headers["user-agent"];
             UserAgentHelper agentHelper = new();
             UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
 
-            await _mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
+            await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
 
             return Redirect(result.Value.UrlAddress);
         }

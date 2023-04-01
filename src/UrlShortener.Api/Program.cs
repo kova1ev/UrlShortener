@@ -18,6 +18,7 @@ namespace UrlShortener.Api
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddRazorPages();
 
             builder.Services.Configure<JsonOptions>(options =>
             {
@@ -27,6 +28,8 @@ namespace UrlShortener.Api
             builder.Services.Configure<MvcOptions>(options =>
                 {
                     options.Filters.Add(typeof(ValidateModelStateFilter));
+                    options.RespectBrowserAcceptHeader = true;
+                    options.ReturnHttpNotAcceptable = true;
                 });
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -35,10 +38,9 @@ namespace UrlShortener.Api
             });
 
             builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
+
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
-
-            builder.Services.AddRazorPages();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -69,13 +71,10 @@ namespace UrlShortener.Api
                     options.AddSecurityRequirement(requirement);
                 });
 
-            builder.Services.Configure<MvcOptions>(opts =>
-            {
-                opts.RespectBrowserAcceptHeader = true;
-                opts.ReturnHttpNotAcceptable = true;
-            });
+
 
             builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
+
 
             var app = builder.Build();
 
@@ -103,7 +102,7 @@ namespace UrlShortener.Api
             app.UseBlazorFrameworkFiles();
 
             app.UseStaticFiles();
-            app.UseAuthorization();
+            // app.UseAuthorization();
             app.MapControllers();
             app.MapRazorPages();
             // WASM 

@@ -14,9 +14,9 @@ namespace UrlShortener.Api.Controllers
 {
     [ApiKeyAuthorize]
     [Route("api/link")]
-    public class LinkController : ApiControllerBase<LinkController>
+    public class LinkController : ApiControllerBase
     {
-        public LinkController(ILogger<LinkController> logger, IMediator mediator) : base(logger, mediator)
+        public LinkController(IMediator mediator) : base(mediator)
         {
 
         }
@@ -26,7 +26,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> GetById([FromRoute] Guid id)
         {
-            Result<LinkDto> result = await _mediator.Send(new GetLinkByIdQuery(id));
+            Result<LinkDto> result = await Mediator.Send(new GetLinkByIdQuery(id));
             if (result.IsSuccess == false)
             {
                 return NoContent();
@@ -39,7 +39,7 @@ namespace UrlShortener.Api.Controllers
         public async Task<ActionResult> GetLinks()
         {
             // TODO:  PAGINATIONS!
-            var links = await _mediator.Send(new GetLinksQuery());
+            var links = await Mediator.Send(new GetLinksQuery());
             return Ok(links);
         }
 
@@ -49,7 +49,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreteLink([FromBody] CreateLinkModel createLinkDto)
         {
-            Result<LinkResponse> result = await _mediator.Send(new CreateLinkCommand(createLinkDto));
+            Result<LinkResponse> result = await Mediator.Send(new CreateLinkCommand(createLinkDto));
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
@@ -62,7 +62,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
         {
-            Result result = await _mediator.Send(new DeleteLinkCommand(id));
+            Result result = await Mediator.Send(new DeleteLinkCommand(id));
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
@@ -75,7 +75,7 @@ namespace UrlShortener.Api.Controllers
         [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkModel updateLinkDto)
         {
-            Result result = await _mediator.Send(new UpdateLinkCommand(id, updateLinkDto));
+            Result result = await Mediator.Send(new UpdateLinkCommand(id, updateLinkDto));
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));

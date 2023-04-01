@@ -8,10 +8,11 @@ public class GeolocationService : IGeolocationService
     private JsonSerializerOptions _options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
     private readonly string apiAddress = "http://ip-api.com/json/";
     private readonly HttpClient _httpClient;
-
-    public GeolocationService(HttpClient httpClient)
+    private readonly ILogger<GeolocationService> _logger;
+    public GeolocationService(HttpClient httpClient, ILogger<GeolocationService> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(_httpClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _httpClient.BaseAddress = new Uri(apiAddress);
         _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
     }
@@ -19,16 +20,29 @@ public class GeolocationService : IGeolocationService
 
     public async Task<Geolocation> GetData(string ip)
     {
-        if (ip == null)
-            throw new ArgumentNullException(nameof(ip));
-        string requestQueryParameters = "?fields=status,message,country,regionName,city";
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync(string.Concat(ip, requestQueryParameters));
-        string jsonString = await responseMessage.Content.ReadAsStringAsync();
-        if (!responseMessage.IsSuccessStatusCode)
+        Geolocation geolocation = new();
+        try
         {
-            throw new BadHttpRequestException($"{apiAddress} return not Success StatusCode", (int)responseMessage.StatusCode);
+            if (ip == null)
+                throw new ArgumentNullException(nameof(ip));
+            string requestQueryParameters = "?fields=status,message,country,regionName,city";
+            HttpResponseMessage responseMessage = await _httpClient.GetAsync(string.Concat(ip, requestQueryParameters));
+            string jsonString = await responseMessage.Content.ReadAsStringAsync();
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                throw new BadHttpRequestException($"{apiAddress} with ip {ip} return not Success StatusCode", (int)responseMessage.StatusCode);
+            }
+            geolocation = JsonSerializer.Deserialize<Geolocation>(jsonString, _options)!;
         }
-        Geolocation geolocation = JsonSerializer.Deserialize<Geolocation>(jsonString, _options)!;
+        catch (BadHttpRequestException exception)
+        {
+            //todo log
+            _logger.LogError("Source: {0}. Message:  {1}", exception.Source, exception.Message);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
         return geolocation;
     }
 

@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
 using UrlShortener.Application.Common.Models.Links;
@@ -13,6 +15,7 @@ using UrlShortener.Application.Links.Queries.GetLinks;
 namespace UrlShortener.Api.Controllers
 {
     [ApiKeyAuthorize]
+    [Authorize]
     [Route("api/link")]
     public class LinkController : ApiControllerBase
     {
@@ -22,11 +25,11 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(LinkDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(LinkDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<ActionResult> GetById([FromRoute] Guid id)
         {
-            Result<LinkDto> result = await Mediator.Send(new GetLinkByIdQuery(id));
+            Result<LinkDetailsResponse> result = await Mediator.Send(new GetLinkByIdQuery(id));
             if (result.IsSuccess == false)
             {
                 return NoContent();
@@ -35,7 +38,7 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpGet()]
-        [ProducesResponseType(typeof(IEnumerable<LinkDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetLinks()
         {
             // TODO:  PAGINATIONS!
@@ -44,12 +47,14 @@ namespace UrlShortener.Api.Controllers
         }
 
         //  COMMANDS
+        [AllowAnonymous]
         [HttpPost]
-        [ProducesResponseType(typeof(LinkResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreteLink([FromBody] CreateLinkModel createLinkDto)
+        [ProducesResponseType(typeof(LinkCreatedResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CreteLink([FromBody] CreateLinkRequest createLinkRequest)
         {
-            Result<LinkResponse> result = await Mediator.Send(new CreateLinkCommand(createLinkDto));
+            Result<LinkCreatedResponse> result = await Mediator.Send(
+                new CreateLinkCommand(createLinkRequest.UrlAddress, createLinkRequest.Alias));
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));
@@ -58,8 +63,8 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
         {
             Result result = await Mediator.Send(new DeleteLinkCommand(id));
@@ -71,11 +76,11 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkModel updateLinkDto)
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkRequest updateLinkRequest)
         {
-            Result result = await Mediator.Send(new UpdateLinkCommand(id, updateLinkDto));
+            Result result = await Mediator.Send(new UpdateLinkCommand(id, updateLinkRequest.UrlAddress, updateLinkRequest.Alias));
             if (result.IsSuccess == false)
             {
                 return BadRequest(ApiErrors.ToBadRequest(result));

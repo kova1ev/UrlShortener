@@ -4,11 +4,12 @@ using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Interfaces;
 
-//undone
+
 public interface IAppDbContext
 {
     DbSet<Link> Links { get; set; }
     DbSet<LinkStatistic> LinkStatistics { get; set; }
+    DbSet<Geolocation> Geolocations { get; set; }
 
     DatabaseFacade Database { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellation = default);

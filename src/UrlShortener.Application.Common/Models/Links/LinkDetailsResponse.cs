@@ -2,7 +2,7 @@
 
 namespace UrlShortener.Application.Common.Models.Links;
 
-public class LinkDto
+public class LinkDetailsResponse
 {
     public Guid Id { get; set; }
     public string? UrlAddress { get; set; }
@@ -10,21 +10,21 @@ public class LinkDto
 
     public DateTime DateTimeCreated { get; set; }
 
-    public LinkStatisticDto LinkStatistic { get; set; } = new LinkStatisticDto();
-    public LinkDto() { }
+    public LinkStatisticResponse LinkStatistic { get; set; } = new LinkStatisticResponse();
+    public LinkDetailsResponse() { }
 
-    public static LinkDto? MapToLInkDto(Link? link)
+    public static LinkDetailsResponse? MapToLInkDto(Link? link)
     {
         if (link != null)
         {
-            return new LinkDto()
+            return new LinkDetailsResponse()
             {
                 Id = link.Id,
                 UrlAddress = link.UrlAddress,
                 DateTimeCreated = link.DateTimeCreated,
                 UrlShort = link.UrlShort,
 
-                LinkStatistic = new LinkStatisticDto()
+                LinkStatistic = new LinkStatisticResponse()
                 {
                     DomainName = link.LinkStatistic.DomainName,
                     Id = link.LinkStatistic.Id,
@@ -43,7 +43,7 @@ public class LinkDto
     }
 }
 
-public class LinkStatisticDto
+public class LinkStatisticResponse
 {
     public Guid Id { get; set; }
     public string? DomainName { get; set; }

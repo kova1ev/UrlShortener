@@ -1,26 +1,27 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Data;
+using UrlShortener.Application.Interfaces;
+
 
 namespace UrlShortener.Application.Links.Queries.GetLinks;
 
-public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, IEnumerable<LinkDto>>
+public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, IEnumerable<LinkDetailsResponse>>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
 
-    public GetLinksQueryHandler(AppDbContext appDbContext)
+    public GetLinksQueryHandler(IAppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<IEnumerable<LinkDto>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<LinkDetailsResponse>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<LinkDto> links = await _appDbContext.Links
+        IEnumerable<LinkDetailsResponse> links = await _appDbContext.Links
              .Include(l => l.LinkStatistic)
                 .ThenInclude(st => st.Geolocation)
              .AsNoTracking()
-             .Select(link => LinkDto.MapToLInkDto(link))
+             .Select(link => LinkDetailsResponse.MapToLInkDto(link))
              .ToArrayAsync();
         return links;
     }

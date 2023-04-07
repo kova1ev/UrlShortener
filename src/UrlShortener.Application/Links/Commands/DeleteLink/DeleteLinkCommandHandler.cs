@@ -2,16 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
-using UrlShortener.Data;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Commands.DeleteLink;
 
 public class DeleteLinkCommandHandler : IRequestHandler<DeleteLinkCommand, Result>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
 
-    public DeleteLinkCommandHandler(AppDbContext appDbContext)
+    public DeleteLinkCommandHandler(IAppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
@@ -24,7 +24,7 @@ public class DeleteLinkCommandHandler : IRequestHandler<DeleteLinkCommand, Resul
         {
             return Result.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
-        _appDbContext.Entry(link).State = EntityState.Deleted;
+        _appDbContext.Links.Remove(link);
 
         await _appDbContext.SaveChangesAsync();
 

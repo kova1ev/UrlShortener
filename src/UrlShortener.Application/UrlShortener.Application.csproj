@@ -11,11 +11,11 @@
 	  <PackageReference Include="FluentValidation" Version="11.5.1" />
 	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
 	  <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UrlShortener.Application.Common\UrlShortener.Application.Common.csproj" />
-	  <ProjectReference Include="..\UrlShortener.Data\UrlShortener.Data.csproj" />
 	  <ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
 	</ItemGroup>
 

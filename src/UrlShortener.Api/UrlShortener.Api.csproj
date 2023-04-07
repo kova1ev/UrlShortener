@@ -14,6 +14,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="DeviceDetector.NET" Version="6.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.3">
@@ -27,6 +28,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\UrlShortener.Application\UrlShortener.Application.csproj" />
 		<ProjectReference Include="..\UrlShortener.ClientWasm\UrlShortener.ClientWasm.csproj" />
+		<ProjectReference Include="..\UrlShortener.Data\UrlShortener.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Authentication\" />
 	</ItemGroup>
 
 </Project>

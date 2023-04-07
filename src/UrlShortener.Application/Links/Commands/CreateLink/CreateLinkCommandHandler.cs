@@ -4,40 +4,39 @@ using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Data;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Commands.CreateLink;
 
-public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkResponse>>
+public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Result<LinkCreatedResponse>>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
     private readonly ILinkService _linkService;
 
-    public CreateLinkCommandHandler(AppDbContext appDbContext, ILinkService aliasService)
+    public CreateLinkCommandHandler(IAppDbContext appDbContext, ILinkService aliasService)
     {
         this._appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         _linkService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
-    public async Task<Result<LinkResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
+    public async Task<Result<LinkCreatedResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
         if (request.Alias != null && await _linkService.AliasIsBusy(request.Alias))
         {
-            return Result<LinkResponse>.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
+            return Result<LinkCreatedResponse>.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
         }
 
         if (request.Alias == null)
         {
-            LinkResponse? existingLink = await _appDbContext.Links
+            LinkCreatedResponse? existingLink = await _appDbContext.Links
                 .AsNoTracking()
                 .Where(l => l.UrlAddress == request.UrlAddress)
-                .Select(l => new LinkResponse(l.Id, l.UrlShort))
+                .Select(l => new LinkCreatedResponse(l.Id, l.UrlShort))
                 .FirstOrDefaultAsync();
 
             if (existingLink != null)
             {
-                return Result<LinkResponse>.Success(existingLink);
+                return Result<LinkCreatedResponse>.Success(existingLink);
             }
         }
 
@@ -49,7 +48,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             Alias = alias,
             UrlShort = _linkService.CreateShortUrl(alias)
         };
-        _appDbContext.Entry(link).State = EntityState.Added;
+        await _appDbContext.Links.AddAsync(link);
 
         LinkStatistic linkStatistic = new LinkStatistic()
         {
@@ -59,14 +58,13 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             Os = null,
             Link = link,
         };
-
-        _appDbContext.Entry(linkStatistic).State = EntityState.Added;
+        await _appDbContext.LinkStatistics.AddAsync(linkStatistic);
 
         Geolocation geolocation = new Geolocation() { LinkStatistic = linkStatistic };
-        _appDbContext.Entry(geolocation).State = EntityState.Added;
+        await _appDbContext.Geolocations.AddAsync(geolocation);
 
         await _appDbContext.SaveChangesAsync();
 
-        return Result<LinkResponse>.Success(new LinkResponse(link.Id, link.UrlShort));
+        return Result<LinkCreatedResponse>.Success(new LinkCreatedResponse(link.Id, link.UrlShort));
     }
 }

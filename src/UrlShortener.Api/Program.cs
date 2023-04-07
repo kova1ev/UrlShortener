@@ -1,11 +1,19 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using UrlShortener.Api.Authentication;
 using UrlShortener.Api.Filters;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Middleware;
+using UrlShortener.Api.Models;
 using UrlShortener.Application;
 using UrlShortener.Application.Common;
+using UrlShortener.Application.Common.Models;
 using UrlShortener.Data;
 
 namespace UrlShortener.Api
@@ -19,7 +27,13 @@ namespace UrlShortener.Api
 
             builder.Services.AddControllers();
             builder.Services.AddRazorPages();
+            builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(AppOptions)));
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+            builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
+            builder.Services.AddScoped<TokenProvider, TokenProvider>();
 
+            JwtOptions jwtOptions = new();
+            ConfigurationBinder.Bind(builder.Configuration.GetSection("JwtOptions"), jwtOptions);
             builder.Services.Configure<JsonOptions>(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -37,7 +51,40 @@ namespace UrlShortener.Api
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("AppOptions"));
+            builder.Services.AddAuthentication(options =>
+            {
+                //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtOptions.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtOptions.Audience,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                               {
+                                   context.HandleResponse();
+                                   context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                   context.Response.ContentType = "application/json";
+                                   var err = new ApiErrors(StatusCodes.Status401Unauthorized, "JwtToken is required", null);
+                                   await context.Response.WriteAsJsonAsync(err, new JsonSerializerOptions()
+                                   { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+                               }
+                    };
+                });
+            builder.Services.AddAuthorization();
+
+
 
             builder.Services.AddAppDbContext(builder.Configuration);
             builder.Services.AddApplication();
@@ -55,7 +102,7 @@ namespace UrlShortener.Api
                         In = ParameterLocation.Header,
                         Scheme = "ApiKeyScheme"
                     });
-                    var scheme = new OpenApiSecurityScheme
+                    var apiKey = new OpenApiSecurityScheme
                     {
                         Reference = new OpenApiReference
                         {
@@ -64,17 +111,39 @@ namespace UrlShortener.Api
                         },
                         In = ParameterLocation.Header
                     };
-                    var requirement = new OpenApiSecurityRequirement
+                    var apiKEyRequirement = new OpenApiSecurityRequirement
                     {
-                        { scheme,new List<string>()}
+                        { apiKey,new List<string>()}
                     };
-                    options.AddSecurityRequirement(requirement);
+                    options.AddSecurityRequirement(apiKEyRequirement);
+
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        Description = "JWT Authorization",
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        In = ParameterLocation.Header,
+                        Scheme = "Bearer",
+                        BearerFormat = "JWT"
+                    });
+                    var bearer = new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        In = ParameterLocation.Header
+                    };
+                    var bearerRequirement = new OpenApiSecurityRequirement
+                    {
+                        { bearer,new List<string>()}
+                    };
+                    options.AddSecurityRequirement(bearerRequirement);
                 });
 
 
-
             builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
-
 
             var app = builder.Build();
 
@@ -102,20 +171,18 @@ namespace UrlShortener.Api
             app.UseBlazorFrameworkFiles();
 
             app.UseStaticFiles();
-            // app.UseAuthorization();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapControllers();
             app.MapRazorPages();
+
             // WASM 
             app.MapFallbackToFile("index.html");
 
             app.Run();
         }
-
-
-
-
-
-
 
     }
 

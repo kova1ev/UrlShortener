@@ -1,17 +1,19 @@
 ﻿using MediatR;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
+using UrlShortener.Application.Common.Utility;
 
 namespace UrlShortener.Application.Links.Commands.CreateLink;
 
-public class CreateLinkCommand : IRequest<Result<LinkResponse>>
+public class CreateLinkCommand : IRequest<Result<LinkCreatedResponse>>
 {
-    public string UrlAddress { get; }
-    public string? Alias { get; }
+    public string? UrlAddress { get; set; }
+    public string? Alias { get; set; }
 
-    public CreateLinkCommand(CreateLinkModel createLinkDto)
+    public CreateLinkCommand(string urlAddress, string alias)
     {
-        UrlAddress = createLinkDto.UrlAddress;
-        Alias = createLinkDto.Alias;
+        UrlAddress = urlAddress.TrimAndSetNull();
+        Alias = alias.TrimAndSetNull();
     }
+
 }

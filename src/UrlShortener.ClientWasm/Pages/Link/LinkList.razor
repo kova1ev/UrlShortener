@@ -48,7 +48,7 @@ else
 }
 
 @code {
-    private IEnumerable<LinkDto>? links;
+    private IEnumerable<LinkDetailsViewModel>? links;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,7 +58,7 @@ else
     private async Task GetLinks()
     {
 
-        HttpResponseResult<IEnumerable<LinkDto>> result = await LinkHttpService.GetLinksAsync();
+        HttpResponseResult<IEnumerable<LinkDetailsViewModel>> result = await LinkHttpService.GetLinksAsync();
         links = result.Value;
     }
 

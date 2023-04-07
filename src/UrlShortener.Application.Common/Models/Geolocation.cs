@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace UrlShortener.Application.Common.Models;
+
 public class Geolocation
 {
     [JsonPropertyName("country")]

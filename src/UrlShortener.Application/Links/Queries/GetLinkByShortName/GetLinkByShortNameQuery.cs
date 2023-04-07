@@ -4,7 +4,7 @@ using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
-public class GetLinkByShortNameQuery : IRequest<Result<LinkDto>>
+public class GetLinkByShortNameQuery : IRequest<Result<LinkDetailsResponse>>
 {
     public string Alias { get; set; }
 

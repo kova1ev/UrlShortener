@@ -2,16 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Exceptions;
-using UrlShortener.Data;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Statistic.Commands;
 
 public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStatisticCommand, Unit>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
 
-    public UpdateLinkStatisticCommandHandler(AppDbContext appDbContext)
+    public UpdateLinkStatisticCommandHandler(IAppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
     }
@@ -34,8 +34,9 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
         linkStatistic.Geolocation.Region = request.Geolocation.Region;
         linkStatistic.Geolocation.City = request.Geolocation.City;
 
-
+        _appDbContext.LinkStatistics.Update(linkStatistic);
         await _appDbContext.SaveChangesAsync();
+
         return Unit.Value;
     }
 }

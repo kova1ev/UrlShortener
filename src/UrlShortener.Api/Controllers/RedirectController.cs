@@ -25,7 +25,7 @@ namespace UrlShortener.Api.Controllers
         [HttpGet("{alias}")]
         public async Task<IActionResult> RedirectTo([FromRoute] string alias)
         {
-            Result<LinkDto> result = await Mediator.Send(new GetLinkByShortNameQuery(alias));
+            Result<LinkDetailsResponse> result = await Mediator.Send(new GetLinkByShortNameQuery(alias));
             if (result.IsSuccess == false)
             {
                 return RedirectToPage("/NotFound");
@@ -38,6 +38,7 @@ namespace UrlShortener.Api.Controllers
             if (clientIp == null)
                 clientIp = _configuration.GetValue<string>("ApiAddress");
 #endif
+            // TODO 1-2 sec server latency => make background work 
             Geolocation data = await _geolocationService.GetData(clientIp);
 
             string? agent = HttpContext.Request.Headers["user-agent"];

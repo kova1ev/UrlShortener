@@ -2,6 +2,7 @@
 @inject ILinkHttpService LinkHttpService
 @inject NavigationManager NavigationManager
 
+@attribute [Authorize]
 <PageTitle>About</PageTitle>
 
 @if (fail)
@@ -12,20 +13,20 @@ else
 {
     <div class="row">
         <h3>Link</h3>
-        @if (_linkDto != null)
+        @if (_linkViewModel != null)
         {
-            <p class="fw-bold">UrlAddress : <span class="fw-lighter">@_linkDto.UrlAddress</span> </p>
-            <p class="fw-bold">UrlShort : <span class="fw-lighter">@_linkDto.UrlShort</span> </p>
-            <p class="fw-bold">DateTimeCreated : <span class="fw-lighter">@_linkDto.DateTimeCreated</span> </p>
-            <p class="fw-bold">DomainName : <span class="fw-lighter">@_linkDto.LinkStatistic.DomainName</span> </p>
-            <p class="fw-bold">LastUse : <span class="fw-lighter">@_linkDto.LinkStatistic.LastUse</span> </p>
-            <p class="fw-bold">Clicks : <span class="fw-lighter">@_linkDto.LinkStatistic.Clicks</span> </p>
-            <p class="fw-bold">Browser : <span class="fw-lighter">@_linkDto.LinkStatistic.Browser</span> </p>
-            <p class="fw-bold">Os : <span class="fw-lighter">@_linkDto.LinkStatistic.Os</span> </p>
+            <p class="fw-bold">UrlAddress : <span class="fw-lighter">@_linkViewModel.UrlAddress</span> </p>
+            <p class="fw-bold">UrlShort : <span class="fw-lighter">@_linkViewModel.UrlShort</span> </p>
+            <p class="fw-bold">DateTimeCreated : <span class="fw-lighter">@_linkViewModel.DateTimeCreated</span> </p>
+            <p class="fw-bold">DomainName : <span class="fw-lighter">@_linkViewModel.LinkStatistic.DomainName</span> </p>
+            <p class="fw-bold">LastUse : <span class="fw-lighter">@_linkViewModel.LinkStatistic.LastUse</span> </p>
+            <p class="fw-bold">Clicks : <span class="fw-lighter">@_linkViewModel.LinkStatistic.Clicks</span> </p>
+            <p class="fw-bold">Browser : <span class="fw-lighter">@_linkViewModel.LinkStatistic.Browser</span> </p>
+            <p class="fw-bold">Os : <span class="fw-lighter">@_linkViewModel.LinkStatistic.Os</span> </p>
             <h6>Geolocation</h6>
-            <p class="fw-bold">Country : <span class="fw-lighter">@_linkDto.LinkStatistic.Country</span> </p>
-            <p class="fw-bold">Region : <span class="fw-lighter">@_linkDto.LinkStatistic.Region</span> </p>
-            <p class="fw-bold">City : <span class="fw-lighter">@_linkDto.LinkStatistic.City</span> </p>
+            <p class="fw-bold">Country : <span class="fw-lighter">@_linkViewModel.LinkStatistic.Country</span> </p>
+            <p class="fw-bold">Region : <span class="fw-lighter">@_linkViewModel.LinkStatistic.Region</span> </p>
+            <p class="fw-bold">City : <span class="fw-lighter">@_linkViewModel.LinkStatistic.City</span> </p>
             <div>
                 <button class="btn btn-danger" @onclick="Delete">Delete</button>
                 <button class="btn btn-warning" @onclick="NavToUpdate">Update</button>
@@ -40,23 +41,21 @@ else
 
     private bool fail;
 
-    private LinkDto? _linkDto;
+    private LinkDetailsViewModel? _linkViewModel;
 
     protected async override Task OnInitializedAsync()
     {
-        Console.WriteLine(Id);
-
         await GetLink();
     }
 
     private async Task GetLink()
     {
 
-        HttpResponseResult<LinkDto> responseResult = await LinkHttpService.GetLinkByIdAsync(Id);
+        HttpResponseResult<LinkDetailsViewModel> responseResult = await LinkHttpService.GetLinkByIdAsync(Id);
         if (responseResult.Status == ResultStatus.Success)
         {
             fail = default;
-            _linkDto = responseResult.Value;
+            _linkViewModel = responseResult.Value;
         }
         else
         {
@@ -68,7 +67,7 @@ else
     private async Task Delete()
     {
         HttpResponseResult res = await LinkHttpService.DeleteLinkAsync(Id);
-        if (res.Status == ResultStatus.Success)
+        if (res.Status == ResultStatus.EmptyResult)
             NavigationManager.NavigateTo("/links");
         else
             fail = true;

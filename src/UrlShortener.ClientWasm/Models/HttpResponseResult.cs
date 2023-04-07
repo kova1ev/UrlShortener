@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace UrlShortener.ClientWasm.ApiHttpClient;
+namespace UrlShortener.ClientWasm.Models;
 
 public enum ResultStatus
 {

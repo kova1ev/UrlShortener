@@ -2,21 +2,21 @@
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
-using UrlShortener.Data;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
-public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortNameQuery, Result<LinkDto>>
+public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortNameQuery, Result<LinkDetailsResponse>>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
 
-    public GetLinkByShortNameQueryHandler(AppDbContext appDbContext)
+    public GetLinkByShortNameQueryHandler(IAppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<LinkDto>> Handle(GetLinkByShortNameQuery request, CancellationToken cancellationToken)
+    public async Task<Result<LinkDetailsResponse>> Handle(GetLinkByShortNameQuery request, CancellationToken cancellationToken)
     {
         Link? link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
@@ -24,9 +24,9 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
             .AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias);
         if (link == null)
         {
-            return Result<LinkDto>.Failure(new[] { "Link Not Found" });
+            return Result<LinkDetailsResponse>.Failure(new[] { "Link Not Found" });
         }
 
-        return Result<LinkDto>.Success(LinkDto.MapToLInkDto(link));
+        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link));
     }
 }

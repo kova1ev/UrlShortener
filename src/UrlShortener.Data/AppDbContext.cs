@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Data.EntityConfiguration;
 using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IAppDbContext
 {
     public DbSet<Link> Links { get; set; }
     public DbSet<LinkStatistic> LinkStatistics { get; set; }

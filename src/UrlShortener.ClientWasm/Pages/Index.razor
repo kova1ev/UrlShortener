@@ -4,7 +4,7 @@
 @inject IJSRuntime JsRuntime
 
 <PageTitle>UrlShortener</PageTitle>
-@if (fail )
+@if (fail)
 {
     <ServerError></ServerError>
 }
@@ -13,31 +13,32 @@ else
     <div class="flex-column d-flex flex-wrap align-content-center">
 
         <h1 class="text-center">Just shorten your link!</h1>
-        @foreach (var item in _apiErrors?.Errors ?? Enumerable.Empty<string>())
+        @foreach (var item in ValidationMessages )
         {
             <div class="alert alert-danger" role="alert">@item</div>
         }
-        @if (_link != null)
+        @if (LinkViewModel != null)
         {
             <div class="d-flex justify-content-between col-lg-6">
                 <div id="short__link" class="alert alert-success col-lg" role="alert">
-                    <span>@_link.ShortUrl</span>                    
+                    <span>@LinkViewModel.ShortUrl</span>
                 </div>
                 <button class="btn btn-outline-success ms-2 " type="button" @onclick="Copy">Copy</button>
             </div>
         }
 
-        <EditForm class="col-lg-6 my-4" Model="_createLinkDto" OnSubmit="@CreateLink">
+        <EditForm class="col-lg-6 my-4" EditContext="EditContext" OnSubmit="@CreateLink">
+            <DataAnnotationsValidator />
+
             <div class="input-group input-group-lg mb-3">
-                <input class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="_createLinkDto.UrlAddress"
-                       type="text" />
+                <input type="text" class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="createLinkModel.UrlAddress" />
                 <button class="btn btn-primary" type="submit">Cut</button>
             </div>
             <span class="oi oi-cog" aria-hidden="true"></span>
             <span>Optional</span>
             <div class="input-group input-group-sm mb-3">
                 <span class="input-group-text bg-warning">Alias</span>
-                <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="_createLinkDto.Alias" />
+                <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="createLinkModel.Alias" />
             </div>
         </EditForm>
         <br />
@@ -48,25 +49,32 @@ else
 
 
 @code {
-    private CreateLinkModel _createLinkDto = new();
-    private ApiErrors? _apiErrors;
-    private LinkResponse? _link;
-    private bool fail ;
+    private CreateLinkModel createLinkModel = new();
+    private LinkCreatedViewModel? LinkViewModel;
+    private bool fail;
+    private EditContext? EditContext { get; set; }
+    private IEnumerable<string> ValidationMessages { get; set; } = Enumerable.Empty<string>();
 
     protected async override Task OnInitializedAsync()
     {
+        EditContext = new EditContext(createLinkModel);
         await Task.CompletedTask;
     }
 
+
     private async Task CreateLink()
     {
-        if (ValidateCreateLinkDto())
+        TrimStringFieldsModel();
+        bool valid = EditContext.Validate();
+        ValidationMessages = EditContext.GetValidationMessages().ToArray();
+
+        if (valid)
         {
-            HttpResponseResult<LinkResponse> responseResult = await LinkHttpService.CreateLinkAsync(_createLinkDto);
+            HttpResponseResult<LinkCreatedViewModel> responseResult = await LinkHttpService.CreateLinkAsync(createLinkModel);
             if (responseResult.Status == ResultStatus.Success)
             {
-                _link = responseResult.Value;
-                _apiErrors = null;
+                LinkViewModel = responseResult.Value;
+                ValidationMessages = Enumerable.Empty<string>();
             }
             else
             {
@@ -74,23 +82,27 @@ else
                 {
                     fail = true;
                 }
-                _link = null;
-                _apiErrors = responseResult.ApiErrors;
+                LinkViewModel = null;
+                ValidationMessages = responseResult.ApiErrors?.Errors;
             }
-            StateHasChanged();
         }
+        else
+        {
+            if (createLinkModel.Alias?.Length == 0)
+                createLinkModel.Alias = null;
+        }
+        StateHasChanged();
     }
 
     private async Task Copy()
     {
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _link?.ShortUrl);
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", LinkViewModel?.ShortUrl);
     }
 
-    private bool ValidateCreateLinkDto()
+
+    private void TrimStringFieldsModel()
     {
-        // ?
-        var results = new List<ValidationResult>();
-        var context = new ValidationContext(_createLinkDto);
-        return Validator.TryValidateObject(_createLinkDto, context, results, true);
+        createLinkModel.UrlAddress = createLinkModel.UrlAddress?.Trim()!;
+        createLinkModel.Alias = createLinkModel.Alias?.Trim();
     }
 }

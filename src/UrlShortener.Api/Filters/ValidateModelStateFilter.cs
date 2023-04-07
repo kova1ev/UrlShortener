@@ -14,6 +14,8 @@ public class ValidateModelStateFilter : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
+        // for bad format request  
+
         if (context.ModelState.IsValid)
         {
             return;

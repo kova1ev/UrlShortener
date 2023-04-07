@@ -1,5 +1,4 @@
-﻿
-namespace UrlShortener.ClientWasm.ApiHttpClient;
+﻿namespace UrlShortener.ClientWasm.Models;
 
 public class ApiErrors
 {

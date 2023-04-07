@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\UrlShortener.Application\UrlShortener.Application.csproj" />
 		<ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
 	</ItemGroup>
 

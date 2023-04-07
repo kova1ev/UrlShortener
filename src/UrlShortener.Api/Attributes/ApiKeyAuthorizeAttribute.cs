@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
-using UrlShortener.Api.Authentication;
 using UrlShortener.Api.Models;
+using UrlShortener.Api.Utility;
 
 namespace UrlShortener.Api.Attributes;
 
@@ -11,7 +11,7 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (context.HttpContext.Request.Headers.TryGetValue(Security.ApiKeyHeaderName, out StringValues apiKeyFromHeaders) == false)
+        if (context.HttpContext.Request.Headers.TryGetValue(ApiKeyOptions.ApiKeyHeaderName, out StringValues apiKeyFromHeaders) == false)
         {
             context.Result = new UnauthorizedObjectResult(
                 new ApiErrors(StatusCodes.Status401Unauthorized, "ApiKey is required", null));
@@ -19,8 +19,8 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
         }
 
         IConfiguration configuration = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-        string apiKeyFromSettings = configuration.GetValue<string>(Security.ApiKeySectionValue)
-            ?? throw new ArgumentNullException("ApiKey is null", nameof(Security.ApiKeySectionValue));
+        string apiKeyFromSettings = configuration.GetValue<string>(ApiKeyOptions.ApiKeySectionValue)
+            ?? throw new ArgumentNullException("ApiKey is null", nameof(ApiKeyOptions.ApiKeySectionValue));
 
         if (apiKeyFromHeaders.Equals(apiKeyFromSettings) == false)
         {

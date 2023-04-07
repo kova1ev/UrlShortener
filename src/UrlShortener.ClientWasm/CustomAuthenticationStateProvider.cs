@@ -1,61 +1,80 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
+using UrlShortener.ClientWasm.Constants;
+using UrlShortener.ClientWasm.Models;
+using UrlShortener.ClientWasm.Services;
 
 namespace UrlShortener.ClientWasm
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private const string AUTHSCHEME = "FAKE";
-        private const string KEY = "authkey";
         private readonly ILocalStorageService _localStorage;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
 
-        public CustomAuthenticationStateProvider(ILocalStorageService localStorage)
+        public CustomAuthenticationStateProvider(ILocalStorageService localStorage, IAuthenticationService authenticationService)
         {
             _localStorage = localStorage;
+            _authenticationService = authenticationService;
         }
 
-        private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
+
         public async override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string name = await _localStorage.GetItemAsStringAsync(KEY);
-            if (!string.IsNullOrWhiteSpace(name))
+            string? token = await _localStorage.GetItemAsync<string>(AuthConstant.TOKEN_KEY);
+
+            if (!string.IsNullOrWhiteSpace(token))
             {
-                var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name), }, "Fake Auth");
-                var user = new ClaimsPrincipal(identity);
-                return new AuthenticationState(user);
+                try
+                {
+                    //if (await _authenticationService.ValidCheck(token) == false)
+                    //{
+                    //    await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
+                    //    return new AuthenticationState(_anonymous);
+                    //}
+                    ClaimsPrincipal user = CreteClaimsPrincipal(token);
+                    return new AuthenticationState(user);
+                }
+                catch (Exception ex)
+                {
+                    await Console.Out.WriteLineAsync(ex.Message);
+                    await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
+                }
             }
-            // получить из локал сторедж (токен) клаимсы 
-            // если их есть UpdateAuthenticationState
-            // если нету то анонимный пользователь
-            // Claim claim1 = new Claim(ClaimTypes.Name, AuthConstant.ADMIN);
-            //  var identity = new ClaimsIdentity(new[] { claim1 }, AUTHSCHEME);
             return new AuthenticationState(_anonymous);
         }
 
 
-        public async Task UpdateAuthenticationState(string name)
+        public async Task UpdateAuthenticationState(JwtToken jwtToken)
         {
-            // TODO :
-            // получить имя(email) и пароль
-            // (создать клаимсы ) проверить если ли в локал сторедж и проверить время годности 
-            // опционально отправить на сервер , для верификации  и получиться ответ
-            // создать клаимсы , добавить в  локал сторедж
-            // изменить  стейт аунтефикации
-
-            await _localStorage.SetItemAsync(KEY, name);
-            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name), }, AUTHSCHEME);
-
-            var user = new ClaimsPrincipal(identity);
-
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+            string token = jwtToken.Value;
+            await _localStorage.SetItemAsync(AuthConstant.TOKEN_KEY, token);
+            ClaimsPrincipal? user = null;
+            try
+            {
+                user = CreteClaimsPrincipal(token);
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
+            }
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user ?? _anonymous)));
         }
-
 
         public async Task LogOut()
         {
-            await _localStorage.RemoveItemAsync(KEY);
+            await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_anonymous)));
+        }
+
+
+        private ClaimsPrincipal CreteClaimsPrincipal(string token)
+        {
+            IEnumerable<Claim> claims = JwtToken.ExtractClaims(token);
+            ClaimsIdentity identity = new ClaimsIdentity(claims, AuthConstant.AUTHSCHEME);
+            return new ClaimsPrincipal(identity);
         }
     }
 }

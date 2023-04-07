@@ -3,21 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
-using UrlShortener.Data;
+
 
 namespace UrlShortener.Application.Links.Queries.GetLinkById;
 
-public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<LinkDto>>
+public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<LinkDetailsResponse>>
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly IAppDbContext _appDbContext;
 
-    public GetLinkByIdQueryHandler(AppDbContext appDbContext)
+    public GetLinkByIdQueryHandler(IAppDbContext appDbContext)
     {
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<LinkDto>> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<LinkDetailsResponse>> Handle(GetLinkByIdQuery request, CancellationToken cancellationToken)
     {
         var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
@@ -26,9 +27,9 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<
 
         if (link == null)
         {
-            return Result<LinkDto>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
+            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
 
-        return Result<LinkDto>.Success(LinkDto.MapToLInkDto(link));
+        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link));
     }
 }

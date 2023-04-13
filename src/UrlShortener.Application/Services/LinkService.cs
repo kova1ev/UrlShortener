@@ -39,6 +39,8 @@ public class LinkService : ILinkService
 
     public string CreateShortUrl(string alias)
     {
+        if (_appOptions.AppUrl == null)
+            throw new ArgumentNullException(nameof(_appOptions.AppUrl));
         return string.Concat(_appOptions.AppUrl, RedirectRoute, alias);
     }
 }

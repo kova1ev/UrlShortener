@@ -11,6 +11,12 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>..\..</DockerfileContext>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Authentication\**" />
+	  <Content Remove="Authentication\**" />
+	  <EmbeddedResource Remove="Authentication\**" />
+	  <None Remove="Authentication\**" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="DeviceDetector.NET" Version="6.1.0" />
@@ -29,10 +35,6 @@
 		<ProjectReference Include="..\UrlShortener.Application\UrlShortener.Application.csproj" />
 		<ProjectReference Include="..\UrlShortener.ClientWasm\UrlShortener.ClientWasm.csproj" />
 		<ProjectReference Include="..\UrlShortener.Data\UrlShortener.Data.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Authentication\" />
 	</ItemGroup>
 
 </Project>

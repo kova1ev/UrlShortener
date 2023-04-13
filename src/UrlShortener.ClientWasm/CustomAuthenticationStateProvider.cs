@@ -28,11 +28,11 @@ namespace UrlShortener.ClientWasm
             {
                 try
                 {
-                    //if (await _authenticationService.ValidCheck(token) == false)
-                    //{
-                    //    await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
-                    //    return new AuthenticationState(_anonymous);
-                    //}
+                    if (await _authenticationService.ValidCheck(token) == false)
+                    {
+                        await _localStorage.RemoveItemAsync(AuthConstant.TOKEN_KEY);
+                        return new AuthenticationState(_anonymous);
+                    }
                     ClaimsPrincipal user = CreteClaimsPrincipal(token);
                     return new AuthenticationState(user);
                 }

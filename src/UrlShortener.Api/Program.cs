@@ -27,13 +27,13 @@ namespace UrlShortener.Api
 
             builder.Services.AddControllers();
             builder.Services.AddRazorPages();
-            builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(AppOptions)));
-            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+            builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.CONFIG_KEY));
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.CONFIG_KEY));
             builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
             builder.Services.AddScoped<TokenProvider, TokenProvider>();
 
             JwtOptions jwtOptions = new();
-            ConfigurationBinder.Bind(builder.Configuration.GetSection("JwtOptions"), jwtOptions);
+            ConfigurationBinder.Bind(builder.Configuration.GetSection(JwtOptions.CONFIG_KEY), jwtOptions);
             builder.Services.Configure<JsonOptions>(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -76,9 +76,12 @@ namespace UrlShortener.Api
                                    context.HandleResponse();
                                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                    context.Response.ContentType = "application/json";
-                                   var err = new ApiErrors(StatusCodes.Status401Unauthorized, "JwtToken is required", null);
-                                   await context.Response.WriteAsJsonAsync(err, new JsonSerializerOptions()
-                                   { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+                                   ApiErrors err = new ApiErrors(StatusCodes.Status401Unauthorized, "JwtToken is required", null);
+                                   JsonSerializerOptions options = new JsonSerializerOptions()
+                                   {
+                                       DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                                   };
+                                   await context.Response.WriteAsJsonAsync(err, options);
                                }
                     };
                 });

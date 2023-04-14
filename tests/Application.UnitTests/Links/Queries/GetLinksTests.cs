@@ -12,7 +12,7 @@ public class GetLinksTests
     public async Task Get_all_links()
     {
         //arrange
-        using AppDbContext context = DbContextCreator.CreateContext();
+        using AppDbContext context = DbContextHepler.CreateContext();
         GetLinksQueryHandler handler = new(context);
 
         //act

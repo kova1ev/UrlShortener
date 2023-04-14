@@ -42,13 +42,8 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
         string alias = request.Alias ?? await _linkService.GenerateAlias();
 
-        Link link = new Link()
-        {
-            UrlAddress = request.UrlAddress!,
-            Alias = alias,
-            UrlShort = _linkService.CreateShortUrl(alias)
-        };
-        await _appDbContext.Links.AddAsync(link);
+        Geolocation geolocation = new Geolocation();
+        await _appDbContext.Geolocations.AddAsync(geolocation);
 
         LinkStatistic linkStatistic = new LinkStatistic()
         {
@@ -56,12 +51,18 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             LastUse = null,
             Browser = null,
             Os = null,
-            Link = link,
+            Geolocation = geolocation
         };
         await _appDbContext.LinkStatistics.AddAsync(linkStatistic);
 
-        Geolocation geolocation = new Geolocation() { LinkStatistic = linkStatistic };
-        await _appDbContext.Geolocations.AddAsync(geolocation);
+        Link link = new Link()
+        {
+            UrlAddress = request.UrlAddress!,
+            Alias = alias,
+            UrlShort = _linkService.CreateShortUrl(alias),
+            LinkStatistic = linkStatistic
+        };
+        await _appDbContext.Links.AddAsync(link);
 
         await _appDbContext.SaveChangesAsync();
 

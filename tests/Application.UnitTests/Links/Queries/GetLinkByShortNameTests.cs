@@ -2,43 +2,43 @@
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
-using UrlShortener.Application.Links.Queries.GetLinkById;
+using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 using UrlShortener.Data;
 
 namespace Application.UnitTests.Links.Queries;
 
-public class GetByIdTests
+public class GetLinkByShortNameTests
 {
 
-    [Fact]
-    public async Task Get_link_by_id_Success()
+    [Theory]
+    [InlineData("aaa")]
+    [InlineData("bbb")]
+    public async Task Get_link_by_short_name_Success(string shortName)
     {
         //arrange
-        Guid id = new Guid("567BD1BF-6287-4331-A50E-82984DB0B97D");
-        GetLinkByIdQuery request = new(id);
-
+        GetLinkByShortNameQuery request = new(shortName);
         using AppDbContext context = DbContextHepler.CreateContext();
-        GetLinkByIdQueryHandler handler = new(context);
+        GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
         Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);
-
         //assert
+
         Assert.True(result.IsSuccess);
         Assert.True(result.HasValue);
         Assert.Empty(result.Errors!);
-        Assert.Equal(id, result.Value.Id);
+        Assert.EndsWith(shortName, result.Value.UrlShort);
     }
 
-    [Fact]
-    public async Task Get_link_by_badId_Failure()
+    [Theory]
+    [InlineData("zzzzz")]
+    [InlineData("fsdfdsf")]
+    public async Task Get_link_by_bad_short_name_Failure(string shortName)
     {
         //arrange
-        Guid badId = new Guid("567BDaaa-6287-4331-A50E-82984DB0B97D");
-        GetLinkByIdQuery request = new(badId);
-
+        GetLinkByShortNameQuery request = new(shortName);
         using AppDbContext context = DbContextHepler.CreateContext();
-        GetLinkByIdQueryHandler handler = new(context);
+        GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
         Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);

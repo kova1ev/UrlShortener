@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
@@ -22,9 +23,10 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
             .Include(l => l.LinkStatistic)
                 .ThenInclude(st => st.Geolocation)
             .AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias);
+
         if (link == null)
         {
-            return Result<LinkDetailsResponse>.Failure(new[] { "Link Not Found" });
+            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
         }
 
         return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link));

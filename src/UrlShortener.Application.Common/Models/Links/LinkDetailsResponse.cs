@@ -26,16 +26,16 @@ public class LinkDetailsResponse
 
                 LinkStatistic = new LinkStatisticResponse()
                 {
-                    DomainName = link.LinkStatistic.DomainName,
-                    Id = link.LinkStatistic.Id,
-                    LastUse = link.LinkStatistic.LastUse,
-                    Clicks = link.LinkStatistic.Clicks,
-                    Browser = link.LinkStatistic.Browser,
-                    Os = link.LinkStatistic.Os,
+                    DomainName = link.LinkStatistic?.DomainName,
+                    Id = link.LinkStatistic!.Id,
+                    LastUse = link.LinkStatistic?.LastUse,
+                    Clicks = link.LinkStatistic!.Clicks,
+                    Browser = link.LinkStatistic?.Browser,
+                    Os = link.LinkStatistic?.Os,
 
-                    City = link.LinkStatistic.Geolocation.City,
-                    Country = link.LinkStatistic.Geolocation.Country,
-                    Region = link.LinkStatistic.Geolocation.Region
+                    City = link.LinkStatistic?.Geolocation?.City,
+                    Country = link.LinkStatistic?.Geolocation?.Country,
+                    Region = link.LinkStatistic?.Geolocation?.Region
                 }
             };
         }

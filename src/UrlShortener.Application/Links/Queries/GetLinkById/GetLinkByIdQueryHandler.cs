@@ -4,7 +4,6 @@ using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
 
 namespace UrlShortener.Application.Links.Queries.GetLinkById;

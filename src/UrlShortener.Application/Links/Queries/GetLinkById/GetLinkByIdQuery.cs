@@ -2,7 +2,7 @@ using MediatR;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 
-namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
+namespace UrlShortener.Application.Links.Queries.GetLinkById;
 
 
 public class GetLinkByIdQuery : IRequest<Result<LinkDetailsResponse>>

@@ -9,7 +9,7 @@ using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.CreateLink;
 using UrlShortener.Application.Links.Commands.DeleteLink;
 using UrlShortener.Application.Links.Commands.UpdateLink;
-using UrlShortener.Application.Links.Queries.GetLinkByShortName;
+using UrlShortener.Application.Links.Queries.GetLinkById;
 using UrlShortener.Application.Links.Queries.GetLinks;
 
 namespace UrlShortener.Api.Controllers

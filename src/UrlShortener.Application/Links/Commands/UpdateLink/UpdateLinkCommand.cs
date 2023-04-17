@@ -6,9 +6,9 @@ namespace UrlShortener.Application.Links.Commands.UpdateLink;
 
 public class UpdateLinkCommand : IRequest<Result>
 {
-    public Guid Id { get; set; }
-    public string? Alias { get; set; }
-    public string? UrlAddress { get; set; }
+    public Guid Id { get; }
+    public string? Alias { get; }
+    public string? UrlAddress { get; }
 
     public UpdateLinkCommand(Guid id, string urlAddress, string alias)
     {

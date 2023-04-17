@@ -7,8 +7,8 @@ namespace UrlShortener.Application.Links.Commands.CreateLink;
 
 public class CreateLinkCommand : IRequest<Result<LinkCreatedResponse>>
 {
-    public string? UrlAddress { get; set; }
-    public string? Alias { get; set; }
+    public string? UrlAddress { get; }
+    public string? Alias { get; }
 
     public CreateLinkCommand(string urlAddress, string alias)
     {

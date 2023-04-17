@@ -32,11 +32,15 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
         }
 
         existingLink.UrlAddress = request.UrlAddress ?? existingLink.UrlAddress;
-        existingLink.Alias = request.Alias ?? existingLink.Alias;
-        existingLink.UrlShort = _linkService.CreateShortUrl(existingLink.Alias!);
         if (request.UrlAddress != null)
         {
             existingLink.LinkStatistic.DomainName = new Uri(request.UrlAddress).Host;
+        }
+        existingLink.Alias = request.Alias ?? existingLink.Alias;
+        if (request.Alias != null)
+        {
+
+            existingLink.UrlShort = _linkService.CreateShortUrl(request.Alias);
         }
 
         _appDbContext.Links.Update(existingLink);

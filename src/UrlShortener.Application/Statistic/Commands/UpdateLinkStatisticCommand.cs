@@ -1,9 +1,10 @@
 ﻿using MediatR;
 using UrlShortener.Application.Common.Models;
+using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Statistic.Commands;
 
-public class UpdateLinkStatisticCommand : IRequest
+public class UpdateLinkStatisticCommand : IRequest<Result>
 {
     public Guid Id { get; }
     public UserAgentInfo AgentInfo { get; set; }

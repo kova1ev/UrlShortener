@@ -15,11 +15,14 @@ namespace UrlShortener.Api.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IGeolocationService _geolocationService;
-        public RedirectController(IMediator mediator, IGeolocationService geolocationService, IConfiguration configuration)
+        private readonly ILogger<RedirectController> _logger;
+        public RedirectController(IMediator mediator, IGeolocationService geolocationService,
+            IConfiguration configuration, ILogger<RedirectController> logger)
             : base(mediator)
         {
             _geolocationService = geolocationService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpGet("{alias}")]
@@ -45,9 +48,11 @@ namespace UrlShortener.Api.Controllers
             UserAgentHelper agentHelper = new();
             UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
 
-            await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
+            Result resultUpdate = await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
+            if (result.IsSuccess == false)
+                _logger.LogError("Link id: {0} - {1}", result.Value.Id, resultUpdate.Errors?.First());
 
-            return Redirect(result.Value.UrlAddress);
+            return Redirect(result.Value.UrlAddress!);
         }
     }
 }

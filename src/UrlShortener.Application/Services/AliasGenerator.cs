@@ -1,8 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using UrlShortener.Application.Interfaces;
 
-[assembly: InternalsVisibleTo("Application.UnitTests")]
 namespace UrlShortener.Application.Services;
 
 

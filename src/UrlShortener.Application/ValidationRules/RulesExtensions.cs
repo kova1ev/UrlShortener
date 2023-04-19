@@ -8,8 +8,7 @@ namespace UrlShortener.Application.ValidationRules
         {
             return ruleBuilder
                 .Must(url => url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-                      || url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                      || url.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase))
+                      || url.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
                 .WithMessage("Not Url.");
         }
     }

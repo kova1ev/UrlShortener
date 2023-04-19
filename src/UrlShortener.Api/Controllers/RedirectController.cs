@@ -42,6 +42,7 @@ namespace UrlShortener.Api.Controllers
                 clientIp = _configuration.GetValue<string>("ApiAddress");
 #endif
             // TODO 1-2 sec server latency => make background work 
+            // todo add add canceled 1-2 sec?
             Geolocation data = await _geolocationService.GetData(clientIp);
 
             string? agent = HttpContext.Request.Headers["user-agent"];

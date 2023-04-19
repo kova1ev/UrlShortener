@@ -15,6 +15,7 @@ public static class ApplicationDependencyInjection
     {
         services.AddTransient<IAliasGenerator, AliasGenerator>();
         services.AddTransient<ILinkService, LinkService>();
+        services.AddSingleton<ISystemDateTime>(new SystemDateTime());
 
         //var assembly = AppDomain.CurrentDomain.Load("Application");
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();

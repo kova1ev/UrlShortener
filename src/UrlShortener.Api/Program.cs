@@ -40,11 +40,20 @@ namespace UrlShortener.Api
             });
 
             builder.Services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(typeof(ValidateModelStateFilter));
+                options.RespectBrowserAcceptHeader = true;
+                options.ReturnHttpNotAcceptable = true;
+            });
+
+            builder.Services.AddLogging(options =>
+            {
+                options.AddSimpleConsole(c =>
                 {
-                    options.Filters.Add(typeof(ValidateModelStateFilter));
-                    options.RespectBrowserAcceptHeader = true;
-                    options.ReturnHttpNotAcceptable = true;
+                    c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+                    // c.UseUtcTimestamp = true; // something to consider
                 });
+            });
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {

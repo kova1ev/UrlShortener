@@ -22,6 +22,7 @@ public static class ApplicationDependencyInjection
         //services.AddMediatR(assemblies);
 
         services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         // services.AddScoped<IValidator<CreateLinkCommand>, CreateLinkCommandValidator>();

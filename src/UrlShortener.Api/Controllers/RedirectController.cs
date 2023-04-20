@@ -43,13 +43,17 @@ namespace UrlShortener.Api.Controllers
 #endif
             // TODO 1-2 sec server latency => make background work 
             // todo add add canceled 1-2 sec?
-            Geolocation data = await _geolocationService.GetData(clientIp);
+            Geolocation geolocation = new();
+            if (clientIp != null)
+            {
+                geolocation = await _geolocationService.GetData(clientIp);
+            }
 
             string? agent = HttpContext.Request.Headers["user-agent"];
             UserAgentHelper agentHelper = new();
             UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
 
-            Result resultUpdate = await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, data));
+            Result resultUpdate = await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, geolocation));
             if (result.IsSuccess == false)
                 _logger.LogError("Link id: {0} - {1}", result.Value.Id, resultUpdate.Errors?.First());
 

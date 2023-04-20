@@ -51,7 +51,6 @@ namespace UrlShortener.Api
                 options.AddSimpleConsole(c =>
                 {
                     c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-                    // c.UseUtcTimestamp = true; // something to consider
                 });
             });
 
@@ -176,7 +175,6 @@ namespace UrlShortener.Api
             }
 
             app.UseAppExceptionMiddleware();
-
             //app.UseHttpsRedirection();
 
             // WASM

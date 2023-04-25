@@ -54,8 +54,10 @@ namespace UrlShortener.Api.Controllers
             UserAgentInfo userAgentInfo = agentHelper.Parse(agent);
 
             Result resultUpdate = await Mediator.Send(new UpdateLinkStatisticCommand(result.Value.LinkStatistic.Id, userAgentInfo, geolocation));
-            if (result.IsSuccess == false)
-                _logger.LogError("Link id: {0} - {1}", result.Value.Id, resultUpdate.Errors?.First());
+            if (resultUpdate.IsSuccess == false)
+                _logger.LogError("Link statistics not updated id: {Id} Message: {ErrorMessage}",
+                    result.Value.Id,
+                    resultUpdate.Errors?.First());
 
             return Redirect(result.Value.UrlAddress!);
         }

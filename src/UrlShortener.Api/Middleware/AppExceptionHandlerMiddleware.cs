@@ -50,18 +50,11 @@ public class AppExceptionHandlerMiddleware
                 break;
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                // TODO:  log error
-                // using (_logger.BeginScope(new Dictionary<string, object>
-                //{
-                //    ["source"] = exception.Source,
-                //}))
-                _logger.LogError("Source: {0} .Message:  {1} \nStackTrace: {2}",
-                    exception.Source,
-                    exception.Message,
-                    exception.StackTrace);
+                // todo :  log error BeginScope?
+                _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
                 apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
                     StatusCodeMessage.INTERNAL_SERVER_ERROR,
-                    new[] { exception.Message }); // todo : remove 
+                    new[] { exception.Message });
                 resultJsonString = JsonSerializer.Serialize(apiError, options);
                 break;
         }

@@ -16,8 +16,5 @@ internal class LinkStatisticConfiguration : IEntityTypeConfiguration<LinkStatist
         builder.Property(i => i.DomainName).HasMaxLength(50);
         builder.Property(i => i.Browser).HasMaxLength(50);
         builder.Property(i => i.Os).HasMaxLength(50);
-        //builder.Property(i => i.City).HasMaxLength(50);
-        //builder.Property(i => i.Region).HasMaxLength(50);
-        //builder.Property(i => i.Country).HasMaxLength(50);
     }
 }

@@ -36,8 +36,7 @@ public class GeolocationService : IGeolocationService
         }
         catch (BadHttpRequestException exception)
         {
-            //todo log
-            _logger.LogError("Source: {0}. Message:  {1}", exception.Source, exception.Message);
+            _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
         }
         catch (Exception)
         {

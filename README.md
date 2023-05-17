@@ -14,7 +14,8 @@ Demo login on https://link-bit.onrender.com/admin  :
 In the admin panel, you can see the shortened links statistics sheet, when it was last used, how many times it was used, from which browser and cities.
 While the site is running on an in-memory database, a full transition to PostgreSQL is planned in the future.
 
-:candy: Using :
+---
+### :candy: Using :
 -  https://ip-api.com/ is used to determine geolocation.
 -  Mediator for CQRS
 -  Serilog

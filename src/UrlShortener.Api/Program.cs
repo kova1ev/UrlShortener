@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -155,6 +156,17 @@ namespace UrlShortener.Api
 
 
             builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
+
+            builder.Host.UseSerilog((context, config) =>
+            {
+                config.ReadFrom.Configuration(builder.Configuration)
+#if DEBUG
+                       .WriteTo.Seq("http://localhost:5341")
+#endif
+                      .Enrich.FromLogContext();
+            });
+
+
 
             var app = builder.Build();
 

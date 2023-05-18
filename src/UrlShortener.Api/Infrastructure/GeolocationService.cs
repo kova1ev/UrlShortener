@@ -5,7 +5,7 @@ namespace UrlShortener.Api.Infrastructure;
 
 public class GeolocationService : IGeolocationService
 {
-    private JsonSerializerOptions _options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+    private readonly JsonSerializerOptions _options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
     private readonly string apiAddress = "http://ip-api.com/json/";
     private readonly HttpClient _httpClient;
     private readonly ILogger<GeolocationService> _logger;

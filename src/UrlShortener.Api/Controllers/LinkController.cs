@@ -42,8 +42,8 @@ namespace UrlShortener.Api.Controllers
         public async Task<ActionResult> GetLinks()
         {
             // TODO:  PAGINATIONS!
-            var links = await Mediator.Send(new GetLinksQuery());
-            return Ok(links);
+            Result<IEnumerable<LinkDetailsResponse>> result = await Mediator.Send(new GetLinksQuery());
+            return Ok(result.Value);
         }
 
         //  COMMANDS

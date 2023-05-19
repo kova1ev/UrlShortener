@@ -43,4 +43,9 @@ public class LinkService : ILinkService
             throw new ArgumentNullException(nameof(_appOptions.AppUrl));
         return string.Concat(_appOptions.AppUrl, RedirectRoute, alias);
     }
+
+    public string RemoveWhiteSpacesFromAlisa(string alias)
+    {
+        return alias.Replace(" ", "");
+    }
 }

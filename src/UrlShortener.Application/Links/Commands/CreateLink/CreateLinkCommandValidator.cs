@@ -19,5 +19,10 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
             .Length(3, 30)
             .When(c => c.Alias != null)
             .WithMessage(LinkValidationErrorMessage.ALIAS_BAD_RANGE);
+
+        RuleFor(c => c.Alias)
+            .Matches(@"^\S*$")
+            .When(c => c.Alias != null)
+            .WithMessage(LinkValidationErrorMessage.ALIAS_HAVE_WHITESPACE);
     }
 }

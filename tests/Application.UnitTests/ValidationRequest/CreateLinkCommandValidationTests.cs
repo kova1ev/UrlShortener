@@ -87,4 +87,27 @@ public class CreateLinkCommandValidationTests
         Assert.Contains(LinkValidationErrorMessage.ALIAS_BAD_RANGE, errors);
         Assert.True(errors.Length == 1);
     }
+
+    [Theory]
+    [InlineData("fgg  df   gf")]
+    [InlineData("fg gdf")]
+    public void Validate_CreateLInkCommand_ShouldReturnFailureResult_with_WhiteSpaceError(string alias)
+    {
+        //arrange
+        var url = "https://git.com";
+        var request = new CreateLinkCommand(url, alias);
+        var validator = new CreateLinkCommandValidator();
+
+        //act
+        ValidationResult result = validator.Validate(request);
+
+        //assert
+        Assert.False(result.IsValid);
+        Assert.NotEmpty(result.Errors);
+
+        string[] errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.ALIAS_HAVE_WHITESPACE, errors);
+        Assert.True(errors.Length == 1);
+
+    }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
+using UrlShortener.Application.Common.Models;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.CreateLink;
@@ -37,12 +38,15 @@ namespace UrlShortener.Api.Controllers
             return Ok(result.Value);
         }
 
-        [HttpGet()]
-        [ProducesResponseType(typeof(IEnumerable<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetLinks()
+
+        [HttpGet(Name = "GetLinks")]
+        [ProducesResponseType(typeof(FilteredPagedData<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetLinks([FromQuery] LinksRequestParameters requestParameters)
         {
+
             // TODO:  PAGINATIONS!
-            Result<IEnumerable<LinkDetailsResponse>> result = await Mediator.Send(new GetLinksQuery());
+            Result<FilteredPagedData<LinkCompactResponse>> result = await Mediator
+                .Send(new GetLinksQuery(requestParameters));
             return Ok(result.Value);
         }
 

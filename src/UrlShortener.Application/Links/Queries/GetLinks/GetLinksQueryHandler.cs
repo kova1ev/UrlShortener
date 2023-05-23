@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Application.Common.Models;
 using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
@@ -7,7 +8,7 @@ using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Application.Links.Queries.GetLinks;
 
-public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<IEnumerable<LinkDetailsResponse>>>
+public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<FilteredPagedData<LinkCompactResponse>>>
 {
     private readonly IAppDbContext _appDbContext;
 
@@ -16,15 +17,40 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<IEnume
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<IEnumerable<LinkDetailsResponse>>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
+    public async Task<Result<FilteredPagedData<LinkCompactResponse>>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<LinkDetailsResponse> links = await _appDbContext.Links
-             .Include(l => l.LinkStatistic)
-                .ThenInclude(st => st.Geolocation)
-             .AsNoTracking()
-             .Select(link => LinkDetailsResponse.MapToLInkDto(link)!)
-             .ToArrayAsync();
 
-        return Result<IEnumerable<LinkDetailsResponse>>.Success(links);
+        var list = _appDbContext.Links.AsNoTracking();
+
+
+        // serch =>
+        if (string.IsNullOrWhiteSpace(request.RequestParameters.Text) == false)
+        {
+            list = list.Where(l => EF.Functions.ILike(
+                l.UrlAddress,
+                $"%{request.RequestParameters.Text}%"));
+        }
+
+        // sort =>
+        switch (request.RequestParameters.DateSort)
+        {
+            case DateSort.Asc:
+                list = list.OrderBy(l => l.DateTimeCreated);
+                break;
+            default:
+                list = list.OrderByDescending(l => l.DateTimeCreated);
+                break;
+        }
+
+        // pagination  => 
+
+        var links = await FilteredPagedData<LinkCompactResponse>.CreateFilteredPagedData(
+            list.Select(link => LinkCompactResponse.MapFromLink(link)),
+            request.RequestParameters.PageSize,
+            request.RequestParameters.Page);
+
+        return Result<FilteredPagedData<LinkCompactResponse>>.Success(links);
     }
 }
+
+

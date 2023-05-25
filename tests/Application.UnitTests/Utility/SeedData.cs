@@ -8,6 +8,7 @@ public class SeedData
 
     public static void SeedInitData(AppDbContext context)
     {
+
         if (context.Links.Any() == false)
         {
             Geolocation geolocation1 = new()

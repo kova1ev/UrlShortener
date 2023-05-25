@@ -13,14 +13,14 @@ public class UpdateLinkCommandHandlerTests
 {
     private readonly string _hostUrl = "https://localhost:7072/r";
     private readonly Guid _linkId = new Guid("567BD1BF-6287-4331-A50E-82984DB0B97D");
+    private readonly string _newUrlAddress = "https://ya.ru/";
 
     [Fact]
     public async Task Update_link_only_with_new_UrlAddress_Success()
     {
         //arrange
-        var newUrlAddress = "https://ya.ru/";
         string? newAlias = null;
-        var request = new UpdateLinkCommand(_linkId, newUrlAddress, newAlias);
+        var request = new UpdateLinkCommand(_linkId, _newUrlAddress, newAlias);
 
         var mockLinkService = new Mock<ILinkService>();
 
@@ -37,8 +37,8 @@ public class UpdateLinkCommandHandlerTests
         Link? link = await context.Links.Include(l => l.LinkStatistic).FirstOrDefaultAsync(l => l.Id == _linkId);
         //assert updated link
         Assert.NotNull(link);
-        Assert.Equal(newUrlAddress, link.UrlAddress);
-        Assert.Equal(new Uri(newUrlAddress).Host, link.LinkStatistic?.DomainName);
+        Assert.Equal(_newUrlAddress.TrimEnd('/').ToLower(), link.UrlAddress);
+        Assert.Equal(new Uri(_newUrlAddress).Host, link.LinkStatistic?.DomainName);
         Assert.NotNull(link.Alias);
     }
 
@@ -47,9 +47,9 @@ public class UpdateLinkCommandHandlerTests
     public async Task Update_link_only_with_new_Alias_Success()
     {
         //arrange
-        string? newUrlAddress = null;
+        string? emptyUrlAddress = null;
         var newAlias = "banana";
-        var request = new UpdateLinkCommand(_linkId, newUrlAddress, newAlias);
+        var request = new UpdateLinkCommand(_linkId, emptyUrlAddress, newAlias);
 
         var mockLinkService = new Mock<ILinkService>();
         mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
@@ -77,9 +77,8 @@ public class UpdateLinkCommandHandlerTests
     public async Task Update_link_with_new_Alias_and_new_UrlAddress_Success()
     {
         //arrange
-        var newUrlAddress = "https://ya.ru/";
         var newAlias = "yayaya";
-        var request = new UpdateLinkCommand(_linkId, newUrlAddress, newAlias);
+        var request = new UpdateLinkCommand(_linkId, _newUrlAddress, newAlias);
 
         var mockLinkService = new Mock<ILinkService>();
         mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
@@ -102,8 +101,8 @@ public class UpdateLinkCommandHandlerTests
         Assert.NotNull(link.UrlAddress);
         Assert.Equal(shortUrl, link.UrlShort);
         Assert.Equal(newAlias, link.Alias);
-        Assert.Equal(newUrlAddress, link.UrlAddress);
-        Assert.Equal(new Uri(newUrlAddress).Host, link.LinkStatistic?.DomainName);
+        Assert.Equal(_newUrlAddress.TrimEnd('/').ToLower(), link.UrlAddress);
+        Assert.Equal(new Uri(_newUrlAddress).Host, link.LinkStatistic?.DomainName);
     }
 
     [Fact]
@@ -130,9 +129,9 @@ public class UpdateLinkCommandHandlerTests
     public async Task Try_Update_link_with_existing_Alias_Failure()
     {
         //arrange
-        string? newUrlAddress = null;
+        string? emptyUrlAddress = null;
         var newAlias = "bbb"; // existing alias in db
-        var request = new UpdateLinkCommand(_linkId, newUrlAddress!, newAlias);
+        var request = new UpdateLinkCommand(_linkId, emptyUrlAddress!, newAlias);
 
         var mockLinkService = new Mock<ILinkService>();
         mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>())).ReturnsAsync(true);

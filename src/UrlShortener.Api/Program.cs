@@ -190,9 +190,9 @@ namespace UrlShortener.Api
             //app.UseHttpsRedirection();
 
             // WASM
-            app.UseBlazorFrameworkFiles();
+            // app.UseBlazorFrameworkFiles();
 
-            app.UseStaticFiles();
+            // app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -201,7 +201,7 @@ namespace UrlShortener.Api
             app.MapRazorPages();
 
             // WASM 
-            app.MapFallbackToFile("index.html");
+            //app.MapFallbackToFile("index.html");
 
             app.Run();
         }

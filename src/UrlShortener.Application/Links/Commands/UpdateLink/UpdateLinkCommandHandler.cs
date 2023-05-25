@@ -31,7 +31,7 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
             return Result.Failure(new string[] { LinkValidationErrorMessage.ALIAS_TAKEN });
         }
 
-        existingLink.UrlAddress = request.UrlAddress ?? existingLink.UrlAddress;
+        existingLink.UrlAddress = request.UrlAddress?.Trim('/')?.ToLower() ?? existingLink.UrlAddress;
         if (request.UrlAddress != null)
         {
             existingLink.LinkStatistic.DomainName = new Uri(request.UrlAddress).Host;

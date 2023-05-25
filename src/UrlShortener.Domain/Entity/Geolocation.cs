@@ -7,5 +7,5 @@ public class Geolocation : EntityBase
     public string? City { get; set; }
 
     public Guid LinkStatisticId { get; set; }
-    public LinkStatistic LinkStatistic { get; set; } = null!;
+    public virtual LinkStatistic LinkStatistic { get; set; } = null!;
 }

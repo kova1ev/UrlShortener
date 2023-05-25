@@ -1,4 +1,5 @@
 ﻿using Application.UnitTests.Utility;
+using AutoFixture;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using UrlShortener.Application.Common.Constants;
@@ -6,6 +7,7 @@ using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Links.Commands.CreateLink;
+using UrlShortener.Domain.Entity;
 
 namespace Application.UnitTests.Links.Commands;
 
@@ -18,6 +20,11 @@ public class CreateLinkCommandHandlerTests
     [Fact]
     public async Task Create_link_with_input_Alias_and_new_UrlAddress_Success()
     {
+        var fixture = new Fixture();
+        var sut = fixture.Build<Link>()
+            .Without(f => f.LinkStatistic)
+            .Create();
+
         var inputAlias = "goog";
         var shortUrl = $"{_hostUrl}/{inputAlias}";
 

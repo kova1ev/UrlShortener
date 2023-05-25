@@ -8,7 +8,7 @@ public abstract class PageParameters
 
     private int _pageSize = 10;
     private int _page = 1;
-    public int PageSize
+    public virtual int PageSize
     {
         get => _pageSize;
         set
@@ -16,7 +16,7 @@ public abstract class PageParameters
             _pageSize = value > MaxPageSize || value < 1 ? _pageSize : value;
         }
     }
-    public int Page
+    public virtual int Page
     {
         get => _page;
         set

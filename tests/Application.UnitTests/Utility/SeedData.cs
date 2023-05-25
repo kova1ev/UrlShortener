@@ -8,6 +8,7 @@ public class SeedData
 
     public static void SeedInitData(AppDbContext context)
     {
+
         if (context.Links.Any() == false)
         {
             Geolocation geolocation1 = new()
@@ -40,7 +41,7 @@ public class SeedData
                 Id = new Guid("567BD1BF-6287-4331-A50E-82984DB0B97D"),
                 LinkStatistic = linkStatistic1,
                 Alias = "aaa",
-                UrlAddress = "https://github.com/",
+                UrlAddress = "https://github.com",
                 UrlShort = "https://localhost:7072/r/aaa"
             };
             Link link2 = new()
@@ -48,7 +49,7 @@ public class SeedData
                 Id = new Guid("64DE08F3-B627-46EE-AE23-C2C873FC4C11"),
                 LinkStatistic = linkStatistic2,
                 Alias = "bbb",
-                UrlAddress = "https://leetcode.com/",
+                UrlAddress = "https://leetcode.com",
                 UrlShort = "https://localhost:7072/r/bbb"
             };
             context.AddRange(link1, link2);

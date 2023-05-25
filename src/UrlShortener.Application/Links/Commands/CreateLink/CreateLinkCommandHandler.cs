@@ -30,8 +30,8 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
         {
             LinkCreatedResponse? existingLink = await _appDbContext.Links
                 .AsNoTracking()
-                .Where(l => l.UrlAddress == request.UrlAddress)
-                .Select(l => new LinkCreatedResponse(l.Id, l.UrlShort))
+                .Where(link => link.UrlAddress == request.UrlAddress.TrimEnd('/').ToLower())
+                .Select(link => new LinkCreatedResponse(link.Id, link.UrlShort))
                 .FirstOrDefaultAsync();
 
             if (existingLink != null)
@@ -57,7 +57,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
         Link link = new Link()
         {
-            UrlAddress = request.UrlAddress!,
+            UrlAddress = request.UrlAddress.TrimEnd('/').ToLower(),
             Alias = alias,
             UrlShort = _linkService.CreateShortUrl(alias),
             LinkStatistic = linkStatistic

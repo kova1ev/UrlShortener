@@ -1,4 +1,5 @@
 ﻿using Application.UnitTests.Utility;
+using AutoFixture;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using UrlShortener.Application.Common.Constants;
@@ -6,6 +7,7 @@ using UrlShortener.Application.Common.Models.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Links.Commands.CreateLink;
+using UrlShortener.Domain.Entity;
 
 namespace Application.UnitTests.Links.Commands;
 
@@ -13,11 +15,16 @@ public class CreateLinkCommandHandlerTests
 {
     private readonly string _hostUrl = "https://localhost:7072/r";
     private readonly string _newUrlAddress = "https://www.google.com/";
-    private readonly string _existingUrlAddress = "https://github.com/";
+    private readonly string _existingUrlAddress = "https://github.com";
 
     [Fact]
     public async Task Create_link_with_input_Alias_and_new_UrlAddress_Success()
     {
+        var fixture = new Fixture();
+        var sut = fixture.Build<Link>()
+            .Without(f => f.LinkStatistic)
+            .Create();
+
         var inputAlias = "goog";
         var shortUrl = $"{_hostUrl}/{inputAlias}";
 
@@ -53,7 +60,7 @@ public class CreateLinkCommandHandlerTests
 
         Assert.Equal(domainName, link.LinkStatistic.DomainName);
         Assert.Equal(inputAlias, link.Alias);
-
+        Assert.Equal(_newUrlAddress.TrimEnd('/'), link.UrlAddress);
     }
 
 
@@ -94,13 +101,14 @@ public class CreateLinkCommandHandlerTests
 
         Assert.Equal(domainName, link.LinkStatistic.DomainName);
         Assert.Equal(randomGeneratedAlias, link.Alias);
+        Assert.Equal(_newUrlAddress.TrimEnd('/'), link.UrlAddress);
     }
 
 
     [Fact]
     public async Task Try_create_link_with_existing_UrlAddress_in_db_without_new_input_alias_Success()
     {
-        string? alias = null; ;
+        string? alias = null;
         var request = new CreateLinkCommand(_existingUrlAddress, alias!);
 
         var mockLinkService = new Mock<ILinkService>();
@@ -156,6 +164,7 @@ public class CreateLinkCommandHandlerTests
 
         Assert.Equal(domainName, link.LinkStatistic?.DomainName);
         Assert.Equal(inputAlias, link.Alias);
+        Assert.Equal(_existingUrlAddress, link.UrlAddress);
     }
 
     [Fact]
@@ -182,7 +191,5 @@ public class CreateLinkCommandHandlerTests
         Assert.True(result.Errors?.Count() == 1);
         Assert.Equal(LinkValidationErrorMessage.ALIAS_TAKEN, result.Errors?.First());
     }
-
-
 }
 

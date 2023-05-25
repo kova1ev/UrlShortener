@@ -4,12 +4,12 @@
 public class Result
 {
     public virtual bool IsSuccess { get; protected set; }
-    public virtual IEnumerable<string>? Errors { get; protected set; }
+    public virtual IEnumerable<string> Errors { get; protected set; } = Enumerable.Empty<string>();
 
     protected Result(bool isSuccess, IEnumerable<string> errors)
     {
         IsSuccess = isSuccess;
-        Errors = errors ?? throw new InvalidOperationException(nameof(errors));
+        Errors = errors;
     }
 
     public static Result Success()

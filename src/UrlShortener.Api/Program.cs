@@ -29,12 +29,12 @@ namespace UrlShortener.Api
             builder.Services.AddControllers();
             builder.Services.AddRazorPages();
             builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.CONFIG_KEY));
-            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.CONFIG_KEY));
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigKey));
             builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
             builder.Services.AddScoped<TokenProvider, TokenProvider>();
 
             JwtOptions jwtOptions = new();
-            ConfigurationBinder.Bind(builder.Configuration.GetSection(JwtOptions.CONFIG_KEY), jwtOptions);
+            ConfigurationBinder.Bind(builder.Configuration.GetSection(JwtOptions.ConfigKey), jwtOptions);
             builder.Services.Configure<JsonOptions>(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -190,9 +190,9 @@ namespace UrlShortener.Api
             //app.UseHttpsRedirection();
 
             // WASM
-            app.UseBlazorFrameworkFiles();
+            // app.UseBlazorFrameworkFiles();
 
-            app.UseStaticFiles();
+            // app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -201,7 +201,7 @@ namespace UrlShortener.Api
             app.MapRazorPages();
 
             // WASM 
-            app.MapFallbackToFile("index.html");
+            //app.MapFallbackToFile("index.html");
 
             app.Run();
         }

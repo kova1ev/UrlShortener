@@ -7,11 +7,8 @@ public class LinkDetailsResponse
     public Guid Id { get; set; }
     public string? UrlAddress { get; set; }
     public string? UrlShort { get; set; }
-
     public DateTime DateTimeCreated { get; set; }
-
     public LinkStatisticResponse LinkStatistic { get; set; } = new LinkStatisticResponse();
-    public LinkDetailsResponse() { }
 
     public static LinkDetailsResponse? MapToLInkDto(Link? link)
     {

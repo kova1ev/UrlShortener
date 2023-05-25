@@ -39,12 +39,10 @@ namespace UrlShortener.Api.Controllers
         }
 
 
-        [HttpGet(Name = "GetLinks")]
+        [HttpGet()]
         [ProducesResponseType(typeof(FilteredPagedData<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetLinks([FromQuery] LinksRequestParameters requestParameters)
         {
-
-            // TODO:  PAGINATIONS!
             Result<FilteredPagedData<LinkCompactResponse>> result = await Mediator
                 .Send(new GetLinksQuery(requestParameters));
             return Ok(result.Value);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UrlShortener.Entity;
+using UrlShortener.Entity.Constraints;
 
 namespace UrlShortener.Data.EntityConfiguration;
 
@@ -13,8 +14,8 @@ internal class LinkStatisticConfiguration : IEntityTypeConfiguration<LinkStatist
          .OnDelete(DeleteBehavior.Cascade);
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).ValueGeneratedNever();
-        builder.Property(i => i.DomainName).HasMaxLength(50);
-        builder.Property(i => i.Browser).HasMaxLength(50);
-        builder.Property(i => i.Os).HasMaxLength(50);
+        builder.Property(i => i.DomainName).HasMaxLength(LinkStatisticConstraints.MaxDomainNameLength);
+        builder.Property(i => i.Browser).HasMaxLength(LinkStatisticConstraints.MaxBrowserLength);
+        builder.Property(i => i.Os).HasMaxLength(LinkStatisticConstraints.MaxOsLength);
     }
 }

@@ -1,0 +1,12 @@
+﻿@foreach (var item in Errors ?? Enumerable.Empty<string>())
+{
+    <div class="alert alert-danger" role="alert">@item</div>
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<string>? Errors { get; set; }
+
+
+}

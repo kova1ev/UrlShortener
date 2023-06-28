@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Common.Models;
+﻿namespace UrlShortener.Application.Common.Domain;
 
 public class User
 {

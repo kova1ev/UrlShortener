@@ -1,10 +1,8 @@
 ﻿using Application.UnitTests.Utility;
 using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Common.Models;
-using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Application.Common.Result;
+using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Links.Queries.GetLinks;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Links.Queries;
 
@@ -14,17 +12,17 @@ public class GetLinksQueryHandlerTest
     public async Task GetLinks_By_Only_Pagination()
     {
         //arrange
-        using AppDbContext context = DbContextHepler.CreateContext();
-        int iniLinksCount = await context.Links.CountAsync();
-        int page = 1;
-        int pageSize = 10;
+        using var context = DbContextHepler.CreateContext();
+        var iniLinksCount = await context.Links.CountAsync();
+        var page = 1;
+        var pageSize = 10;
         LinksRequestParameters requestParameters = new() { Page = page, PageSize = pageSize };
         GetLinksQuery request = new(requestParameters);
 
         GetLinksQueryHandler handler = new(context);
         //act
 
-        Result<FilteredPagedData<LinkCompactResponse>> result = await handler.Handle(
+        var result = await handler.Handle(
             request, CancellationToken.None);
 
         //assert
@@ -53,11 +51,12 @@ public class GetLinksQueryHandlerTest
 
         GetLinksQuery getLinksQuery = new(requestParameters);
 
-        using AppDbContext appDbContext = DbContextHepler.CreateContext();
+        using var appDbContext = DbContextHepler.CreateContext();
 
         GetLinksQueryHandler handler = new(appDbContext);
         //act
-        Result<FilteredPagedData<LinkCompactResponse>> result = await handler.Handle(getLinksQuery, CancellationToken.None);
+        var result =
+            await handler.Handle(getLinksQuery, CancellationToken.None);
 
         //assert
 

@@ -1,5 +1,4 @@
-﻿namespace UrlShortener.Domain.Entity;
-
+﻿namespace UrlShortener.Entity;
 
 public class LinkStatistic : EntityBase
 {
@@ -12,6 +11,4 @@ public class LinkStatistic : EntityBase
 
     public Guid LinkId { get; set; }
     public virtual Link Link { get; set; } = null!;
-
 }
-

@@ -15,10 +15,14 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UrlShortener.Application.Common\UrlShortener.Application.Common.csproj" />
-	  <ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
+	  <ProjectReference Include="..\UrlShortener.Entity\UrlShortener.Entity.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Application.UnitTests" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Links\Queries\GetMostRedirectedLinks\" />
 	</ItemGroup>
 </Project>

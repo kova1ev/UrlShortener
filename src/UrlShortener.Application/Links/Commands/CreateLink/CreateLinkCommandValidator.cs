@@ -8,21 +8,21 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
 {
     public CreateLinkCommandValidator()
     {
-        RuleFor(c => c.UrlAddress).NotEmpty().WithMessage(LinkValidationErrorMessage.URL_ADDRESS_REQUIRED);
+        RuleFor(c => c.UrlAddress).NotEmpty().WithMessage(LinkValidationErrorMessage.UrlAddressRequired);
 
         RuleFor(c => c.UrlAddress)
             .MustUrlAddress()
             .When(c => c.UrlAddress != null)
-            .WithMessage(LinkValidationErrorMessage.URL_ADDRESS_IS_NOT_URL);
+            .WithMessage(LinkValidationErrorMessage.UrlAddressIsNotUrl);
 
         RuleFor(c => c.Alias)
             .Length(3, 30)
             .When(c => c.Alias != null)
-            .WithMessage(LinkValidationErrorMessage.ALIAS_BAD_RANGE);
+            .WithMessage(LinkValidationErrorMessage.AliasBadRange);
 
         RuleFor(c => c.Alias)
             .Matches(@"^\S*$")
             .When(c => c.Alias != null)
-            .WithMessage(LinkValidationErrorMessage.ALIAS_HAVE_WHITESPACE);
+            .WithMessage(LinkValidationErrorMessage.AliasHaveWhitespace);
     }
 }

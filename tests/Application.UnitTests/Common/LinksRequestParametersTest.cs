@@ -1,4 +1,4 @@
-﻿using UrlShortener.Application.Common.Models.Links;
+﻿using UrlShortener.Application.Common.Domain.Links;
 
 namespace Application.UnitTests.Common;
 
@@ -9,7 +9,7 @@ public class LinksRequestParametersTest
     {
         //arrange
         //act
-        LinksRequestParameters linksRequestParameters = new LinksRequestParameters()
+        var linksRequestParameters = new LinksRequestParameters
         {
             Page = 2,
             PageSize = 20
@@ -28,12 +28,12 @@ public class LinksRequestParametersTest
     public void Create_LinksRequestParameters_with_Invalid_Parameters(int pageSize)
     {
         //arrange
-        int invalidPage = -10;
-        int defaultPage = 1;
-        int defaultPageSize = 10;
+        var invalidPage = -10;
+        var defaultPage = 1;
+        var defaultPageSize = 10;
 
         //act
-        LinksRequestParameters linksRequestParameters = new LinksRequestParameters()
+        var linksRequestParameters = new LinksRequestParameters
         {
             Page = invalidPage,
             PageSize = pageSize

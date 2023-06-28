@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using UrlShortener.Application.Common.Constants;
+﻿using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Links.Commands.UpdateLink;
 
 namespace Application.UnitTests.ValidationRequest;
@@ -15,10 +14,10 @@ public class UpdateLinkCommandValidationTests
     public void Validate_updateLinkCommand_Success(string url, string? alias)
     {
         //arrange
-        var request = new UpdateLinkCommand(_linkId, url, alias);
+        var request = new UpdateLinkCommand(_linkId, url, alias!);
         var validator = new UpdateLinkCommandValidator();
         //act 
-        ValidationResult result = validator.Validate(request);
+        var result = validator.Validate(request);
 
         //assert
         Assert.True(result.IsValid);
@@ -35,14 +34,14 @@ public class UpdateLinkCommandValidationTests
         var request = new UpdateLinkCommand(_linkId, url, alias);
         var validator = new UpdateLinkCommandValidator();
         //act 
-        ValidationResult result = validator.Validate(request);
+        var result = validator.Validate(request);
 
         //assert
         Assert.False(result.IsValid);
         Assert.NotEmpty(result.Errors);
 
-        string[] errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.URL_ADDRESS_IS_NOT_URL, errors);
+        var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotUrl, errors);
     }
 
     [Fact]
@@ -56,14 +55,14 @@ public class UpdateLinkCommandValidationTests
         var validator = new UpdateLinkCommandValidator();
 
         //act 
-        ValidationResult result = validator.Validate(request);
+        var result = validator.Validate(request);
 
         //assert
         Assert.False(result.IsValid);
         Assert.NotEmpty(result.Errors);
 
-        string[] errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.ID_REQUIRED, errors);
+        var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.IdRequired, errors);
         Assert.True(errors.Length == 1);
     }
 
@@ -78,14 +77,14 @@ public class UpdateLinkCommandValidationTests
         var validator = new UpdateLinkCommandValidator();
 
         //act 
-        ValidationResult result = validator.Validate(request);
+        var result = validator.Validate(request);
 
         //assert
         Assert.False(result.IsValid);
         Assert.NotEmpty(result.Errors);
 
-        string[] errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.ALIAS_BAD_RANGE, errors);
+        var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.AliasBadRange, errors);
         Assert.True(errors.Length == 1);
     }
 
@@ -100,15 +99,14 @@ public class UpdateLinkCommandValidationTests
         var validator = new UpdateLinkCommandValidator();
 
         //act
-        ValidationResult result = validator.Validate(request);
+        var result = validator.Validate(request);
 
         //assert
         Assert.False(result.IsValid);
         Assert.NotEmpty(result.Errors);
 
-        string[] errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.ALIAS_HAVE_WHITESPACE, errors);
+        var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.AliasHaveWhitespace, errors);
         Assert.True(errors.Length == 1);
-
     }
 }

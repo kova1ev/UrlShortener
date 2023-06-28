@@ -4,32 +4,26 @@
 @inject IJSRuntime JsRuntime
 
 <PageTitle>UrlShortener</PageTitle>
-@if (fail)
+@if (internalServerError)
 {
-    <ServerError></ServerError>
+    <InternalServerError></InternalServerError>
 }
 else
 {
     <div class="flex-column d-flex flex-wrap align-content-center">
-
         <h1 class="text-center">Just shorten your link!</h1>
-        @foreach (var item in ValidationMessages )
-        {
-            <div class="alert alert-danger" role="alert">@item</div>
-        }
-        @if (LinkViewModel != null)
+        @if (linkViewModel != null)
         {
             <div class="d-flex justify-content-between col-lg-6">
                 <div id="short__link" class="alert alert-success col-lg" role="alert">
-                    <span>@LinkViewModel.ShortUrl</span>
+                    <span>@linkViewModel.ShortUrl</span>
                 </div>
                 <button class="btn btn-outline-success ms-2 " type="button" @onclick="Copy">Copy</button>
             </div>
         }
-
-        <EditForm class="col-lg-6 my-4" EditContext="EditContext" OnSubmit="@CreateLink">
+        <EditForm class="col-lg-6 my-4" Model="createLinkModel" OnSubmit="@SubmitAsync">
             <DataAnnotationsValidator />
-
+            <ValidationErrorMessage Errors="@ValidationErrorMessages"/>
             <div class="input-group input-group-lg mb-3">
                 <input type="text" class="form-control" placeholder="input url" autocomplete="off" autofocus @bind="createLinkModel.UrlAddress" />
                 <button class="btn btn-primary" type="submit">Cut</button>
@@ -37,72 +31,60 @@ else
             <span class="oi oi-cog" aria-hidden="true"></span>
             <span>Optional</span>
             <div class="input-group input-group-sm mb-3">
-                <span class="input-group-text bg-warning">Alias</span>
-                <input type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="createLinkModel.Alias" />
+                <label for="alias" class="input-group-text bg-warning">Alias</label>
+                <input id="alias" type="text" placeholder="input alias" class="form-control" autocomplete="off" @bind="createLinkModel.Alias" />
             </div>
         </EditForm>
         <br />
-
     </div>
 }
 
-
-
 @code {
     private CreateLinkModel createLinkModel = new();
-    private LinkCreatedViewModel? LinkViewModel;
-    private bool fail;
-    private EditContext? EditContext { get; set; }
-    private IEnumerable<string> ValidationMessages { get; set; } = Enumerable.Empty<string>();
+    private LinkCreatedViewModel? linkViewModel;
+    private bool internalServerError;
+    private IList<string> ValidationErrorMessages { get; set; } = new List<string>();
 
     protected async override Task OnInitializedAsync()
     {
-        EditContext = new EditContext(createLinkModel);
         await Task.CompletedTask;
     }
 
 
-    private async Task CreateLink()
+    private async Task SubmitAsync(EditContext editContext)
     {
-        TrimStringFieldsModel();
-        bool valid = EditContext.Validate();
-        ValidationMessages = EditContext.GetValidationMessages().ToArray();
+        ValidationErrorMessages.Clear();
+        bool editContextvalidateresult = editContext.Validate();
 
-        if (valid)
+        if (editContextvalidateresult  == false)
         {
-            HttpResponseResult<LinkCreatedViewModel> responseResult = await LinkHttpService.CreateLinkAsync(createLinkModel);
-            if (responseResult.Status == ResultStatus.Success)
-            {
-                LinkViewModel = responseResult.Value;
-                ValidationMessages = Enumerable.Empty<string>();
-            }
-            else
-            {
-                if (responseResult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    fail = true;
-                }
-                LinkViewModel = null;
-                ValidationMessages = responseResult.ApiErrors?.Errors;
-            }
+            editContext.GetValidationMessages().ToList().ForEach(mes => ValidationErrorMessages.Add(mes));
+            return;
+        }
+        HttpResponseResult<LinkCreatedViewModel> responseResult = await LinkHttpService.CreateLinkAsync(createLinkModel);
+        if (responseResult.Status == ResultStatus.Success)
+        {
+            linkViewModel = responseResult.Value;
+            ValidationErrorMessages.Clear();
         }
         else
         {
-            if (createLinkModel.Alias?.Length == 0)
-                createLinkModel.Alias = null;
+            if (responseResult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                ValidationErrorMessages.Clear();
+                internalServerError = true;
+                return;
+            }
+            linkViewModel = null;
+            responseResult.ApiErrors?.Errors?.ToList().ForEach(mes => ValidationErrorMessages.Add(mes));
         }
+        
         StateHasChanged();
     }
 
     private async Task Copy()
     {
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", LinkViewModel?.ShortUrl);
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", linkViewModel?.ShortUrl);
     }
 
-
-    private void TrimStringFieldsModel()
-    {
-        createLinkModel.UrlAddress = createLinkModel.UrlAddress?.Trim()!;
-        createLinkModel.Alias = createLinkModel.Alias?.Trim();
-    }
 }

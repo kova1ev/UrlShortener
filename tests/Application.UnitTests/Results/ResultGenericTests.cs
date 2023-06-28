@@ -9,10 +9,10 @@ public class ResultGenericTests
     public void Result_T_Success()
     {
         // arrange
-        string test = "test";
+        var test = "test";
 
         // act
-        Result<string> result = Result<string>.Success(test);
+        var result = Result<string>.Success(test);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -25,21 +25,22 @@ public class ResultGenericTests
     public void Result_T_Failure()
     {
         // arrange 
-        string[] errors = new[] {
-                LinkValidationErrorMessage.ALIAS_TAKEN,
-                LinkValidationErrorMessage.ID_REQUIRED
-            };
+        string[] errors =
+        {
+            LinkValidationErrorMessage.AliasTaken,
+            LinkValidationErrorMessage.IdRequired
+        };
 
         // act
-        Result<string> result = Result<string>.Failure(errors);
+        var result = Result<string>.Failure(errors);
 
         // assert
         Assert.False(result.IsSuccess);
         Assert.False(result.HasValue);
         Assert.Throws<InvalidOperationException>(() => result.Value);
         Assert.Equal(2, result.Errors?.ToArray().Length);
-        Assert.Equal(LinkValidationErrorMessage.ALIAS_TAKEN, result.Errors.ToArray()[0]);
-        Assert.Equal(LinkValidationErrorMessage.ID_REQUIRED, result.Errors.ToArray()[1]);
+        Assert.Equal(LinkValidationErrorMessage.AliasTaken, result.Errors.ToArray()[0]);
+        Assert.Equal(LinkValidationErrorMessage.IdRequired, result.Errors.ToArray()[1]);
     }
 
 
@@ -52,6 +53,5 @@ public class ResultGenericTests
         // assert
 
         Assert.Throws<ArgumentNullException>(() => Result<string>.Failure(errors!));
-
     }
 }

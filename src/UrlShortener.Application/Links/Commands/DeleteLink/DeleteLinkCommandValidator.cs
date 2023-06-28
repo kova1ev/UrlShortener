@@ -7,6 +7,6 @@ public sealed class DeleteLinkCommandValidator : AbstractValidator<DeleteLinkCom
 {
     public DeleteLinkCommandValidator()
     {
-        RuleFor(command => command.Id).NotEmpty().WithMessage(LinkValidationErrorMessage.ID_REQUIRED);
+        RuleFor(command => command.Id).NotEmpty().WithMessage(LinkValidationErrorMessage.IdRequired);
     }
 }

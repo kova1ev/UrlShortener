@@ -1,23 +1,21 @@
 ﻿using UrlShortener.Data;
-using UrlShortener.Domain.Entity;
+using UrlShortener.Entity;
 
 namespace Application.UnitTests.Utility;
 
 public class SeedData
 {
-
     public static void SeedInitData(AppDbContext context)
     {
-
         if (context.Links.Any() == false)
         {
             Geolocation geolocation1 = new()
             {
-                Id = new Guid("E643C813-E760-4D7E-B5F5-B56223F0314E"),
+                Id = new Guid("E643C813-E760-4D7E-B5F5-B56223F0314E")
             };
             Geolocation geolocation2 = new()
             {
-                Id = new Guid("AA4A2354-0856-47F8-87E0-FC3C1DFBE0E5"),
+                Id = new Guid("AA4A2354-0856-47F8-87E0-FC3C1DFBE0E5")
             };
             context.AddRange(geolocation1, geolocation2);
 
@@ -26,7 +24,6 @@ public class SeedData
                 Id = new Guid("1F083C27-6F99-46D7-8120-8299BFA579E1"),
                 Geolocation = geolocation1,
                 DomainName = "github.com"
-
             };
             LinkStatistic linkStatistic2 = new()
             {
@@ -55,6 +52,5 @@ public class SeedData
             context.AddRange(link1, link2);
             context.SaveChanges();
         }
-
     }
 }

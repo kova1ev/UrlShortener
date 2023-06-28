@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Domain.Entity;
+﻿namespace UrlShortener.Entity;
 
 public class Geolocation : EntityBase
 {

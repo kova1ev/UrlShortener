@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Common.Models.Links;
+﻿namespace UrlShortener.Application.Common.Domain.Links;
 
 public class CreateLinkRequest
 {

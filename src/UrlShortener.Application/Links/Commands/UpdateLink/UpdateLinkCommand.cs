@@ -13,7 +13,9 @@ public class UpdateLinkCommand : IRequest<Result>
     public UpdateLinkCommand(Guid id, string urlAddress, string alias)
     {
         Id = id;
-        UrlAddress = urlAddress.TrimAndSetNull(); ;
-        Alias = alias.TrimAndSetNull(); ;
+        UrlAddress = urlAddress.TrimAndSetNull();
+        ;
+        Alias = alias.TrimAndSetNull();
+        ;
     }
 }

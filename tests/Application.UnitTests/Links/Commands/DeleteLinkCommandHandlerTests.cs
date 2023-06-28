@@ -1,15 +1,12 @@
 ﻿using Application.UnitTests.Utility;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Commands.DeleteLink;
 
 namespace Application.UnitTests.Links.Commands;
 
 public class DeleteLinkCommandHandlerTests
 {
-
-
     [Fact]
     public async Task Delete_link_Success()
     {
@@ -19,14 +16,14 @@ public class DeleteLinkCommandHandlerTests
         var request = new DeleteLinkCommand(linkId);
         using var context = DbContextHepler.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
-        int iniLinksCount = await context.Links.CountAsync();
+        var iniLinksCount = await context.Links.CountAsync();
 
         //act
-        Result result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         //assert 
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors!);
+        Assert.Empty(result.Errors);
         Assert.NotEqual(iniLinksCount, context.Links.Count());
     }
 
@@ -39,17 +36,16 @@ public class DeleteLinkCommandHandlerTests
         var request = new DeleteLinkCommand(badId);
         using var context = DbContextHepler.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
-        int iniLinksCount = await context.Links.CountAsync();
+        var iniLinksCount = await context.Links.CountAsync();
 
         //act
-        Result result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         //assert 
         Assert.False(result.IsSuccess);
         Assert.NotEmpty(result.Errors!);
-        Assert.True(result.Errors?.Count() == 1);
-        Assert.Equal(LinkValidationErrorMessage.LINK_NOT_EXISTING, result.Errors?.First());
+        Assert.Single(result.Errors);
+        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors?.First());
         Assert.Equal(iniLinksCount, context.Links.Count());
     }
-
 }

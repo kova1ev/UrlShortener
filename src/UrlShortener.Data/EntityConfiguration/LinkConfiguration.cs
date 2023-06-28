@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UrlShortener.Domain.Entity;
+using UrlShortener.Entity;
 
 namespace UrlShortener.Data.EntityConfiguration;
 

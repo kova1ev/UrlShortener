@@ -1,8 +1,8 @@
-﻿namespace UrlShortener.Application.Common.Models;
+﻿namespace UrlShortener.Application.Common.Domain;
 
 public abstract class PageParameters
 {
-    // todo move limit pages to appsettings??
+    // todo move limit pages to appsetings??
     public const int MaxPageSize = 50;
     private const int DefaultPage = 1;
 
@@ -11,17 +11,11 @@ public abstract class PageParameters
     public virtual int PageSize
     {
         get => _pageSize;
-        set
-        {
-            _pageSize = value > MaxPageSize || value < 1 ? _pageSize : value;
-        }
+        set => _pageSize = value > MaxPageSize || value < 1 ? _pageSize : value;
     }
     public virtual int Page
     {
         get => _page;
-        set
-        {
-            _page = value < 1 ? DefaultPage : value;
-        }
+        set => _page = value < 1 ? DefaultPage : value;
     }
 }

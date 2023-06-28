@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Domain.Entity;
+using UrlShortener.Entity;
 
 namespace UrlShortener.Application.Statistic.Commands;
 
@@ -25,7 +25,7 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
             .FirstOrDefaultAsync(s => s.Id == request.Id);
 
         if (linkStatistic == null)
-            return Result.Failure(new string[] { LinkStatisticsErrorMessage.NOT_FOUND });
+            return Result.Failure(new string[] { LinkStatisticsErrorMessage.NotFound });
 
         linkStatistic.Browser = request.AgentInfo.Browser;
         linkStatistic.Os = request.AgentInfo.Os;

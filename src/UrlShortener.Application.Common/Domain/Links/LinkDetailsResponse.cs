@@ -1,6 +1,6 @@
-﻿using UrlShortener.Domain.Entity;
+﻿using UrlShortener.Entity;
 
-namespace UrlShortener.Application.Common.Models.Links;
+namespace UrlShortener.Application.Common.Domain.Links;
 
 public class LinkDetailsResponse
 {

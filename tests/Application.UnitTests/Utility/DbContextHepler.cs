@@ -8,7 +8,7 @@ public class DbContextHepler
 {
     public static AppDbContext CreateContext()
     {
-        DbContextOptionsBuilder<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>();
+        var options = new DbContextOptionsBuilder<AppDbContext>();
         options.UseInMemoryDatabase(Guid.NewGuid().ToString());
         options.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
 

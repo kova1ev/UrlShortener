@@ -13,6 +13,7 @@ public class ClientIpHelper
             string? x_forwarded_for = httpContext.Request.Headers["X-Forwarded-For"];
             clientIp = x_forwarded_for?.Split(',')?.FirstOrDefault();
         }
+
         return clientIp;
     }
 }

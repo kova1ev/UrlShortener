@@ -4,7 +4,6 @@ using Moq;
 using UrlShortener.Application.Common;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Services;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Services;
 
@@ -18,13 +17,13 @@ public class LinkServiceTests
     public async Task Alias_busy(string alias)
     {
         //arrange 
-        Mock<IAliasGenerator> moq = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        var moq = new Mock<IAliasGenerator>();
+        var options = Options.Create(new AppOptions { AppUrl = APP_URL });
 
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         LinkService linkService = new(context, moq.Object, options);
         //act
-        bool result = await linkService.AliasIsBusy(alias);
+        var result = await linkService.AliasIsBusy(alias);
 
         //assert
         Assert.True(result);
@@ -36,13 +35,13 @@ public class LinkServiceTests
     public async Task Alias_is_not_busy(string alias)
     {
         //arrange 
-        Mock<IAliasGenerator> moq = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        var moq = new Mock<IAliasGenerator>();
+        var options = Options.Create(new AppOptions { AppUrl = APP_URL });
 
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         LinkService linkService = new(context, moq.Object, options);
         //act
-        bool result = await linkService.AliasIsBusy(alias);
+        var result = await linkService.AliasIsBusy(alias);
 
         //assert
         Assert.False(result);
@@ -53,13 +52,13 @@ public class LinkServiceTests
     [InlineData("qwerty")]
     public void Create_short_url_Success(string alias)
     {
-        Mock<IAliasGenerator> moqDummy = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        var moqDummy = new Mock<IAliasGenerator>();
+        var options = Options.Create(new AppOptions { AppUrl = APP_URL });
 
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         LinkService linkService = new(context, moqDummy.Object, options);
         //act
-        string shortUrl = linkService.CreateShortUrl(alias);
+        var shortUrl = linkService.CreateShortUrl(alias);
 
 
         Assert.NotNull(shortUrl);
@@ -71,10 +70,10 @@ public class LinkServiceTests
     public void Create_short_url_with_Null_app_url_Failure()
     {
         string? appUrl = null;
-        Mock<IAliasGenerator> moqDummy = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> op = Options.Create(new AppOptions() { AppUrl = appUrl });
+        var moqDummy = new Mock<IAliasGenerator>();
+        var op = Options.Create(new AppOptions { AppUrl = appUrl });
 
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         LinkService linkService = new(context, moqDummy.Object, op);
         //act
         //assert
@@ -89,18 +88,17 @@ public class LinkServiceTests
         //arrange
         var mockAliasGenerator = new Mock<IAliasGenerator>();
         mockAliasGenerator.Setup(g => g.GenerateAlias(4, 10)).Returns(returnAlias);
-        IOptions<AppOptions> options = Options.Create(new AppOptions { AppUrl = APP_URL });
+        var options = Options.Create(new AppOptions { AppUrl = APP_URL });
 
         using var context = DbContextHepler.CreateContext();
         var linkService = new LinkService(context, mockAliasGenerator.Object, options);
 
         //act
-        string alias = await linkService.GenerateAlias();
+        var alias = await linkService.GenerateAlias();
 
         //assert
         Assert.NotNull(alias);
         Assert.NotEmpty(alias);
         Assert.Equal(returnAlias, alias);
     }
-
 }

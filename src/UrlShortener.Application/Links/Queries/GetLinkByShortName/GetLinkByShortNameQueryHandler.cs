@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Models.Links;
+using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Domain.Entity;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 
@@ -19,16 +18,16 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
 
     public async Task<Result<LinkDetailsResponse>> Handle(GetLinkByShortNameQuery request, CancellationToken cancellationToken)
     {
-        Link? link = await _appDbContext.Links
+        var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
                 .ThenInclude(st => st.Geolocation)
-            .AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias);
+            .AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias,cancellationToken);
 
         if (link == null)
         {
-            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
+            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LinkNotExisting });
         }
 
-        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link));
+        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link)!);
     }
 }

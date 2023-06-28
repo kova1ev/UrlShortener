@@ -1,4 +1,4 @@
-﻿using UrlShortener.Application.Common.Models;
+﻿using UrlShortener.Application.Common.Domain;
 
 namespace UrlShortener.Api.Infrastructure;
 

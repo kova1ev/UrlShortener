@@ -4,7 +4,6 @@ namespace Application.UnitTests.Services;
 
 public class AliasGeneratorTests
 {
-
     [Fact]
     public void Generate_alias_Success()
     {
@@ -12,7 +11,7 @@ public class AliasGeneratorTests
         AliasGenerator aliasGenerator = new();
 
         //act
-        string alias = aliasGenerator.GenerateAlias();
+        var alias = aliasGenerator.GenerateAlias();
 
         //assert
         Assert.NotEmpty(alias);
@@ -58,7 +57,5 @@ public class AliasGeneratorTests
         //act
         //assert
         Assert.Throws<ArgumentException>(() => aliasGenerator.GenerateAlias(minLength, maxLength));
-
     }
-
 }

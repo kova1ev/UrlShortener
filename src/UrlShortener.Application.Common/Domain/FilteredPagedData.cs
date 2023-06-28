@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace UrlShortener.Application.Common.Models;
+namespace UrlShortener.Application.Common.Domain;
 
 public class FilteredPagedData<T>
 {
@@ -20,16 +20,16 @@ public class FilteredPagedData<T>
     }
 
 
-    public static async Task<FilteredPagedData<T>> CreateFilteredPagedData(IQueryable<T> source, int pageSize, int page)
+    public static async Task<FilteredPagedData<T>> CreateFilteredPagedData(IQueryable<T> source, int pageSize, int page,
+        CancellationToken cancellationToken=default)
     {
-        int count = await source.CountAsync();
+        var count = await source.CountAsync(cancellationToken);
 
         var result = await source
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToArrayAsync();
+            .ToArrayAsync(cancellationToken);
 
         return new FilteredPagedData<T>(result, count, pageSize, page);
     }
-
 }

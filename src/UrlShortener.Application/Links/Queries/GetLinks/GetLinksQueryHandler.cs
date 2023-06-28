@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using UrlShortener.Application.Common.Models;
-using UrlShortener.Application.Common.Models.Links;
+using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Domain.Entity;
+using UrlShortener.Entity;
 
 namespace UrlShortener.Application.Links.Queries.GetLinks;
 
@@ -18,21 +18,22 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<FilteredPagedData<LinkCompactResponse>>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
+    public async Task<Result<FilteredPagedData<LinkCompactResponse>>> Handle(GetLinksQuery request,
+        CancellationToken cancellationToken)
     {
-
         var links = _appDbContext.Links.AsNoTracking();
 
         links = SearchIntUrl(links, request.RequestParameters.Text);
 
         links = SortByDAteCreated(links, request.RequestParameters.DateSort);
 
-        var PagedLinks = await FilteredPagedData<LinkCompactResponse>.CreateFilteredPagedData(
+        var pagedLinks = await FilteredPagedData<LinkCompactResponse>.CreateFilteredPagedData(
             links.Select(link => LinkCompactResponse.MapFromLink(link)),
             request.RequestParameters.PageSize,
-            request.RequestParameters.Page);
+            request.RequestParameters.Page,
+            cancellationToken);
 
-        return Result<FilteredPagedData<LinkCompactResponse>>.Success(PagedLinks);
+        return Result<FilteredPagedData<LinkCompactResponse>>.Success(pagedLinks);
     }
 
     // TODO search keywords
@@ -49,11 +50,13 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
                 BinaryExpression? binaryExpression = null;
                 var parameter = Expression.Parameter(typeof(Link), "link");
                 var urlAddressProperty = Expression.Property(parameter, "UrlAddress");
-                var left = Expression.Call(urlAddressProperty, "Contains", Type.EmptyTypes, Expression.Constant(keywords[0].ToLower()));
+                var left = Expression.Call(urlAddressProperty, "Contains", Type.EmptyTypes,
+                    Expression.Constant(keywords[0].ToLower()));
                 for (int i = 1; i < keywords.Length; i++)
                 {
                     string lowCaseTerm = keywords[i].ToLower();
-                    var right = Expression.Call(urlAddressProperty, "Contains", Type.EmptyTypes, Expression.Constant(lowCaseTerm));
+                    var right = Expression.Call(urlAddressProperty, "Contains", Type.EmptyTypes,
+                        Expression.Constant(lowCaseTerm));
 
                     if (binaryExpression == null)
                     {
@@ -64,6 +67,7 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
                         binaryExpression = Expression.OrElse(binaryExpression, right);
                     }
                 }
+
                 var lambda = Expression.Lambda<Func<Link, bool>>(binaryExpression, parameter);
                 source = (IQueryable<T>)source.Where(lambda);
             }
@@ -73,6 +77,7 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
                 source = source.Where(link => link.UrlAddress!.Contains(keyWord));
             }
         }
+
         return source;
     }
 
@@ -91,5 +96,3 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
         return source;
     }
 }
-
-

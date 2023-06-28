@@ -1,15 +1,11 @@
 ﻿using Application.UnitTests.Utility;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Links.Queries;
 
 public class GetLinkByShortNameTests
 {
-
     [Theory]
     [InlineData("aaa")]
     [InlineData("bbb")]
@@ -17,11 +13,11 @@ public class GetLinkByShortNameTests
     {
         //arrange
         GetLinkByShortNameQuery request = new(shortName);
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
-        Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
         //assert
 
         Assert.True(result.IsSuccess);
@@ -37,18 +33,17 @@ public class GetLinkByShortNameTests
     {
         //arrange
         GetLinkByShortNameQuery request = new(shortName);
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHepler.CreateContext();
         GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
-        Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.False(result.IsSuccess);
         Assert.False(result.HasValue);
         Assert.NotEmpty(result.Errors!);
-        Assert.Equal(1, result.Errors.Count());
-        Assert.Equal(LinkValidationErrorMessage.LINK_NOT_EXISTING, result.Errors.FirstOrDefault());
+        Assert.Single(result.Errors);
+        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors.FirstOrDefault());
     }
-
 }

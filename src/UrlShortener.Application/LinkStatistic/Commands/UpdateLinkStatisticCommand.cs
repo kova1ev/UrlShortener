@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UrlShortener.Application.Common.Models;
+using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Statistic.Commands;

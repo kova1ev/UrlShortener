@@ -29,7 +29,8 @@ public class RedirectController : ApiControllerBase
     public async Task<IActionResult> RedirectTo([FromRoute] string alias)
     {
         var result = await Mediator.Send(new GetLinkByShortNameQuery(alias));
-        if (result.IsSuccess == false) return RedirectToPage("/NotFound");
+        if (result.IsSuccess == false) 
+            return RedirectToPage("/NotFound");
 
         var clientIpHelper = new ClientIpHelper();
         var clientIp = clientIpHelper.GetClientIpByCloudFlare(HttpContext);

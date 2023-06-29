@@ -19,13 +19,5 @@ public class ValidationException : Exception
     {
         Errors = errors;
     }
-    public ValidationException(string message, Exception inner) : base(message, inner)
-    {
-        Errors = Enumerable.Empty<string>();
-    }
-    protected ValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        Errors = Enumerable.Empty<string>();
-    }
 }
 

@@ -11,17 +11,18 @@ public class GetLinksQueryHandlerTest
     [Fact]
     public async Task GetLinks_By_Only_Pagination()
     {
+        var pageSize = 10;
+        var page = 1;
+        
         //arrange
         using var context = DbContextHepler.CreateContext();
         var iniLinksCount = await context.Links.CountAsync();
-        var page = 1;
-        var pageSize = 10;
+        
         LinksRequestParameters requestParameters = new() { Page = page, PageSize = pageSize };
         GetLinksQuery request = new(requestParameters);
-
         GetLinksQueryHandler handler = new(context);
+        
         //act
-
         var result = await handler.Handle(
             request, CancellationToken.None);
 
@@ -45,9 +46,12 @@ public class GetLinksQueryHandlerTest
     [InlineData("leet")]
     public async Task Should_return_result_by_search(string keyWord)
     {
+        int expectedCount = 1; 
         //arrange 
-        LinksRequestParameters requestParameters = new();
-        requestParameters.Text = keyWord;
+        LinksRequestParameters requestParameters = new()
+        {
+            Text = keyWord
+        };
 
         GetLinksQuery getLinksQuery = new(requestParameters);
 
@@ -69,8 +73,8 @@ public class GetLinksQueryHandlerTest
 
         Assert.NotNull(data.Data);
         Assert.Single(data.Data.ToArray());
-        Assert.Equal(1, data.TotalCount);
-        Assert.Equal(1, data.CurrentPage);
-        Assert.Equal(1, data.TotalPages);
+        Assert.Equal(expectedCount, data.TotalCount);
+        Assert.Equal(expectedCount, data.CurrentPage);
+        Assert.Equal(expectedCount, data.TotalPages);
     }
 }

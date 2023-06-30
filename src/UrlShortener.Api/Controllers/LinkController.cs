@@ -10,6 +10,7 @@ using UrlShortener.Application.Links.Commands.DeleteLink;
 using UrlShortener.Application.Links.Commands.UpdateLink;
 using UrlShortener.Application.Links.Queries.GetLinkById;
 using UrlShortener.Application.Links.Queries.GetLinks;
+using UrlShortener.Application.Links.Queries.GetMostRedirectedLinks;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -43,6 +44,16 @@ public class LinkController : ApiControllerBase
         var cancellationToken = HttpContext.RequestAborted;
         var result = await Mediator
             .Send(new GetLinksQuery(requestParameters), cancellationToken);
+        return Ok(result.Value);
+    }
+
+    [HttpGet("popular")]
+    [ProducesResponseType(typeof(IEnumerable<LinkCompactResponse>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult> GetMostPopular()
+    {
+        var cancellationToken = HttpContext.RequestAborted;
+        var result = await Mediator.Send(new GetMostRedirectedLinksQuery(),cancellationToken);
+
         return Ok(result.Value);
     }
 

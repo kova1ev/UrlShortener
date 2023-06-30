@@ -36,23 +36,4 @@ public class GlobalStatisticsController : ApiControllerBase
 
         return Ok(result.Value);
     }
-
-
-    // [HttpGet("mostredirected")]
-    //public async Task<IActionResult> GetMostRedirectedLinks()
-    //{
-    //    _logger.LogInformation("-> start {GetMostRedirectedLinks}", nameof(GetMostRedirectedLinks));
-
-    //    await Task.Delay(2_000);
-
-    //    var links = await _dbContext.Links
-    //        .OrderByDescending(link => link.LinkStatistic.Clicks)
-    //        .ThenByDescending(l => l.DateTimeCreated)
-    //        .Select(l => new { l, l.LinkStatistic.Clicks })
-    //        .Take(10)
-    //        .ToListAsync();
-
-    //    _logger.LogInformation("-> finish {GetMostRedirectedLinks} ", nameof(GetMostRedirectedLinks));
-    //    return Ok(links);
-    //}
 }

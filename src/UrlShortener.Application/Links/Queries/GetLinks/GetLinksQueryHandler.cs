@@ -81,7 +81,7 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
         return source;
     }
 
-    private IQueryable<T> SortByDAteCreated<T>(IQueryable<T> source, DateSort dateSort) where T : Link
+    private static IQueryable<T> SortByDAteCreated<T>(IQueryable<T> source, DateSort dateSort) where T : Link
     {
         switch (dateSort)
         {

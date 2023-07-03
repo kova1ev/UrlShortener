@@ -2,6 +2,6 @@
 
 public class AppOptions
 {
-    public const string CONFIG_KEY = "AppOptions";
+    public const string ConfigKey = "AppOptions";
     public string? AppUrl { get; set; }
 }

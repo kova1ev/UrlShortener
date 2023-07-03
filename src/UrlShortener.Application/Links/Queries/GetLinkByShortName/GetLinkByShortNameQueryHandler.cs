@@ -20,7 +20,7 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
     {
         var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
-                .ThenInclude(st => st.Geolocation)
+                .ThenInclude(st => st!.Geolocation)
             .AsNoTracking().FirstOrDefaultAsync(l => l.Alias == request.Alias,cancellationToken);
 
         if (link == null)

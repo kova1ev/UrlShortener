@@ -12,18 +12,17 @@ public class UpdateLinkCommandHandlerTests
     private readonly string _hostUrl = "https://localhost:7072/r";
     private readonly Guid _linkId = new("567BD1BF-6287-4331-A50E-82984DB0B97D");
     private readonly string _newUrlAddress = "https://ya.ru/";
+    private readonly Mock<ILinkService> _mockLinkService = new Mock<ILinkService>();
 
     [Fact]
-    public async Task Update_link_only_with_new_UrlAddress_Success()
+    public async Task UpdateLink_Should_return_SuccessResult_WithNewUrlAddress_only()
     {
         //arrange
         string? newAlias = null;
         var request = new UpdateLinkCommand(_linkId, _newUrlAddress, newAlias);
 
-        var mockLinkService = new Mock<ILinkService>();
-
-        using var context = DbContextHepler.CreateContext();
-        var handler = new UpdateLinkCommandHandler(context, mockLinkService.Object);
+        using var context = DbContextHelper.CreateContext();
+        var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
 
         //act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -42,25 +41,24 @@ public class UpdateLinkCommandHandlerTests
 
 
     [Fact]
-    public async Task Update_link_only_with_new_Alias_Success()
+    public async Task  UpdateLink_Should_return_SuccessResult_WithNewAlias_only()
     {
         //arrange
         string? emptyUrlAddress = null;
         var newAlias = "banana";
         var request = new UpdateLinkCommand(_linkId, emptyUrlAddress, newAlias);
+        
+        _mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
 
-        var mockLinkService = new Mock<ILinkService>();
-        mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
-
-        using var context = DbContextHepler.CreateContext();
-        var handler = new UpdateLinkCommandHandler(context, mockLinkService.Object);
+        using var context = DbContextHelper.CreateContext();
+        var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
 
         //act
         var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors!);
+        Assert.Empty(result.Errors);
 
         var link = await context.Links.Include(l => l.LinkStatistic).FirstOrDefaultAsync(l => l.Id == _linkId);
         var shortUrl = $"{_hostUrl}/{newAlias}";
@@ -72,24 +70,23 @@ public class UpdateLinkCommandHandlerTests
     }
 
     [Fact]
-    public async Task Update_link_with_new_Alias_and_new_UrlAddress_Success()
+    public async Task  UpdateLink_Should_return_SuccessResult_WhenAliasAndUrlAddressIsNew()
     {
         //arrange
         var newAlias = "yayaya";
         var request = new UpdateLinkCommand(_linkId, _newUrlAddress, newAlias);
+        
+        _mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
 
-        var mockLinkService = new Mock<ILinkService>();
-        mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
-
-        using var context = DbContextHepler.CreateContext();
-        var handler = new UpdateLinkCommandHandler(context, mockLinkService.Object);
+        using var context = DbContextHelper.CreateContext();
+        var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
 
         //act
         var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors!);
+        Assert.Empty(result.Errors);
 
         var link = await context.Links.Include(l => l.LinkStatistic).FirstOrDefaultAsync(l => l.Id == _linkId);
         var shortUrl = $"{_hostUrl}/{newAlias}";
@@ -104,45 +101,42 @@ public class UpdateLinkCommandHandlerTests
     }
 
     [Fact]
-    public async Task Try_Update_link_with_bad_id_Failure()
+    public async Task UpdateLink_Should_return_FailureResult_WhenIdIsInvalid()
     {
         //arrange
         Guid linkId = default!; //  Guid.NewGuid();
         var request = new UpdateLinkCommand(linkId, null!, null!);
-
-        var mockLinkService = new Mock<ILinkService>();
-        using var context = DbContextHepler.CreateContext();
-        var handler = new UpdateLinkCommandHandler(context, mockLinkService.Object);
+        
+        using var context = DbContextHelper.CreateContext();
+        var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
         //act
         var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.False(result.IsSuccess);
-        Assert.NotEmpty(result.Errors!);
+        Assert.NotEmpty(result.Errors);
         Assert.Single(result.Errors);
-        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors?.First());
+        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors.First());
     }
 
-    [Fact]
-    public async Task Try_Update_link_with_existing_Alias_Failure()
+    [Fact] public async Task UpdateLink_Should_return_FailureResult_WhenAliasIsTaken()
     {
         //arrange
         string? emptyUrlAddress = null;
         var newAlias = "bbb"; // existing alias in db
         var request = new UpdateLinkCommand(_linkId, emptyUrlAddress!, newAlias);
+        
+        _mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(true);
 
-        var mockLinkService = new Mock<ILinkService>();
-        mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(true);
-
-        using var context = DbContextHepler.CreateContext();
-        var handler = new UpdateLinkCommandHandler(context, mockLinkService.Object);
+        using var context = DbContextHelper.CreateContext();
+        var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
         //act
         var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.False(result.IsSuccess);
-        Assert.NotEmpty(result.Errors!);
+        Assert.NotEmpty(result.Errors);
         Assert.Single(result.Errors);
-        Assert.Equal(LinkValidationErrorMessage.AliasTaken, result.Errors?.First());
+        Assert.Equal(LinkValidationErrorMessage.AliasTaken, result.Errors.First());
     }
 }

@@ -2,7 +2,7 @@
 using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Common.Result;
 
-namespace UrlShortener.Application.Statistic.Commands;
+namespace UrlShortener.Application.LinkStatistics.Commands;
 
 public class UpdateLinkStatisticCommand : IRequest<Result>
 {

@@ -10,7 +10,7 @@ public class CreateLinkCommand : IRequest<Result<LinkCreatedResponse>>
     public string? UrlAddress { get; }
     public string? Alias { get; }
 
-    public CreateLinkCommand(string urlAddress, string alias)
+    public CreateLinkCommand(string urlAddress, string? alias)
     {
         UrlAddress = urlAddress.TrimAndSetNull();
         Alias = alias.TrimAndSetNull();

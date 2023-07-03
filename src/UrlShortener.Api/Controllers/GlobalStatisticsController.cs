@@ -22,7 +22,7 @@ public class GlobalStatisticsController : ApiControllerBase
     public async Task<IActionResult> GetTotalLinkCount()
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result = await Mediator.Send(new GetTotalLinksCount(), cancellationToken);
+        var result = await Mediator.Send(new GetTotalLinksCountQuery(), cancellationToken);
 
         return Ok(result.Value);
     }
@@ -32,7 +32,7 @@ public class GlobalStatisticsController : ApiControllerBase
     public async Task<IActionResult> GetLastWeekLinkCount([FromQuery] DateOnly? start, [FromQuery] DateOnly? end)
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result = await Mediator.Send(new GetLinksCountByTime(start, end), cancellationToken);
+        var result = await Mediator.Send(new GetLinksCountByTimeQuery(start, end), cancellationToken);
 
         return Ok(result.Value);
     }

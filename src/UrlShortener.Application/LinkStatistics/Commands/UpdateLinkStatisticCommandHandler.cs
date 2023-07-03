@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Entity;
 
-namespace UrlShortener.Application.Statistic.Commands;
+namespace UrlShortener.Application.LinkStatistics.Commands;
 
 public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStatisticCommand, Result>
 {
@@ -20,9 +19,9 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
 
     public async Task<Result> Handle(UpdateLinkStatisticCommand request, CancellationToken cancellationToken)
     {
-        LinkStatistic? linkStatistic = await _appDbContext.LinkStatistics
+        var linkStatistic = await _appDbContext.LinkStatistics
             .Include(st => st.Geolocation)
-            .FirstOrDefaultAsync(s => s.Id == request.Id);
+            .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (linkStatistic == null)
             return Result.Failure(new string[] { LinkStatisticsErrorMessage.NotFound });
@@ -32,12 +31,12 @@ public class UpdateLinkStatisticCommandHandler : IRequestHandler<UpdateLinkStati
         linkStatistic.Clicks++;
         linkStatistic.LastUse = _systemDateTime.UtcNow;
 
-        linkStatistic.Geolocation.Country = request.Geolocation.Country;
+        linkStatistic.Geolocation!.Country = request.Geolocation.Country;
         linkStatistic.Geolocation.Region = request.Geolocation.Region;
         linkStatistic.Geolocation.City = request.Geolocation.City;
 
         _appDbContext.LinkStatistics.Update(linkStatistic);
-        await _appDbContext.SaveChangesAsync();
+        await _appDbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

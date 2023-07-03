@@ -4,7 +4,9 @@ using Moq;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Interfaces;
-using UrlShortener.Application.Statistic.Commands;
+using UrlShortener.Application.LinkStatistics.Commands;
+using UrlShortener.Entity;
+using Geolocation = UrlShortener.Application.Common.Domain.Geolocation;
 
 namespace Application.UnitTests.LinkStatistics;
 
@@ -19,14 +21,15 @@ public class UpdateLinkStatisticCommandHandlerTests
         Region = "Berlin"
     };
 
-    private readonly Guid _linkStatisticId = new("1F083C27-6F99-46D7-8120-8299BFA579E1");
-    private readonly Mock<ISystemDateTime> _mockSystemDateTime;
-
     private readonly UserAgentInfo _userAgentInfo = new()
     {
         Browser = "Opera",
         Os = "Linux"
     };
+
+    private readonly LinkStatistic _seedLinkLinkStatistic = SeedData.Links.First().LinkStatistic!;
+    private readonly Mock<ISystemDateTime> _mockSystemDateTime;
+
 
     public UpdateLinkStatisticCommandHandlerTests()
     {
@@ -35,27 +38,27 @@ public class UpdateLinkStatisticCommandHandlerTests
     }
 
     [Fact]
-    public async Task Update_link_Statistic_Success()
+    public async Task Update_Should_return_SuccessResult()
     {
-        var request = new UpdateLinkStatisticCommand(_linkStatisticId, _userAgentInfo, _geolocation);
+        //arrange
+        var request = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, _geolocation);
 
-        using var context = DbContextHepler.CreateContext();
-
-
+        using var context = DbContextHelper.CreateContext();
         var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
 
         //act 
         var result = await handler.Handle(request, CancellationToken.None);
+
         //assert
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors!);
+        Assert.Empty(result.Errors);
 
         var linkStatistic = await context.LinkStatistics
             .Include(ls => ls.Geolocation)
-            .FirstOrDefaultAsync(l => l.Id == _linkStatisticId);
+            .FirstOrDefaultAsync(l => l.Id == _seedLinkLinkStatistic.Id);
 
         Assert.NotNull(linkStatistic);
-        Assert.True(linkStatistic.Clicks == 1);
+        Assert.True(linkStatistic.Clicks == _seedLinkLinkStatistic.Clicks + 1);
         Assert.Equal(_geolocation.City, linkStatistic.Geolocation?.City);
         Assert.Equal(_geolocation.Country, linkStatistic.Geolocation?.Country);
         Assert.Equal(_geolocation.Region, linkStatistic.Geolocation?.Region);
@@ -66,26 +69,27 @@ public class UpdateLinkStatisticCommandHandlerTests
 
 
     [Fact]
-    public async Task Update_link_Statistic_with_double_update_Success()
+    public async Task Update_Should_return_SuccessResult_When_doubleUpdate()
     {
-        var request = new UpdateLinkStatisticCommand(_linkStatisticId, _userAgentInfo, _geolocation);
+        var request = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, _geolocation);
 
-        using var context = DbContextHepler.CreateContext();
+        using var context = DbContextHelper.CreateContext();
         var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
 
         //act 
         var result = await handler.Handle(request, CancellationToken.None);
         await handler.Handle(request, CancellationToken.None);
+
         //assert
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors!);
+        Assert.Empty(result.Errors);
 
         var linkStatistic = await context.LinkStatistics
             .Include(ls => ls.Geolocation)
-            .FirstOrDefaultAsync(l => l.Id == _linkStatisticId);
+            .FirstOrDefaultAsync(l => l.Id == _seedLinkLinkStatistic.Id);
 
         Assert.NotNull(linkStatistic);
-        Assert.True(linkStatistic.Clicks == 2); // assert this!
+        Assert.True(linkStatistic.Clicks == _seedLinkLinkStatistic.Clicks + 2); // assert this!
         Assert.Equal(_geolocation.City, linkStatistic.Geolocation?.City);
         Assert.Equal(_geolocation.Country, linkStatistic.Geolocation?.Country);
         Assert.Equal(_geolocation.Region, linkStatistic.Geolocation?.Region);
@@ -95,12 +99,13 @@ public class UpdateLinkStatisticCommandHandlerTests
     }
 
     [Fact]
-    public async Task Try_Update_link_Statistic_with_bad_Id_Failure()
+    public async Task Update_Should_return_FailureResult_When_IdIsBad()
     {
-        Guid badId = default!; // Guid.NewGuid(); 
+        //arrange
+        Guid badId = default!; //or Guid.NewGuid(); 
         var request = new UpdateLinkStatisticCommand(badId, _userAgentInfo, _geolocation);
 
-        using var context = DbContextHepler.CreateContext();
+        using var context = DbContextHelper.CreateContext();
         var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
 
         //act 
@@ -108,9 +113,8 @@ public class UpdateLinkStatisticCommandHandlerTests
 
         //assert
         Assert.False(result.IsSuccess);
-        Assert.NotEmpty(result.Errors!);
-        Assert.True(result.Errors?.Count() == 1);
-
+        Assert.NotEmpty(result.Errors);
+        Assert.Single(result.Errors);
         Assert.Equal(LinkStatisticsErrorMessage.NotFound, result.Errors.First());
     }
 }

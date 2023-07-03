@@ -8,13 +8,13 @@ namespace Application.UnitTests.Links.Commands;
 public class DeleteLinkCommandHandlerTests
 {
     [Fact]
-    public async Task Delete_link_Success()
+    public async Task DeleteLink_Should_return_SuccessResult()
     {
         //arrange
-        var linkId = new Guid("64DE08F3-B627-46EE-AE23-C2C873FC4C11");
-
-        var request = new DeleteLinkCommand(linkId);
-        using var context = DbContextHepler.CreateContext();
+        var link = SeedData.Links.Last();
+        var request = new DeleteLinkCommand(link.Id);
+        
+        using var context = DbContextHelper.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
         var iniLinksCount = await context.Links.CountAsync();
 
@@ -28,13 +28,13 @@ public class DeleteLinkCommandHandlerTests
     }
 
     [Fact]
-    public async Task Delete_link_with_bad_id_Failure()
+    public async Task DeleteLink_Should_return_FailureResult_WhenIdIsInvalid()
     {
         //arrange
         Guid badId = default;
-
         var request = new DeleteLinkCommand(badId);
-        using var context = DbContextHepler.CreateContext();
+        
+        using var context = DbContextHelper.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
         var iniLinksCount = await context.Links.CountAsync();
 
@@ -43,9 +43,9 @@ public class DeleteLinkCommandHandlerTests
 
         //assert 
         Assert.False(result.IsSuccess);
-        Assert.NotEmpty(result.Errors!);
+        Assert.NotEmpty(result.Errors);
         Assert.Single(result.Errors);
-        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors?.First());
+        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors.First());
         Assert.Equal(iniLinksCount, context.Links.Count());
     }
 }

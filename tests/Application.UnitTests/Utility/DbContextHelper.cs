@@ -4,7 +4,7 @@ using UrlShortener.Data;
 
 namespace Application.UnitTests.Utility;
 
-public class DbContextHepler
+public static class DbContextHelper
 {
     public static AppDbContext CreateContext()
     {

@@ -42,10 +42,10 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, Result<Filter
         if (string.IsNullOrWhiteSpace(term) == false)
         {
             var splitSeparators = new char[] { ',', ' ', ';', ':', '/', '\\', '|', };
-            var keywords = term?.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries)
+            var keywords = term.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct()
                 .ToArray();
-            if (keywords != null && keywords.Length > 1)
+            if (keywords.Length > 1)
             {
                 BinaryExpression? binaryExpression = null;
                 var parameter = Expression.Parameter(typeof(Link), "link");

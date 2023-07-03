@@ -5,7 +5,7 @@ using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Application.GlobalStatistics.Queries.GetTotalLinksCount;
 
-public class GetTotalLinksCountHandler : IRequestHandler<GetTotalLinksCount,Result<int>>
+public class GetTotalLinksCountHandler : IRequestHandler<GetTotalLinksCountQuery,Result<int>>
 {
     private readonly IAppDbContext _appDbContext;
 
@@ -14,7 +14,7 @@ public class GetTotalLinksCountHandler : IRequestHandler<GetTotalLinksCount,Resu
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<int>> Handle(Queries.GetTotalLinksCount.GetTotalLinksCount request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(GetTotalLinksCountQuery request, CancellationToken cancellationToken)
     {
         var linkCount = await _appDbContext.Links.AsNoTracking().CountAsync(cancellationToken);
 

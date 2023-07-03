@@ -10,12 +10,10 @@ public class UpdateLinkCommand : IRequest<Result>
     public string? Alias { get; }
     public string? UrlAddress { get; }
 
-    public UpdateLinkCommand(Guid id, string urlAddress, string alias)
+    public UpdateLinkCommand(Guid id, string? urlAddress, string? alias)
     {
         Id = id;
         UrlAddress = urlAddress.TrimAndSetNull();
-        ;
         Alias = alias.TrimAndSetNull();
-        ;
     }
 }

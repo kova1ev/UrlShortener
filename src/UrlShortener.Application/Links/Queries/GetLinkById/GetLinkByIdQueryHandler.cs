@@ -21,7 +21,7 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<
     {
         var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
-                .ThenInclude(st => st.Geolocation)
+                .ThenInclude(st => st!.Geolocation)
             .AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id,cancellationToken);
 
         if (link == null)

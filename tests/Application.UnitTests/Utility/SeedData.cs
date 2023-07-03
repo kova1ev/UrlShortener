@@ -3,7 +3,7 @@ using UrlShortener.Entity;
 
 namespace Application.UnitTests.Utility;
 
-public class SeedData
+public static class SeedData
 {
     public static List<Link> Links => new List<Link>
     {

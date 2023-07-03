@@ -4,58 +4,77 @@ namespace Application.UnitTests.Services;
 
 public class AliasGeneratorTests
 {
+    private readonly AliasGenerator _aliasGenerator = new();
+
     [Fact]
-    public void Generate_alias_Success()
+    public void GenerateAlias_WithDefaultParams_Should_return_validAlias()
     {
         //arrange
-        AliasGenerator aliasGenerator = new();
-
+        int defaultMinLen = 4;
+        int defaultMaxLen = 10;
         //act
-        var alias = aliasGenerator.GenerateAlias();
+        var alias = _aliasGenerator.GenerateAlias();
 
         //assert
         Assert.NotEmpty(alias);
         Assert.NotNull(alias);
-        Assert.InRange(alias.Length, 4, 10);
+        Assert.InRange(alias.Length, defaultMinLen, defaultMaxLen);
+    }
+
+    [Theory]
+    [MemberData(nameof(ValidLengthForAlias))]
+    public void GenerateAlias_InputValidParams_Should_return_ValidAlias(int minLen, int maxLen)
+    {
+        //act
+        var alias = _aliasGenerator.GenerateAlias(minLen, maxLen);
+
+        //assert
+        Assert.NotEmpty(alias);
+        Assert.NotNull(alias);
+        Assert.InRange(alias.Length, minLen, maxLen);
     }
 
     [Theory]
     [InlineData(0)]
-    [InlineData(1)]
     [InlineData(-2)]
-    public void Generate_alias_by_minLength_Failure(int minLength)
+    [InlineData(int.MinValue)]
+    public void GenerateAlias_Should_throw_ArgumentException_WhenMinLenInvalid(int minLength)
     {
-        //arrange
-        AliasGenerator aliasGenerator = new();
-        //act
         //assert
-        Assert.Throws<ArgumentException>(() => aliasGenerator.GenerateAlias(minLength));
+        Assert.Throws<ArgumentException>(() => _aliasGenerator.GenerateAlias(minLength));
     }
 
     [Theory]
     [InlineData(3)]
     [InlineData(1)]
     [InlineData(-2)]
-    public void Generate_alias_by_maxLength_Failure(int maxLength)
+    public void GenerateAlias_Should_throw_ArgumentException_WhenMaxLenInvalid(int maxLength)
     {
-        //arrange
-        AliasGenerator aliasGenerator = new();
-        //act
         //assert
-        Assert.Throws<ArgumentException>(() => aliasGenerator.GenerateAlias(maxLength: maxLength));
+        Assert.Throws<ArgumentException>(() => _aliasGenerator.GenerateAlias(maxLength: maxLength));
     }
 
     [Theory]
-    [InlineData(2, 2)]
-    [InlineData(5, 2)]
-    [InlineData(-1, 10)]
-    public void Generate_alias_Failure(int minLength, int maxLength)
+    [MemberData(nameof(InvalidLengthForAlias))]
+    public void GenerateAlias_Should_throw_ArgumentException_WhenMinAndMax_LenInvalid(int minLength, int maxLength)
     {
-        //arrange
-        AliasGenerator aliasGenerator = new();
-
-        //act
         //assert
-        Assert.Throws<ArgumentException>(() => aliasGenerator.GenerateAlias(minLength, maxLength));
+        Assert.Throws<ArgumentException>(() => _aliasGenerator.GenerateAlias(minLength, maxLength));
     }
+
+
+    public static IEnumerable<object[]> InvalidLengthForAlias = new List<object[]>()
+    {
+        new object[] { 0, 2 },
+        new object[] { int.MinValue, 2 },
+        new object[] { -1, 111 }
+    };
+
+    public static IEnumerable<object[]> ValidLengthForAlias = new List<object[]>()
+    {
+        new object[] { 5, 7 },
+        new object[] { 6, 12 },
+        new object[] { 5, 5 }
+    };
 }
+

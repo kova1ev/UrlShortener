@@ -3,8 +3,8 @@
 
 public class Result
 {
-    public virtual bool IsSuccess { get; protected set; }
-    public virtual IEnumerable<string> Errors { get; protected set; } = Enumerable.Empty<string>();
+    public  bool IsSuccess { get; protected set; }
+    public  IEnumerable<string> Errors { get; protected set; }
 
     protected Result(bool isSuccess, IEnumerable<string> errors)
     {

@@ -4,7 +4,7 @@ using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Utility;
 using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
-using UrlShortener.Application.Statistic.Commands;
+using UrlShortener.Application.LinkStatistics.Commands;
 
 namespace UrlShortener.Api.Controllers;
 

@@ -5,7 +5,7 @@ using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Application.GlobalStatistics.Queries.GetLinksCountByTime;
 
-public class GetLinksCountByTimeHandler : IRequestHandler<GetLinksCountByTime, Result<int>>
+public class GetLinksCountByTimeHandler : IRequestHandler<GetLinksCountByTimeQuery, Result<int>>
 {
     private readonly IAppDbContext _appDbContext;
 
@@ -14,9 +14,9 @@ public class GetLinksCountByTimeHandler : IRequestHandler<GetLinksCountByTime, R
         _appDbContext = appDbContext;
     }
 
-    public async Task<Result<int>> Handle(GetLinksCountByTime request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(GetLinksCountByTimeQuery request, CancellationToken cancellationToken)
     {
-        var count = 0;
+        int count;
         var query = _appDbContext.Links.AsNoTracking();
 
         if (request.StartDate == null && request.EndDate == null)

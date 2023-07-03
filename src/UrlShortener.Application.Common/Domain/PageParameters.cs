@@ -3,7 +3,7 @@
 public abstract class PageParameters
 {
     // todo move limit pages to appsetings??
-    public const int MaxPageSize = 50;
+    private const int MaxPageSize = 50;
     private const int DefaultPage = 1;
 
     private int _pageSize = 10;

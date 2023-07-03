@@ -7,14 +7,14 @@ namespace Application.UnitTests.Links.Queries;
 public class GetMostRedirectedLinksQueryHandlerTests
 {
     [Fact]
-    public async Task Should_return_IEnumerableLinks()
+    public async Task Should_return_SuccessResult()
     {
         var mostClickableLink =
           SeedData.Links.OrderByDescending(l => (l.LinkStatistic!.Clicks, l.DateTimeCreated)).First();
         //arrange 
         var request = new GetMostRedirectedLinksQuery();
 
-        await using var dbContext = DbContextHepler.CreateContext();
+        await using var dbContext = DbContextHelper.CreateContext();
         var handler = new GetMostRedirectedLinksQueryHandler(dbContext);
         
         //act

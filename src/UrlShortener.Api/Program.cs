@@ -28,7 +28,7 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddRazorPages();
-        builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.CONFIG_KEY));
+        builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.ConfigKey));
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigKey));
         builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
         builder.Services.AddScoped<TokenProvider, TokenProvider>();

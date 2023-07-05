@@ -1,10 +1,11 @@
-﻿using UrlShortener.Application.Services;
+﻿using UrlShortener.Application.Interfaces;
+using UrlShortener.Application.Services;
 
 namespace Application.UnitTests.Services;
 
 public class AliasGeneratorTests
 {
-    private readonly AliasGenerator _aliasGenerator = new();
+    private readonly IAliasGenerator _aliasGenerator = new AliasGenerator();
 
     [Fact]
     public void GenerateAlias_WithDefaultParams_Should_return_validAlias()

@@ -33,7 +33,7 @@ public class LinkServiceTests
     {
         //arrange
         using var context = DbContextHelper.CreateContext();
-        LinkService linkService = new(context, _mockAliasGenerator.Object, _appOptions);
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
         
         //act
         var result = await linkService.AliasIsBusy(alias);
@@ -48,7 +48,7 @@ public class LinkServiceTests
     {
         //arrange
         using var context = DbContextHelper.CreateContext();
-        LinkService linkService = new(context, _mockAliasGenerator.Object, _appOptions);
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
         
         //act
         var result = await linkService.AliasIsBusy(alias);
@@ -64,7 +64,7 @@ public class LinkServiceTests
         //arrange
         string urlPattern = "https://localhost:7072/r/" + alias;
         using var context = DbContextHelper.CreateContext();
-        LinkService linkService = new(context, _mockAliasGenerator.Object, _appOptions);
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
         //act
         var shortUrl = linkService.CreateShortUrl(alias);
@@ -82,7 +82,7 @@ public class LinkServiceTests
         string randomAlias = "test";
         _appOptions.Value.AppUrl = null;
         using var context = DbContextHelper.CreateContext();
-        LinkService linkService = new(context, _mockAliasGenerator.Object, _appOptions);
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
         
         //assert
         Assert.Throws<ArgumentNullException>(() => linkService.CreateShortUrl(randomAlias));
@@ -96,7 +96,7 @@ public class LinkServiceTests
         _mockAliasGenerator.Setup(g => g.GenerateAlias(4, 10)).Returns(returnAlias);
         
         using var context = DbContextHelper.CreateContext();
-        var linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
         //act
         var alias = await linkService.GenerateAlias();

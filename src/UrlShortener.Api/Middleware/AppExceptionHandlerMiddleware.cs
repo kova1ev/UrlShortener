@@ -50,7 +50,7 @@ public class AppExceptionHandlerMiddleware
             case ValidationException validation:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 apiError = new ApiErrors(StatusCodes.Status400BadRequest,
-                    StatusCodeMessage.BadRequestMessage,
+                    StatusCodeErrorMessage.BadRequestErrorMessage,
                     validation.Errors);
                 resultJsonString = JsonSerializer.Serialize(apiError, _options);
                 break;
@@ -58,7 +58,7 @@ public class AppExceptionHandlerMiddleware
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
                 apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
-                    StatusCodeMessage.InternalServerError,
+                    StatusCodeErrorMessage.InternalServerErrorMessage,
                     new[] { exception.Message });
                 resultJsonString = JsonSerializer.Serialize(apiError, _options);
                 break;

@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using UrlShortener.Api.Models;
 using UrlShortener.Api.Utility;
+using UrlShortener.Application.Common.Constants;
 
 namespace UrlShortener.Api.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-    public string Message { get; set; } = "ApiKey is required";
+    public string Message { get; set; } = StatusCodeErrorMessage.ApiKeyErrorMessage;
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
@@ -16,7 +17,7 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
                 out var apiKeyFromHeaders) == false)
         {
             context.Result = new UnauthorizedObjectResult(
-                new ApiErrors(StatusCodes.Status401Unauthorized, Message, null));
+                new ApiErrors(StatusCodes.Status401Unauthorized, Message));
             return;
         }
 
@@ -27,7 +28,7 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
         if (apiKeyFromHeaders.Equals(apiKeyFromSettings) == false)
         {
             context.Result = new UnauthorizedObjectResult(
-                new ApiErrors(StatusCodes.Status401Unauthorized, Message, null));
+                new ApiErrors(StatusCodes.Status401Unauthorized, Message));
         }
     }
 }

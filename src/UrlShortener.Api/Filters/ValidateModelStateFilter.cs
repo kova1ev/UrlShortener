@@ -19,8 +19,10 @@ public class ValidateModelStateFilter : IActionFilter
         {
             return;
         }
+
         var errors = context.ModelState.SelectMany(e => e.Value.Errors.Select(m => m?.ErrorMessage));
-        var apiErrors = new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeMessage.BadRequestMessage, errors);
+        var apiErrors = new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeErrorMessage.BadRequestErrorMessage,
+            errors);
 
         context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Result = new ObjectResult(apiErrors);

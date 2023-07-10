@@ -4,7 +4,7 @@ using UrlShortener.Application.Interfaces;
 namespace UrlShortener.Application.Services;
 
 /// <inheritdoc cref="IAliasGenerator"/>
-internal class AliasGenerator : IAliasGenerator
+public class AliasGenerator : IAliasGenerator
 {
     private const string Source = "abcdefghijklnmopqrstuvwxyzABCDEFGHIJKLNMOPQRSTUVWXYZ";
 

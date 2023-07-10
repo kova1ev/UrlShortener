@@ -16,7 +16,7 @@ public class GetMostRedirectedLinksQueryHandlerTests
 
         await using var dbContext = DbContextHelper.CreateContext();
         var handler = new GetMostRedirectedLinksQueryHandler(dbContext);
-        
+
         //act
         var result = await handler.Handle(request, CancellationToken.None);
 
@@ -26,9 +26,9 @@ public class GetMostRedirectedLinksQueryHandlerTests
         Assert.NotNull(result.Value);
 
         var links = Assert.IsAssignableFrom<IEnumerable<LinkCompactResponse>>(result.Value).ToArray();
-        
+
         Assert.NotNull(links);
         Assert.Equal(mostClickableLink.Id, links.First().Id);
-        Assert.Equal(SeedData.Links.Count,links.Length);
+        Assert.Equal(SeedData.Links.Count, links.Length);
     }
 }

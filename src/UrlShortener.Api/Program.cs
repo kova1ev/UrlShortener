@@ -1,12 +1,12 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using UrlShortener.Api.Authentication;
 using UrlShortener.Api.Filters;
 using UrlShortener.Api.Infrastructure;
@@ -32,7 +32,11 @@ public class Program
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigKey));
         builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
         builder.Services.AddScoped<TokenProvider, TokenProvider>();
+        builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
+        builder.Services.AddAppDbContext(builder.Configuration);
+        builder.Services.AddApplication();
 
+        builder.Services.AddHttpContextAccessor();
         JwtOptions jwtOptions = new();
         builder.Configuration.GetSection(JwtOptions.ConfigKey).Bind(jwtOptions);
         builder.Services.Configure<JsonOptions>(options =>
@@ -46,6 +50,7 @@ public class Program
             options.RespectBrowserAcceptHeader = true;
             options.ReturnHttpNotAcceptable = true;
         });
+
 
         builder.Services.AddLogging(options =>
         {
@@ -90,9 +95,6 @@ public class Program
             });
         builder.Services.AddAuthorization();
 
-
-        builder.Services.AddAppDbContext(builder.Configuration);
-        builder.Services.AddApplication();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -147,8 +149,6 @@ public class Program
             options.AddSecurityRequirement(bearerRequirement);
         });
 
-
-        builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
 
         builder.Host.UseSerilog((context, config) =>
         {

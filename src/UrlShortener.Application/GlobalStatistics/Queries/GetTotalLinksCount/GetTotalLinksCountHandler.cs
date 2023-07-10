@@ -5,7 +5,7 @@ using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Application.GlobalStatistics.Queries.GetTotalLinksCount;
 
-public class GetTotalLinksCountHandler : IRequestHandler<GetTotalLinksCountQuery,Result<int>>
+public class GetTotalLinksCountHandler : IRequestHandler<GetTotalLinksCountQuery, Result<int>>
 {
     private readonly IAppDbContext _appDbContext;
 

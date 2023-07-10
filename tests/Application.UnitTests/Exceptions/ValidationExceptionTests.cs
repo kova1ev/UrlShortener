@@ -7,35 +7,28 @@ public class ValidationExceptionTests
     [Fact]
     public void Should_throw_Exception()
     {
-        var acton = () =>
-        {
-            throw new ValidationException();
-        };
-        Assert.Throws<ValidationException>(acton);
-    } 
+        var action = () => { throw new ValidationException(); };
+        Assert.Throws<ValidationException>(action);
+    }
+
     [Fact]
     public void Should_throw_Exception_WithCustomMessageAndErrorsList()
     {
         var message = "new errors";
         var errors = new List<string>() { "first", "second" };
 
-        var acton = () =>
-        {
-            throw new ValidationException(message,errors);
-        };
+        var action = () => { throw new ValidationException(message, errors); };
 
-        Assert.Throws<ValidationException>(acton);
-    } 
+        Assert.Throws<ValidationException>(action);
+    }
+
     [Fact]
     public void Should_throw_Exception_WithErrorsList()
     {
         var errors = new List<string>() { "first", "second" };
 
-        var acton = () =>
-        {
-            throw new ValidationException(errors);
-        };
+        var action = () => { throw new ValidationException(errors); };
 
-        Assert.Throws<ValidationException>(acton);
-    } 
+        Assert.Throws<ValidationException>(action);
+    }
 }

@@ -3,8 +3,8 @@
 
 public class Result
 {
-    public  bool IsSuccess { get; protected set; }
-    public  IEnumerable<string> Errors { get; protected set; }
+    public bool IsSuccess { get; protected set; }
+    public IEnumerable<string> Errors { get; protected set; }
 
     protected Result(bool isSuccess, IEnumerable<string> errors)
     {

@@ -7,7 +7,7 @@ namespace Application.UnitTests.Links.Queries;
 
 public class GetByIdTests
 {
-    private readonly Link _seedLink = SeedData.Links.First(); 
+    private readonly Link _seedLink = SeedData.Links.First();
     [Fact]
     public async Task GetById_Should_return_Link()
     {

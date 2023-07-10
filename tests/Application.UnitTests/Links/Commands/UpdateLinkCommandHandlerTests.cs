@@ -41,13 +41,13 @@ public class UpdateLinkCommandHandlerTests
 
 
     [Fact]
-    public async Task  UpdateLink_Should_return_SuccessResult_WithNewAlias_only()
+    public async Task UpdateLink_Should_return_SuccessResult_WithNewAlias_only()
     {
         //arrange
         string? emptyUrlAddress = null;
         var newAlias = "banana";
         var request = new UpdateLinkCommand(_linkId, emptyUrlAddress, newAlias);
-        
+
         _mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
 
         using var context = DbContextHelper.CreateContext();
@@ -70,12 +70,12 @@ public class UpdateLinkCommandHandlerTests
     }
 
     [Fact]
-    public async Task  UpdateLink_Should_return_SuccessResult_WhenAliasAndUrlAddressIsNew()
+    public async Task UpdateLink_Should_return_SuccessResult_WhenAliasAndUrlAddressIsNew()
     {
         //arrange
         var newAlias = "yayaya";
         var request = new UpdateLinkCommand(_linkId, _newUrlAddress, newAlias);
-        
+
         _mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns($"{_hostUrl}/{newAlias}");
 
         using var context = DbContextHelper.CreateContext();
@@ -106,7 +106,7 @@ public class UpdateLinkCommandHandlerTests
         //arrange
         Guid linkId = default!; //  Guid.NewGuid();
         var request = new UpdateLinkCommand(linkId, null!, null!);
-        
+
         using var context = DbContextHelper.CreateContext();
         var handler = new UpdateLinkCommandHandler(context, _mockLinkService.Object);
         //act
@@ -119,13 +119,14 @@ public class UpdateLinkCommandHandlerTests
         Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors.First());
     }
 
-    [Fact] public async Task UpdateLink_Should_return_FailureResult_WhenAliasIsTaken()
+    [Fact]
+    public async Task UpdateLink_Should_return_FailureResult_WhenAliasIsTaken()
     {
         //arrange
         string? emptyUrlAddress = null;
         var newAlias = "bbb"; // existing alias in db
         var request = new UpdateLinkCommand(_linkId, emptyUrlAddress!, newAlias);
-        
+
         _mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(true);
 
         using var context = DbContextHelper.CreateContext();

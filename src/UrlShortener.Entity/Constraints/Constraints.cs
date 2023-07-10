@@ -14,7 +14,7 @@ public static class LinkStatisticConstraints
     public const int MaxOsLength = 50;
 }
 
-public static class  GeolocationConstraints
+public static class GeolocationConstraints
 {
     public const int MaxCountryLength = 50;
     public const int MaxRegionLength = 50;

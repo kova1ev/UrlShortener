@@ -8,13 +8,15 @@ namespace UrlShortener.Api.Attributes;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
 {
+    public string Message { get; set; } = "ApiKey is required";
+
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         if (context.HttpContext.Request.Headers.TryGetValue(ApiKeyOptions.ApiKeyHeaderName,
                 out var apiKeyFromHeaders) == false)
         {
             context.Result = new UnauthorizedObjectResult(
-                new ApiErrors(StatusCodes.Status401Unauthorized, "ApiKey is required", null));
+                new ApiErrors(StatusCodes.Status401Unauthorized, Message, null));
             return;
         }
 
@@ -25,7 +27,7 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAuthorizationFilter
         if (apiKeyFromHeaders.Equals(apiKeyFromSettings) == false)
         {
             context.Result = new UnauthorizedObjectResult(
-                new ApiErrors(StatusCodes.Status401Unauthorized, "ApiKey is required", null));
+                new ApiErrors(StatusCodes.Status401Unauthorized, Message, null));
         }
     }
 }

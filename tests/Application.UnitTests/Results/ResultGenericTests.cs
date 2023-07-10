@@ -27,11 +27,11 @@ public class ResultGenericTests
     {
         // arrange
         string? data = null;
-        
+
         // assert
         Assert.Throws<ArgumentNullException>(() => Result<string>.Success(data!));
     }
-    
+
     [Fact]
     public void Result_T_Should_return_Errors()
     {
@@ -53,13 +53,13 @@ public class ResultGenericTests
         Assert.Equal(LinkValidationErrorMessage.AliasTaken, result.Errors.ToArray()[0]);
         Assert.Equal(LinkValidationErrorMessage.IdRequired, result.Errors.ToArray()[1]);
     }
-    
+
     [Fact]
     public void Result_T_Failure_Should_throw_ArgumentNullException_WhenErrorsIsNull()
     {
         // arrange
         string[]? errors = null;
-       
+
         // assert
         Assert.Throws<ArgumentNullException>(() => Result<string>.Failure(errors!));
     }

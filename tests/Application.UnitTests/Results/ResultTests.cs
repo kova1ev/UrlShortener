@@ -41,7 +41,7 @@ public class ResultTests
     {
         // arrange
         string[]? errors = null;
-        
+
         // assert
         Assert.Throws<ArgumentNullException>(() => Result.Failure(errors!));
     }

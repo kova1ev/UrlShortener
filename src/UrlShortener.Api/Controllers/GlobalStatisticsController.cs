@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Application.GlobalStatistics.Queries.GetLinksCountByTime;
@@ -8,6 +9,7 @@ using UrlShortener.Application.Interfaces;
 namespace UrlShortener.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [ApiKeyAuthorize]
 [Route("api/statistic")]
 public class GlobalStatisticsController : ApiControllerBase

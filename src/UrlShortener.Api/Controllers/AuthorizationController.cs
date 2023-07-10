@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Models;
 using UrlShortener.Application.Users.Queries;
@@ -9,6 +10,7 @@ using UrlShortener.Application.Users.Queries;
 namespace UrlShortener.Api.Controllers;
 
 [ApiController]
+[ApiKeyAuthorize]
 [Route("api/auth")]
 public class AuthorizationController : ApiControllerBase
 {

@@ -21,14 +21,14 @@ public class UpdateLinkCommandHandler : IRequestHandler<UpdateLinkCommand, Resul
     public async Task<Result> Handle(UpdateLinkCommand request, CancellationToken cancellationToken)
     {
         Link? existingLink = await _appDbContext.Links.Include(l => l.LinkStatistic)
-            .FirstOrDefaultAsync(l => l.Id == request.Id,cancellationToken);
+            .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
         if (existingLink == null)
         {
             return Result.Failure(new string[] { LinkValidationErrorMessage.LinkNotExisting });
         }
 
         if (request.Alias != null && existingLink.Alias != request.Alias &&
-            await _linkService.AliasIsBusy(request.Alias,cancellationToken))
+            await _linkService.AliasIsBusy(request.Alias, cancellationToken))
         {
             return Result.Failure(new string[] { LinkValidationErrorMessage.AliasTaken });
         }

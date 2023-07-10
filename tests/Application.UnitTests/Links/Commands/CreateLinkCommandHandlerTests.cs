@@ -23,7 +23,7 @@ public class CreateLinkCommandHandlerTests
 
         var request = new CreateLinkCommand(_newUrlAddress, inputAlias);
         var domainName = new Uri(request.UrlAddress!).Host;
-        
+
         _mockLinkService.Setup(ls => ls.CreateShortUrl(It.IsAny<string>())).Returns(shortUrl);
         _mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(false);
 
@@ -64,7 +64,7 @@ public class CreateLinkCommandHandlerTests
 
         var request = new CreateLinkCommand(_newUrlAddress, alias!);
         var domainName = new Uri(request.UrlAddress!).Host;
-        
+
         _mockLinkService.Setup(s => s.GenerateAlias(default)).ReturnsAsync(randomGeneratedAlias);
         _mockLinkService.Setup(ls => ls.CreateShortUrl(It.IsAny<string>())).Returns(shortUrl);
 
@@ -79,7 +79,7 @@ public class CreateLinkCommandHandlerTests
         Assert.True(result.IsSuccess);
         Assert.True(result.HasValue);
         Assert.Empty(result.Errors);
-        
+
         var linkCreatedResponse = Assert.IsType<LinkCreatedResponse>(result.Value);
         Assert.True(initialLinksCount + 1 == await context.Links.CountAsync());
         Assert.Equal(shortUrl, linkCreatedResponse.ShortUrl);
@@ -114,7 +114,7 @@ public class CreateLinkCommandHandlerTests
         Assert.True(result.HasValue);
         Assert.Empty(result.Errors);
         Assert.True(initialLinksCount == await context.Links.CountAsync());
-        
+
         var linkCreatedResponse = Assert.IsType<LinkCreatedResponse>(result.Value);
         Assert.NotEqual(default!, linkCreatedResponse.Id);
     }
@@ -126,7 +126,7 @@ public class CreateLinkCommandHandlerTests
         var shortUrl = $"{_hostUrl}/{inputAlias}";
         var request = new CreateLinkCommand(_existingUrlAddress, inputAlias);
         var domainName = new Uri(request.UrlAddress!).Host;
-        
+
         _mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(false);
         _mockLinkService.Setup(s => s.CreateShortUrl(It.IsAny<string>())).Returns(shortUrl);
 
@@ -161,7 +161,7 @@ public class CreateLinkCommandHandlerTests
     {
         var existingAlias = "aaa";
         var request = new CreateLinkCommand(_newUrlAddress, existingAlias);
-        
+
         _mockLinkService.Setup(s => s.AliasIsBusy(It.IsAny<string>(), default)).ReturnsAsync(true);
 
         using var context = DbContextHelper.CreateContext();

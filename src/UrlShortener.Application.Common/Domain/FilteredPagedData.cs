@@ -21,7 +21,7 @@ public class FilteredPagedData<T>
 
 
     public static async Task<FilteredPagedData<T>> CreateFilteredPagedData(IQueryable<T> source, int pageSize, int page,
-        CancellationToken cancellationToken=default)
+        CancellationToken cancellationToken = default)
     {
         var count = await source.CountAsync(cancellationToken);
 

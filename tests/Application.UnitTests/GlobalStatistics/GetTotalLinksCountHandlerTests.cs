@@ -8,7 +8,7 @@ public class GetTotalLinksCountHandlerTests
     [Fact]
     public async Task Should_return_SuccessResult()
     {
-        var expectedTotalCount = SeedData.Links.Count; 
+        var expectedTotalCount = SeedData.Links.Count;
         var request = new GetTotalLinksCountQuery();
 
         await using var appDbContext = DbContextHelper.CreateContext();
@@ -20,6 +20,6 @@ public class GetTotalLinksCountHandlerTests
         //assert
         Assert.True(result.IsSuccess);
         Assert.True(result.HasValue);
-        Assert.Equal(expectedTotalCount,result.Value);
+        Assert.Equal(expectedTotalCount, result.Value);
     }
 }

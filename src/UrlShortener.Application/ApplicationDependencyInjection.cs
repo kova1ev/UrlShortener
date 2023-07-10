@@ -15,11 +15,11 @@ public static class ApplicationDependencyInjection
         services.AddTransient<IAliasGenerator, AliasGenerator>();
         services.AddTransient<ILinkService, LinkService>();
         services.AddSingleton<ISystemDateTime>(new SystemDateTime());
-        
+
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
         services.AddMediatR(Assembly.GetExecutingAssembly());
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     }
 }

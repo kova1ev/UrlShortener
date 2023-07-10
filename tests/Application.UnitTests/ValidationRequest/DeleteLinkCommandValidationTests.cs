@@ -17,7 +17,7 @@ public class DeleteLinkCommandValidationTests
     {
         var id = Guid.NewGuid();
         var request = new DeleteLinkCommand(id);
-        
+
         //act
         var result = _validator.Validate(request);
 
@@ -31,7 +31,7 @@ public class DeleteLinkCommandValidationTests
     {
         Guid id = default;
         var request = new DeleteLinkCommand(id);
-        
+
         //act
         var result = _validator.Validate(request);
 

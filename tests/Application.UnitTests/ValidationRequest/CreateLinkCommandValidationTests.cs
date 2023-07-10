@@ -21,7 +21,7 @@ public class CreateLinkCommandValidationTests
     {
         //arrange
         var request = new CreateLinkCommand(url, alias);
-        
+
         //act 
         var result = _validator.Validate(request);
 
@@ -37,7 +37,7 @@ public class CreateLinkCommandValidationTests
     {
         //arrange
         var request = new CreateLinkCommand(url, alias);
-        
+
         //act 
         var result = _validator.Validate(request);
 

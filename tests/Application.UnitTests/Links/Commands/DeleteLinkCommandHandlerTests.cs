@@ -13,7 +13,7 @@ public class DeleteLinkCommandHandlerTests
         //arrange
         var link = SeedData.Links.Last();
         var request = new DeleteLinkCommand(link.Id);
-        
+
         using var context = DbContextHelper.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
         var iniLinksCount = await context.Links.CountAsync();
@@ -33,7 +33,7 @@ public class DeleteLinkCommandHandlerTests
         //arrange
         Guid badId = default;
         var request = new DeleteLinkCommand(badId);
-        
+
         using var context = DbContextHelper.CreateContext();
         var handler = new DeleteLinkCommandHandler(context);
         var iniLinksCount = await context.Links.CountAsync();

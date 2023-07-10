@@ -21,7 +21,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
 
     public async Task<Result<LinkCreatedResponse>> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
     {
-        if (request.Alias != null && await _linkService.AliasIsBusy(request.Alias,cancellationToken))
+        if (request.Alias != null && await _linkService.AliasIsBusy(request.Alias, cancellationToken))
         {
             return Result<LinkCreatedResponse>.Failure(new string[] { LinkValidationErrorMessage.AliasTaken });
         }
@@ -43,7 +43,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
         string alias = request.Alias ?? await _linkService.GenerateAlias(cancellationToken);
 
         Geolocation geolocation = new Geolocation();
-        await _appDbContext.Geolocations.AddAsync(geolocation,cancellationToken);
+        await _appDbContext.Geolocations.AddAsync(geolocation, cancellationToken);
 
         LinkStatistic linkStatistic = new LinkStatistic()
         {
@@ -53,7 +53,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             Os = null,
             Geolocation = geolocation
         };
-        await _appDbContext.LinkStatistics.AddAsync(linkStatistic,cancellationToken);
+        await _appDbContext.LinkStatistics.AddAsync(linkStatistic, cancellationToken);
 
         Link link = new Link()
         {
@@ -62,7 +62,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, Resul
             UrlShort = _linkService.CreateShortUrl(alias),
             LinkStatistic = linkStatistic
         };
-        await _appDbContext.Links.AddAsync(link,cancellationToken);
+        await _appDbContext.Links.AddAsync(link, cancellationToken);
 
         await _appDbContext.SaveChangesAsync(cancellationToken);
 

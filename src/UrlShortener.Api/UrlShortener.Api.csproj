@@ -43,6 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="ConfigureServices\" />
         <Folder Include="logs\" />
     </ItemGroup>
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
 using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Common.Domain.Links;
@@ -15,8 +16,8 @@ using UrlShortener.Application.Links.Queries.GetMostRedirectedLinks;
 namespace UrlShortener.Api.Controllers;
 
 [ApiController]
-// [ApiKeyAuthorize]
-// [Authorize]
+[ApiKeyAuthorize]
+[Authorize]
 [Route("api/link")]
 public class LinkController : ApiControllerBase
 {
@@ -52,7 +53,7 @@ public class LinkController : ApiControllerBase
     public async Task<ActionResult> GetMostPopular()
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result = await Mediator.Send(new GetMostRedirectedLinksQuery(),cancellationToken);
+        var result = await Mediator.Send(new GetMostRedirectedLinksQuery(), cancellationToken);
 
         return Ok(result.Value);
     }

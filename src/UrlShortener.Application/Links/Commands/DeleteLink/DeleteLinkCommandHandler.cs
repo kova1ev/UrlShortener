@@ -19,7 +19,7 @@ public class DeleteLinkCommandHandler : IRequestHandler<DeleteLinkCommand, Resul
     public async Task<Result> Handle(DeleteLinkCommand request, CancellationToken cancellationToken)
     {
 
-        Link? link = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id,cancellationToken);
+        Link? link = await _appDbContext.Links.FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
         if (link == null)
         {
             return Result.Failure(new[] { LinkValidationErrorMessage.LinkNotExisting });

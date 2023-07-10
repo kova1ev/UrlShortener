@@ -15,7 +15,7 @@ public class UpdateLinkCommandValidationTests
     }
 
 
-    public  static IEnumerable<object[]> ValidDataForValidation = new List<object[]>()
+    public static IEnumerable<object[]> ValidDataForValidation = new List<object[]>()
     {
         new object[] { "http://git.com", "goog" },
         new object[] { "https://myspace.com", "" },

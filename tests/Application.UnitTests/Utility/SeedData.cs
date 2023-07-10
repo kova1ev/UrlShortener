@@ -41,7 +41,7 @@ public static class SeedData
             }
         },
     };
-    
+
 
     public static void SeedInitData(AppDbContext context)
     {

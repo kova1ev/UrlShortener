@@ -25,9 +25,9 @@ public class LinksRequestParametersTest
     }
 
     [Theory]
-    [InlineData(-11,-122)]
-    [InlineData(0,10000)]
-    public void Should_Create_LinksRequestParameters_withDefaultParam_WhenInputParamsInInvalid(int page,int pageSize)
+    [InlineData(-11, -122)]
+    [InlineData(0, 10000)]
+    public void Should_Create_LinksRequestParameters_withDefaultParam_WhenInputParamsInInvalid(int page, int pageSize)
     {
         //arrange
         var expectedDefaultPage = 1;

@@ -7,7 +7,7 @@ namespace UrlShortener.Application.Services;
 internal class AliasGenerator : IAliasGenerator
 {
     private const string Source = "abcdefghijklnmopqrstuvwxyzABCDEFGHIJKLNMOPQRSTUVWXYZ";
-    
+
     public string GenerateAlias(int minLength = 4, int maxLength = 10)
     {
         if (minLength < 1)

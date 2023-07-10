@@ -88,7 +88,7 @@ public class GetLinksQueryHandlerTest
 
         using var appDbContext = DbContextHelper.CreateContext();
         GetLinksQueryHandler handler = new(appDbContext);
-        
+
         //act
         var result = await handler.Handle(getLinksQuery, CancellationToken.None);
 

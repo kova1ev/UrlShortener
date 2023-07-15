@@ -15,8 +15,14 @@ public static class ClientIpHelper
         }
 
         string? xForwardedFor = httpRequest.Headers[XForwardedFor];
-        clientIp = xForwardedFor?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+        clientIp = Parse(xForwardedFor);
 
         return clientIp;
+    }
+
+
+    private static string? Parse(string? xForwardedFor)
+    {
+        return xForwardedFor?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
     }
 }

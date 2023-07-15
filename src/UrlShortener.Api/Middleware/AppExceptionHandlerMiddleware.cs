@@ -45,7 +45,7 @@ public class AppExceptionHandlerMiddleware
         {
             case OperationCanceledException:
                 context.Response.StatusCode = 409;
-                _logger.LogInformation(exception, "Canceled request {Path}", context.Request.Path);
+                _logger.LogInformation(exception, "Canceled request {@Path}", context.Request.Path);
                 break;
             case ValidationException validation:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -56,7 +56,7 @@ public class AppExceptionHandlerMiddleware
                 break;
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
+                _logger.LogError(exception, "Exception occurred: {@Message}", exception.Message);
                 apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
                     StatusCodeErrorMessage.InternalServerErrorMessage,
                     new[] { exception.Message });

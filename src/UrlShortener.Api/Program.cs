@@ -7,6 +7,7 @@ using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application.Common;
 using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Api;
 

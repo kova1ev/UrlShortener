@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Application.GlobalStatistics.Queries.GetLinksCountByTime;
 using UrlShortener.Application.GlobalStatistics.Queries.GetTotalLinksCount;
-using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -14,8 +13,7 @@ namespace UrlShortener.Api.Controllers;
 [Route("api/statistic")]
 public class GlobalStatisticsController : ApiControllerBase
 {
-    public GlobalStatisticsController(IMediator mediator, IAppDbContext dbContext,
-        ILogger<GlobalStatisticsController> logger) : base(mediator)
+    public GlobalStatisticsController(IMediator mediator) : base(mediator)
     {
     }
 

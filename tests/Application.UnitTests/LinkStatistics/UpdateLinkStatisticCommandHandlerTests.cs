@@ -1,8 +1,11 @@
 ﻿using Application.UnitTests.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Exceptions;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.LinkStatistics.Commands;
 using UrlShortener.Entity;
@@ -12,7 +15,8 @@ namespace Application.UnitTests.LinkStatistics;
 
 public class UpdateLinkStatisticCommandHandlerTests
 {
-    private readonly DateTime _dateTime = new(2023, 4, 5, 12, 0, 0);
+    private readonly string _api = "some-api";
+    private readonly DateTime _dateTime = new(2055, 1, 1, 12, 0, 0);
 
     private readonly Geolocation _geolocation = new()
     {
@@ -29,92 +33,77 @@ public class UpdateLinkStatisticCommandHandlerTests
 
     private readonly LinkStatistic _seedLinkLinkStatistic = SeedData.Links.First().LinkStatistic!;
     private readonly Mock<ISystemDateTime> _mockSystemDateTime;
+    private readonly Mock<IGeolocationService> _mockGeolocationService;
 
+    private readonly Mock<ILogger<UpdateLinkStatisticCommandHandler>> _mockLogger;
+    private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
 
+    // TODO 
     public UpdateLinkStatisticCommandHandlerTests()
     {
         _mockSystemDateTime = new Mock<ISystemDateTime>();
         _mockSystemDateTime.Setup(st => st.UtcNow).Returns(_dateTime);
+
+        _mockGeolocationService = new Mock<IGeolocationService>();
+        _mockGeolocationService.Setup(gs => gs.GetGeolocationDataAsync(It.IsAny<string>(), CancellationToken.None))
+            .ReturnsAsync(_geolocation);
+
+        _mockLogger = new Mock<ILogger<UpdateLinkStatisticCommandHandler>>();
+        _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
     }
 
     [Fact]
-    public async Task Update_Should_return_SuccessResult()
+    public async Task Update_Should_return_taskCompleted()
     {
-        //arrange
-        var request = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, _geolocation);
+        // arrange
+        var requestCommand = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, _api);
 
-        using var context = DbContextHelper.CreateContext();
-        var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
+        var handler = new UpdateLinkStatisticCommandHandler(_mockSystemDateTime.Object, _mockGeolocationService.Object,
+            _mockLogger.Object, _mockServiceScopeFactory.Object);
 
-        //act 
-        var result = await handler.Handle(request, CancellationToken.None);
+        // act
+        var result = handler.Handle(requestCommand, CancellationToken.None);
 
-        //assert
-        Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors);
+        // assert
+        Assert.True(result.IsCompleted);
+        Assert.True(result.IsCompletedSuccessfully);
+        _mockGeolocationService.Verify(gs => gs.GetGeolocationDataAsync(It.IsAny<string>(), CancellationToken.None),
+            Times.Once);
 
-        var linkStatistic = await context.LinkStatistics
-            .Include(ls => ls.Geolocation)
-            .FirstOrDefaultAsync(l => l.Id == _seedLinkLinkStatistic.Id);
+        _mockLogger.Verify(l =>
+                l.Log(LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Error")),
+                    It.IsAny<ObjectNotFoundException>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
+            Times.Never);
 
-        Assert.NotNull(linkStatistic);
-        Assert.True(linkStatistic.Clicks == _seedLinkLinkStatistic.Clicks + 1);
-        Assert.Equal(_geolocation.City, linkStatistic.Geolocation?.City);
-        Assert.Equal(_geolocation.Country, linkStatistic.Geolocation?.Country);
-        Assert.Equal(_geolocation.Region, linkStatistic.Geolocation?.Region);
-        Assert.Equal(_userAgentInfo.Os, linkStatistic.Os);
-        Assert.Equal(_userAgentInfo.Browser, linkStatistic.Browser);
-        Assert.Equal(_dateTime, linkStatistic.LastUse);
-    }
-
-
-    [Fact]
-    public async Task Update_Should_return_SuccessResult_When_doubleUpdate()
-    {
-        var request = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, _geolocation);
-
-        using var context = DbContextHelper.CreateContext();
-        var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
-
-        //act 
-        var result = await handler.Handle(request, CancellationToken.None);
-        await handler.Handle(request, CancellationToken.None);
-
-        //assert
-        Assert.True(result.IsSuccess);
-        Assert.Empty(result.Errors);
-
-        var linkStatistic = await context.LinkStatistics
-            .Include(ls => ls.Geolocation)
-            .FirstOrDefaultAsync(l => l.Id == _seedLinkLinkStatistic.Id);
-
-        Assert.NotNull(linkStatistic);
-        Assert.True(linkStatistic.Clicks == _seedLinkLinkStatistic.Clicks + 2); // assert this!
-        Assert.Equal(_geolocation.City, linkStatistic.Geolocation?.City);
-        Assert.Equal(_geolocation.Country, linkStatistic.Geolocation?.Country);
-        Assert.Equal(_geolocation.Region, linkStatistic.Geolocation?.Region);
-        Assert.Equal(_userAgentInfo.Os, linkStatistic.Os);
-        Assert.Equal(_userAgentInfo.Browser, linkStatistic.Browser);
-        Assert.Equal(_dateTime, linkStatistic.LastUse);
+        _mockLogger.Verify(l =>
+                l.Log(LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Error")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
+            Times.Never);
     }
 
     [Fact]
-    public async Task Update_Should_return_FailureResult_When_IdIsBad()
+    public async Task Update_Should_return_taskCompleted_When_ClientIpIsNUll()
     {
-        //arrange
-        Guid badId = default!; //or Guid.NewGuid(); 
-        var request = new UpdateLinkStatisticCommand(badId, _userAgentInfo, _geolocation);
+        string? ip = null;
+        // arrange
+        var requestCommand = new UpdateLinkStatisticCommand(_seedLinkLinkStatistic.Id, _userAgentInfo, ip);
 
-        using var context = DbContextHelper.CreateContext();
-        var handler = new UpdateLinkStatisticCommandHandler(context, _mockSystemDateTime.Object);
+        var handler = new UpdateLinkStatisticCommandHandler(_mockSystemDateTime.Object, _mockGeolocationService.Object,
+            _mockLogger.Object, _mockServiceScopeFactory.Object);
 
-        //act 
-        var result = await handler.Handle(request, CancellationToken.None);
+        // act
+        var result = handler.Handle(requestCommand, CancellationToken.None);
 
-        //assert
-        Assert.False(result.IsSuccess);
-        Assert.NotEmpty(result.Errors);
-        Assert.Single(result.Errors);
-        Assert.Equal(LinkStatisticsErrorMessage.NotFound, result.Errors.First());
+        // assert
+        Assert.True(result.IsCompleted);
+        Assert.True(result.IsCompletedSuccessfully);
+        _mockGeolocationService.Verify(gs => gs.GetGeolocationDataAsync(It.IsAny<string>(), CancellationToken.None),
+            Times.Never);
     }
 }

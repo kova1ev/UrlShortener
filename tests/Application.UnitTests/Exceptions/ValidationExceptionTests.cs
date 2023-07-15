@@ -7,7 +7,7 @@ public class ValidationExceptionTests
     [Fact]
     public void Should_throw_Exception()
     {
-        var action = () => { throw new ValidationException(); };
+        var action = new Action(() => throw new ValidationException());
         Assert.Throws<ValidationException>(action);
     }
 
@@ -17,9 +17,14 @@ public class ValidationExceptionTests
         var message = "new errors";
         var errors = new List<string>() { "first", "second" };
 
-        var action = () => { throw new ValidationException(message, errors); };
+        var action = new Action(() => throw new ValidationException(message, errors));
 
-        Assert.Throws<ValidationException>(action);
+        var exception = Assert.Throws<ValidationException>(action);
+        Assert.NotNull(exception.Message);
+        Assert.Equal(message, exception.Message);
+
+        Assert.NotNull(exception.Errors);
+        Assert.Equal(errors, exception.Errors);
     }
 
     [Fact]
@@ -27,8 +32,10 @@ public class ValidationExceptionTests
     {
         var errors = new List<string>() { "first", "second" };
 
-        var action = () => { throw new ValidationException(errors); };
+        var action = new Action(() => throw new ValidationException(errors));
 
-        Assert.Throws<ValidationException>(action);
+        var exception = Assert.Throws<ValidationException>(action);
+        Assert.NotNull(exception.Errors);
+        Assert.Equal(errors, exception.Errors);
     }
 }

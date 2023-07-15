@@ -16,7 +16,8 @@ public class GetLinkByShortNameQueryHandler : IRequestHandler<GetLinkByShortName
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task<Result<LinkDetailsResponse>> Handle(GetLinkByShortNameQuery request, CancellationToken cancellationToken)
+    public async Task<Result<LinkDetailsResponse>> Handle(GetLinkByShortNameQuery request,
+        CancellationToken cancellationToken)
     {
         var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)

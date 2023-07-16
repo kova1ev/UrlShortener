@@ -4,11 +4,10 @@ namespace UrlShortener.Application.Common.Domain;
 
 public class Geolocation
 {
-    [JsonPropertyName("country")]
+    [JsonPropertyName("country_name")] 
     public string? Country { get; set; }
-    [JsonPropertyName("regionname")]
+    [JsonPropertyName("state_prov")] 
     public string? Region { get; set; }
-    [JsonPropertyName("city")]
+    [JsonPropertyName("city")] 
     public string? City { get; set; }
 }
-

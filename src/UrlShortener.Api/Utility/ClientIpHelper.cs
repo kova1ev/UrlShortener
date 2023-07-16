@@ -1,18 +1,28 @@
 ﻿namespace UrlShortener.Api.Utility;
 
-public class ClientIpHelper
+public static class ClientIpHelper
 {
-    public string? GetClientIpByCloudFlare(HttpContext httpContext)
+    // todo try get from config appOptions  
+    private const string CfConnectingIp = "CF-Connecting-IP";
+    private const string XForwardedFor = "X-Forwarded-For";
+
+    public static string? GetClientIp(this HttpRequest httpRequest)
     {
-        //FOR CLOUDFLARE 
-        string? clientIp = httpContext.Request.Headers["CF-Connecting-IP"];
-        if (clientIp == null)
-            clientIp = httpContext.Request.Headers["True-Client-IP"];
-        if (clientIp == null)
+        string? clientIp = httpRequest.Headers[CfConnectingIp];
+        if (clientIp != null)
         {
-            string? x_forwarded_for = httpContext.Request.Headers["X-Forwarded-For"];
-            clientIp = x_forwarded_for?.Split(',')?.FirstOrDefault();
+            return clientIp;
         }
+
+        string? xForwardedFor = httpRequest.Headers[XForwardedFor];
+        clientIp = Parse(xForwardedFor);
+
         return clientIp;
+    }
+
+
+    private static string? Parse(string? xForwardedFor)
+    {
+        return xForwardedFor?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
     }
 }

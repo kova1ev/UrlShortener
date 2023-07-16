@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
-using UrlShortener.Application.Common.Models;
+using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.Users.Queries;

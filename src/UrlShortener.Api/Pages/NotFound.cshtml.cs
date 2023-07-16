@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace UrlShortener.Api.Pages
+namespace UrlShortener.Api.Pages;
+
+public class NotFoundModel : PageModel
 {
-    public class NotFoundModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

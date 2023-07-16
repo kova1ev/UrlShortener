@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -7,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Api", "src\Url
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Application", "src\UrlShortener.Application\UrlShortener.Application.csproj", "{B8A8776E-CD45-4934-9FEF-8B4230ABF758}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Domain", "src\UrlShortener.Domain\UrlShortener.Domain.csproj", "{AB8F30E4-35FE-4628-8EF7-406C11410837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Entity", "src\UrlShortener.Entity\UrlShortener.Entity.csproj", "{AB8F30E4-35FE-4628-8EF7-406C11410837}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Data", "src\UrlShortener.Data\UrlShortener.Data.csproj", "{1557D2F0-E80D-4D94-9638-C2905CB44D2C}"
 EndProject

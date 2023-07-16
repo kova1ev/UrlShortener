@@ -1,51 +1,48 @@
 using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Common.Result;
 
-namespace Application.UnitTests.Results
+namespace Application.UnitTests.Results;
+
+public class ResultTests
 {
-    public class ResultTests
+    [Fact]
+    public void ResultSuccess_Should_return_Success()
     {
-        [Fact]
-        public void Result_Success()
+        // act
+        var result = Result.Success();
+
+        // assert
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Errors);
+    }
+
+    [Fact]
+    public void ResultFailure_Should_return_Errors()
+    {
+        // arrange 
+        string[] errors =
         {
-            // arrange
-            // act
-            Result result = Result.Success();
+            LinkValidationErrorMessage.AliasTaken,
+            LinkValidationErrorMessage.IdRequired
+        };
 
-            // assert
-            Assert.True(result.IsSuccess);
-            Assert.Empty(result.Errors!);
-        }
+        // act
+        var result = Result.Failure(errors);
 
-        [Fact]
-        public void Result_Failure()
-        {
-            // arrange 
-            string[] errors = new[] {
-                LinkValidationErrorMessage.ALIAS_TAKEN,
-                LinkValidationErrorMessage.ID_REQUIRED
-            };
+        // assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(errors.Length, result.Errors.ToArray().Length);
+        Assert.Equal(LinkValidationErrorMessage.AliasTaken, result.Errors.ToArray()[0]);
+        Assert.Equal(LinkValidationErrorMessage.IdRequired, result.Errors.ToArray()[1]);
+    }
 
-            // act
-            Result result = Result.Failure(errors);
+    [Fact]
+    public void ResultFailure_Should_Throw_ArgumentNullException_when_Errors_Null()
+    {
+        // arrange
+        string[]? errors = null;
 
-            // assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal(2, result.Errors?.ToArray().Length);
-            Assert.Equal(LinkValidationErrorMessage.ALIAS_TAKEN, result.Errors.ToArray()[0]);
-            Assert.Equal(LinkValidationErrorMessage.ID_REQUIRED, result.Errors.ToArray()[1]);
-        }
-
-        [Fact]
-        public void Result_Errors_Exception()
-        {
-            // arrange
-            string[]? errors = null;
-            // act          
-            // assert
-
-            Assert.Throws<ArgumentNullException>(() => Result.Failure(errors!));
-
-        }
+        // assert
+        Assert.Throws<ArgumentNullException>(() => Result.Failure(errors!));
     }
 }

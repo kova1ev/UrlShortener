@@ -1,10 +1,38 @@
 ﻿@page "/admin"
+@inject HttpClient httpClient
 @attribute [Authorize]
 
+
 <PageTitle>Admin Page</PageTitle>
+
+<p>Total short links: @TotalCount</p>
+<p>Total short links: @TotalCount</p>
 
 <h3>Admin home page</h3>
 
 @code {
+    int TotalCount { get; set; }
+    int WeekCount { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await httpClient.GetStringAsync("/api/statistic/totalcount");
+
+
+        Int32.TryParse(res,out int temp);
+        TotalCount = temp;
+    }
+
+    private async Task GetWeekCount()
+    {
+        var res = await httpClient.GetStringAsync("/api/statistic/weekcount");
+        Int32.TryParse(res, out int temp);
+        WeekCount = temp;
+    }
+
+    private async Task ListMostRedirected()
+    {
+        var res = await httpClient.GetStringAsync("/api/statistic/mostredirected");
+    }
 
 }

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Models.Links;
+using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
 
@@ -21,14 +21,14 @@ public class GetLinkByIdQueryHandler : IRequestHandler<GetLinkByIdQuery, Result<
     {
         var link = await _appDbContext.Links
             .Include(l => l.LinkStatistic)
-                .ThenInclude(st => st.Geolocation)
-            .AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id);
+                .ThenInclude(st => st!.Geolocation)
+            .AsNoTracking().FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
 
         if (link == null)
         {
-            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LINK_NOT_EXISTING });
+            return Result<LinkDetailsResponse>.Failure(new[] { LinkValidationErrorMessage.LinkNotExisting });
         }
 
-        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link));
+        return Result<LinkDetailsResponse>.Success(LinkDetailsResponse.MapToLInkDto(link)!);
     }
 }

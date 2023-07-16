@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UrlShortener.Domain\UrlShortener.Domain.csproj" />
+    <ProjectReference Include="..\UrlShortener.Entity\UrlShortener.Entity.csproj" />
   </ItemGroup>
 
 </Project>

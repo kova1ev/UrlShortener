@@ -1,54 +1,54 @@
 ﻿using Application.UnitTests.Utility;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Links.Queries.GetLinkByShortName;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Links.Queries;
 
 public class GetLinkByShortNameTests
 {
+    public static IEnumerable<object[]> GoodAlias = new List<object[]>
+    {
+        new object[] { "aaa" },
+        new object[] { "bbb" }
+    };
 
     [Theory]
-    [InlineData("aaa")]
-    [InlineData("bbb")]
-    public async Task Get_link_by_short_name_Success(string shortName)
+    [MemberData(nameof(GoodAlias))]
+    public async Task GetLinkByShortName_Should_return_SuccessResult(string alias)
     {
         //arrange
-        GetLinkByShortNameQuery request = new(shortName);
-        using AppDbContext context = DbContextHepler.CreateContext();
+        GetLinkByShortNameQuery request = new(alias);
+        using var context = DbContextHelper.CreateContext();
         GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
-        Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
         //assert
 
         Assert.True(result.IsSuccess);
         Assert.True(result.HasValue);
-        Assert.Empty(result.Errors!);
-        Assert.EndsWith(shortName, result.Value.UrlShort);
+        Assert.Empty(result.Errors);
+        Assert.EndsWith(alias, result.Value.UrlShort);
     }
 
     [Theory]
     [InlineData("zzzzz")]
     [InlineData("fsdfdsf")]
-    public async Task Get_link_by_bad_short_name_Failure(string shortName)
+    public async Task GetLinkByShortName_Should_return_FailureResult_WhenAliasIsNotExistingInDB(string shortName)
     {
         //arrange
         GetLinkByShortNameQuery request = new(shortName);
-        using AppDbContext context = DbContextHepler.CreateContext();
+        using var context = DbContextHelper.CreateContext();
         GetLinkByShortNameQueryHandler handler = new(context);
 
         //act
-        Result<LinkDetailsResponse> result = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.False(result.IsSuccess);
         Assert.False(result.HasValue);
-        Assert.NotEmpty(result.Errors!);
-        Assert.Equal(1, result.Errors.Count());
-        Assert.Equal(LinkValidationErrorMessage.LINK_NOT_EXISTING, result.Errors.FirstOrDefault());
+        Assert.NotEmpty(result.Errors);
+        Assert.Single(result.Errors);
+        Assert.Equal(LinkValidationErrorMessage.LinkNotExisting, result.Errors.FirstOrDefault());
     }
-
 }

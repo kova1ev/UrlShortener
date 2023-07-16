@@ -2,11 +2,11 @@
 
 public static class LinkValidationErrorMessage
 {
-    public const string ALIAS_TAKEN = "Alias is taken.";
-    public const string ALIAS_HAVE_WHITESPACE = "Alias must not contain spaces.";
-    public const string LINK_NOT_EXISTING = "Link is not existing.";
-    public const string URL_ADDRESS_REQUIRED = "UrlAddress is required.";
-    public const string URL_ADDRESS_IS_NOT_URL = "UrlAddress is not url.";
-    public const string ID_REQUIRED = "Id is required.";
-    public const string ALIAS_BAD_RANGE = "Alias length must be in range 3 - 30 characters.";
+    public const string AliasTaken = "Alias is taken.";
+    public const string AliasHaveWhitespace = "Alias must not contain spaces.";
+    public const string LinkNotExisting = "Link is not existing.";
+    public const string UrlAddressRequired = "UrlAddress is required.";
+    public const string UrlAddressIsNotUrl = "UrlAddress is not url.";
+    public const string IdRequired = "Id is required.";
+    public const string AliasBadRange = "Alias length must be in range 3 - 30 characters.";
 }

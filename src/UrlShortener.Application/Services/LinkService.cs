@@ -20,19 +20,19 @@ public class LinkService : ILinkService
     }
 
 
-    public async Task<bool> AliasIsBusy(string alias)
+    public async Task<bool> AliasIsBusy(string alias, CancellationToken cancellationToken = default)
     {
-        return await _appDbContext.Links.AnyAsync(l => l.Alias == alias);
+        return await _appDbContext.Links.AnyAsync(l => l.Alias == alias, cancellationToken);
     }
 
-    public async Task<string> GenerateAlias()
+    public async Task<string> GenerateAlias(CancellationToken cancellationToken = default)
     {
+        // Todo : if there are many links in the database, then the generation will be almost endless!!
         string alias;
         do
         {
             alias = _aliasGenerator.GenerateAlias();
-
-        } while (await AliasIsBusy(alias));
+        } while (await AliasIsBusy(alias, cancellationToken));
 
         return alias;
     }

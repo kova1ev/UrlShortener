@@ -1,21 +1,25 @@
-﻿using FluentValidation.Results;
-using UrlShortener.Application.Common.Constants;
+﻿using UrlShortener.Application.Common.Constants;
 using UrlShortener.Application.Links.Commands.DeleteLink;
 
 namespace Application.UnitTests.ValidationRequest;
 
 public class DeleteLinkCommandValidationTests
 {
+    private readonly DeleteLinkCommandValidator _validator;
+
+    public DeleteLinkCommandValidationTests()
+    {
+        _validator = new DeleteLinkCommandValidator();
+    }
+
     [Fact]
-    public void Validate_deleteLinkCommand_Success()
+    public void Should_Return_SuccessResult()
     {
         var id = Guid.NewGuid();
-
         var request = new DeleteLinkCommand(id);
-        var validator = new DeleteLinkCommandValidator();
 
         //act
-        ValidationResult result = validator.Validate(request);
+        var result = _validator.Validate(request);
 
         //assert
         Assert.True(result.IsValid);
@@ -23,20 +27,20 @@ public class DeleteLinkCommandValidationTests
     }
 
     [Fact]
-    public void Validate_deleteLinkCommand_without_id()
+    public void Should_Return_ErrorsResult_WhenId_isDefault()
     {
-        Guid id = default!;
-
+        Guid id = default;
         var request = new DeleteLinkCommand(id);
-        var validator = new DeleteLinkCommandValidator();
 
         //act
-        ValidationResult result = validator.Validate(request);
+        var result = _validator.Validate(request);
 
         //assert
         Assert.False(result.IsValid);
         Assert.NotEmpty(result.Errors);
 
-        Assert.Contains(LinkValidationErrorMessage.ID_REQUIRED, result.Errors.Select(e => e.ErrorMessage).ToArray());
+        var errors = result.Errors.Select(e => e.ErrorMessage).ToArray();
+        Assert.Contains(LinkValidationErrorMessage.IdRequired, errors);
+        Assert.Single(errors);
     }
 }

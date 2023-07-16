@@ -1,50 +1,51 @@
-﻿using UrlShortener.Application.Common.Models.Links;
+﻿using UrlShortener.Application.Common.Domain.Links;
 
 namespace Application.UnitTests.Common;
 
 public class LinksRequestParametersTest
 {
     [Fact]
-    public void Create_LinksRequestParameters_with_Valid_Parameters()
+    public void Should_Create_LinksRequestParameters_When_ParametersIsValid()
     {
         //arrange
+        int currentPage = 2;
+        int pageSize = 10;
         //act
-        LinksRequestParameters linksRequestParameters = new LinksRequestParameters()
+        var linksRequestParameters = new LinksRequestParameters
         {
-            Page = 2,
-            PageSize = 20
+            Page = currentPage,
+            PageSize = pageSize
         };
 
         //assert 
-        Assert.Equal(2, linksRequestParameters.Page);
-        Assert.Equal(20, linksRequestParameters.PageSize);
+        Assert.Equal(currentPage, linksRequestParameters.Page);
+        Assert.Equal(pageSize, linksRequestParameters.PageSize);
         Assert.True(linksRequestParameters.Text == null);
         Assert.True(linksRequestParameters.DateSort == DateSort.Desc);
     }
 
     [Theory]
-    [InlineData(-122)]
-    [InlineData(10000)]
-    public void Create_LinksRequestParameters_with_Invalid_Parameters(int pageSize)
+    [InlineData(-11, -122)]
+    [InlineData(0, 10000)]
+    public void Should_Create_LinksRequestParameters_withDefaultParam_WhenInputParamsInInvalid(int page, int pageSize)
     {
         //arrange
-        int invalidPage = -10;
-        int defaultPage = 1;
-        int defaultPageSize = 10;
+        var expectedDefaultPage = 1;
+        var expectedDefaultPageSize = 10;
 
         //act
-        LinksRequestParameters linksRequestParameters = new LinksRequestParameters()
+        var linksRequestParameters = new LinksRequestParameters
         {
-            Page = invalidPage,
+            Page = page,
             PageSize = pageSize
         };
 
         //assert 
-        Assert.NotEqual(invalidPage, linksRequestParameters.Page);
+        Assert.NotEqual(page, linksRequestParameters.Page);
         Assert.NotEqual(pageSize, linksRequestParameters.PageSize);
 
-        Assert.Equal(defaultPage, linksRequestParameters.Page);
-        Assert.Equal(defaultPageSize, linksRequestParameters.PageSize);
+        Assert.Equal(expectedDefaultPage, linksRequestParameters.Page);
+        Assert.Equal(expectedDefaultPageSize, linksRequestParameters.PageSize);
 
         Assert.True(linksRequestParameters.Text == null);
         Assert.True(linksRequestParameters.DateSort == DateSort.Desc);

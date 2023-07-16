@@ -2,5 +2,5 @@
 
 public static class LinkStatisticsErrorMessage
 {
-    public const string NOT_FOUND = "LinkStatistic not found.";
+    public const string NotFound = "LinkStatistic not found.";
 }

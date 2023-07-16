@@ -1,31 +1,29 @@
 ﻿using Application.UnitTests.Utility;
-using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Common.Models;
-using UrlShortener.Application.Common.Models.Links;
-using UrlShortener.Application.Common.Result;
+using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Links.Queries.GetLinks;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Links.Queries;
 
 public class GetLinksQueryHandlerTest
 {
     [Fact]
-    public async Task GetLinks_By_Only_Pagination()
+    public async Task GetLinks_Should_return_SuccessResult_WhenRequestParamsIsDefault()
     {
         //arrange
-        using AppDbContext context = DbContextHepler.CreateContext();
-        int iniLinksCount = await context.Links.CountAsync();
-        int page = 1;
-        int pageSize = 10;
+        var pageSize = 10;
+        var page = 1;
+        var expectedPageCount = 1;
         LinksRequestParameters requestParameters = new() { Page = page, PageSize = pageSize };
         GetLinksQuery request = new(requestParameters);
 
-        GetLinksQueryHandler handler = new(context);
-        //act
+        using var context = DbContextHelper.CreateContext();
+        var iniLinksCount = SeedData.Links.Count;
 
-        Result<FilteredPagedData<LinkCompactResponse>> result = await handler.Handle(
-            request, CancellationToken.None);
+        GetLinksQueryHandler handler = new(context);
+
+        //act
+        var result = await handler.Handle(request, CancellationToken.None);
 
         //assert
         Assert.NotNull(result.Value);
@@ -39,25 +37,60 @@ public class GetLinksQueryHandlerTest
         Assert.Equal(iniLinksCount, data.TotalCount);
         Assert.Equal(page, data.CurrentPage);
         Assert.Equal(pageSize, data.PageSize);
-        Assert.Equal(1, data.TotalPages);
+        Assert.Equal(expectedPageCount, data.TotalPages);
+    }
+
+    [Fact]
+    public async Task GetLinks_Should_return_SuccessResult_WhenRequestParamsIsCustom()
+    {
+        //arrange
+        var pageSize = 1;
+        var page = 1;
+        var expectedPageCount = 2;
+        LinksRequestParameters requestParameters = new() { Page = page, PageSize = pageSize };
+        GetLinksQuery request = new(requestParameters);
+
+        using var context = DbContextHelper.CreateContext();
+        var iniLinksCount = SeedData.Links.Count;
+
+        GetLinksQueryHandler handler = new(context);
+
+        //act
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        //assert
+        Assert.NotNull(result.Value);
+        Assert.True(result.IsSuccess);
+        Assert.True(result.HasValue);
+
+        var data = Assert.IsType<FilteredPagedData<LinkCompactResponse>>(result.Value);
+
+        Assert.NotNull(data.Data);
+        Assert.Equal(pageSize, data.Data.ToArray().Length);
+        Assert.Equal(iniLinksCount, data.TotalCount);
+        Assert.Equal(page, data.CurrentPage);
+        Assert.Equal(pageSize, data.PageSize);
+        Assert.Equal(expectedPageCount, data.TotalPages);
     }
 
     [Theory]
     [InlineData("git")]
     [InlineData("leet")]
-    public async Task Should_return_result_by_search(string keyWord)
+    public async Task Should_return_SuccessResult_by_search(string keyWord)
     {
         //arrange 
-        LinksRequestParameters requestParameters = new();
-        requestParameters.Text = keyWord;
-
+        int expectedCount = 1;
+        LinksRequestParameters requestParameters = new()
+        {
+            Text = keyWord
+        };
         GetLinksQuery getLinksQuery = new(requestParameters);
 
-        using AppDbContext appDbContext = DbContextHepler.CreateContext();
-
+        using var appDbContext = DbContextHelper.CreateContext();
         GetLinksQueryHandler handler = new(appDbContext);
+
         //act
-        Result<FilteredPagedData<LinkCompactResponse>> result = await handler.Handle(getLinksQuery, CancellationToken.None);
+        var result = await handler.Handle(getLinksQuery, CancellationToken.None);
 
         //assert
 
@@ -70,8 +103,8 @@ public class GetLinksQueryHandlerTest
 
         Assert.NotNull(data.Data);
         Assert.Single(data.Data.ToArray());
-        Assert.Equal(1, data.TotalCount);
-        Assert.Equal(1, data.CurrentPage);
-        Assert.Equal(1, data.TotalPages);
+        Assert.Equal(expectedCount, data.TotalCount);
+        Assert.Equal(expectedCount, data.CurrentPage);
+        Assert.Equal(expectedCount, data.TotalPages);
     }
 }

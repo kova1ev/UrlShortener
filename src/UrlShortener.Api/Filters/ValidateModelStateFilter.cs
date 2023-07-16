@@ -9,7 +9,6 @@ public class ValidateModelStateFilter : IActionFilter
 {
     public void OnActionExecuted(ActionExecutedContext context)
     {
-
     }
 
     public void OnActionExecuting(ActionExecutingContext context)
@@ -20,8 +19,10 @@ public class ValidateModelStateFilter : IActionFilter
         {
             return;
         }
+
         var errors = context.ModelState.SelectMany(e => e.Value.Errors.Select(m => m?.ErrorMessage));
-        ApiErrors apiErrors = new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeMessage.BAD_REQUEST_MESSAGE, errors);
+        var apiErrors = new ApiErrors(StatusCodes.Status400BadRequest, StatusCodeErrorMessage.BadRequestErrorMessage,
+            errors);
 
         context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Result = new ObjectResult(apiErrors);

@@ -8,14 +8,16 @@ namespace UrlShortener.Api.Middleware;
 
 public class AppExceptionHandlerMiddleware
 {
-    private readonly JsonSerializerOptions options = new JsonSerializerOptions()
+    private readonly ILogger<AppExceptionHandlerMiddleware> _logger;
+
+    private readonly RequestDelegate _next;
+
+    private readonly JsonSerializerOptions _options = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private readonly RequestDelegate _next;
-    private readonly ILogger<AppExceptionHandlerMiddleware> _logger;
     public AppExceptionHandlerMiddleware(RequestDelegate next, ILogger<AppExceptionHandlerMiddleware> logger)
     {
         _next = next;
@@ -38,26 +40,30 @@ public class AppExceptionHandlerMiddleware
     {
         context.Response.ContentType = "application/json";
         ApiErrors apiError;
-        string resultJsonString = string.Empty;
+        var resultJsonString = string.Empty;
         switch (exception)
         {
+            case OperationCanceledException:
+                context.Response.StatusCode = 409;
+                _logger.LogInformation(exception, "Canceled request {@Path}", context.Request.Path);
+                break;
             case ValidationException validation:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 apiError = new ApiErrors(StatusCodes.Status400BadRequest,
-                   StatusCodeMessage.BAD_REQUEST_MESSAGE,
-                   validation.Errors);
-                resultJsonString = JsonSerializer.Serialize(apiError, options);
+                    StatusCodeErrorMessage.BadRequestErrorMessage,
+                    validation.Errors);
+                resultJsonString = JsonSerializer.Serialize(apiError, _options);
                 break;
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                // todo :  log error BeginScope?
-                _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
+                _logger.LogError(exception, "Exception occurred: {@Message}", exception.Message);
                 apiError = new ApiErrors(StatusCodes.Status500InternalServerError,
-                    StatusCodeMessage.INTERNAL_SERVER_ERROR,
+                    StatusCodeErrorMessage.InternalServerErrorMessage,
                     new[] { exception.Message });
-                resultJsonString = JsonSerializer.Serialize(apiError, options);
+                resultJsonString = JsonSerializer.Serialize(apiError, _options);
                 break;
         }
+
         await context.Response.WriteAsync(resultJsonString);
     }
 }
@@ -69,4 +75,3 @@ public static class AppExceptionHandlerExtension
         return builder.UseMiddleware<AppExceptionHandlerMiddleware>();
     }
 }
-

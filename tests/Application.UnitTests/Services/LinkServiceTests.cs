@@ -4,103 +4,106 @@ using Moq;
 using UrlShortener.Application.Common;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Services;
-using UrlShortener.Data;
 
 namespace Application.UnitTests.Services;
 
 public class LinkServiceTests
 {
-    private const string APP_URL = "https://localhost:7072";
+    private const string FakeAppUrl = "https://localhost:7072";
+    private readonly IOptions<AppOptions> _appOptions;
+    private readonly Mock<IAliasGenerator> _mockAliasGenerator;
+
+    public LinkServiceTests()
+    {
+        _mockAliasGenerator = new Mock<IAliasGenerator>();
+        _appOptions = Options.Create(new AppOptions() { AppUrl = FakeAppUrl });
+    }
+
+    public static IEnumerable<object[]> BusyAlias = SeedData.Links.Select(l => new[] { l.Alias }).ToList()!;
+
+    public static IEnumerable<object[]> FreeAlias = new List<object[]>()
+    {
+        new object[] { "qwerty" },
+        new object[] { "dsfsdf" }
+    };
 
     [Theory]
-    [InlineData("aaa")]
-    [InlineData("bbb")]
-    public async Task Alias_busy(string alias)
+    [MemberData(nameof(BusyAlias))]
+    public async Task AliasIsBusy_Should_return_False(string alias)
     {
-        //arrange 
-        Mock<IAliasGenerator> moq = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        //arrange
+        using var context = DbContextHelper.CreateContext();
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
-        using AppDbContext context = DbContextHepler.CreateContext();
-        LinkService linkService = new(context, moq.Object, options);
         //act
-        bool result = await linkService.AliasIsBusy(alias);
+        var result = await linkService.AliasIsBusy(alias);
 
         //assert
         Assert.True(result);
     }
 
     [Theory]
-    [InlineData("qwerty")]
-    [InlineData("dsfsdf")]
-    public async Task Alias_is_not_busy(string alias)
+    [MemberData(nameof(FreeAlias))]
+    public async Task AliasIsBusy_Should_return_True(string alias)
     {
-        //arrange 
-        Mock<IAliasGenerator> moq = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        //arrange
+        using var context = DbContextHelper.CreateContext();
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
-        using AppDbContext context = DbContextHepler.CreateContext();
-        LinkService linkService = new(context, moq.Object, options);
         //act
-        bool result = await linkService.AliasIsBusy(alias);
+        var result = await linkService.AliasIsBusy(alias);
 
         //assert
         Assert.False(result);
     }
 
     [Theory]
-    [InlineData("test1")]
-    [InlineData("qwerty")]
-    public void Create_short_url_Success(string alias)
+    [MemberData(nameof(FreeAlias))]
+    public void CreateShortUrl_Should_return_ValidShortUrl(string alias)
     {
-        Mock<IAliasGenerator> moqDummy = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> options = Options.Create(new AppOptions() { AppUrl = APP_URL });
+        //arrange
+        string urlPattern = "https://localhost:7072/r/" + alias;
+        using var context = DbContextHelper.CreateContext();
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
-        using AppDbContext context = DbContextHepler.CreateContext();
-        LinkService linkService = new(context, moqDummy.Object, options);
         //act
-        string shortUrl = linkService.CreateShortUrl(alias);
+        var shortUrl = linkService.CreateShortUrl(alias);
 
-
+        //assert
         Assert.NotNull(shortUrl);
         Assert.NotEmpty(shortUrl);
-        Assert.Equal("https://localhost:7072/r/" + alias, shortUrl);
+        Assert.Equal(urlPattern, shortUrl);
     }
 
     [Fact]
-    public void Create_short_url_with_Null_app_url_Failure()
+    public void CreateShortUrl_Should_throw_ArgumentNullException_when_AppUrlIsNull()
     {
-        string? appUrl = null;
-        Mock<IAliasGenerator> moqDummy = new Mock<IAliasGenerator>();
-        IOptions<AppOptions> op = Options.Create(new AppOptions() { AppUrl = appUrl });
+        //arrange
+        string randomAlias = "test";
+        _appOptions.Value.AppUrl = null;
+        using var context = DbContextHelper.CreateContext();
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
-        using AppDbContext context = DbContextHepler.CreateContext();
-        LinkService linkService = new(context, moqDummy.Object, op);
-        //act
         //assert
-        Assert.Throws<ArgumentNullException>(() => linkService.CreateShortUrl("test"));
+        Assert.Throws<ArgumentNullException>(() => linkService.CreateShortUrl(randomAlias));
     }
 
-
     [Fact]
-    public async Task Generate_alias_Success()
+    public async Task GenerateAlias_Should_return_Alias()
     {
         var returnAlias = "zzzz";
         //arrange
-        var mockAliasGenerator = new Mock<IAliasGenerator>();
-        mockAliasGenerator.Setup(g => g.GenerateAlias(4, 10)).Returns(returnAlias);
-        IOptions<AppOptions> options = Options.Create(new AppOptions { AppUrl = APP_URL });
+        _mockAliasGenerator.Setup(g => g.GenerateAlias(4, 10)).Returns(returnAlias);
 
-        using var context = DbContextHepler.CreateContext();
-        var linkService = new LinkService(context, mockAliasGenerator.Object, options);
+        using var context = DbContextHelper.CreateContext();
+        ILinkService linkService = new LinkService(context, _mockAliasGenerator.Object, _appOptions);
 
         //act
-        string alias = await linkService.GenerateAlias();
+        var alias = await linkService.GenerateAlias();
 
         //assert
         Assert.NotNull(alias);
         Assert.NotEmpty(alias);
         Assert.Equal(returnAlias, alias);
     }
-
 }

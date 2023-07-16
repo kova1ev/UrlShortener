@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UrlShortener.Api.Authentication;
-using UrlShortener.Application.Common.Models;
+using UrlShortener.Application.Common.Domain;
 
 namespace UrlShortener.Api.Infrastructure;
 
@@ -46,13 +46,13 @@ public class TokenProvider : ITokenProvider
 
     private IEnumerable<Claim> GetClaims(User user)
     {
-        string name = user.Email.Substring(0, user.Email.IndexOf('@'));
-        IEnumerable<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name,name),
-                new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.Role,user.Role)
-            };
+        var name = user.Email.Substring(0, user.Email.IndexOf('@'));
+        IEnumerable<Claim> claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, name),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role)
+        };
         return claims;
     }
 }

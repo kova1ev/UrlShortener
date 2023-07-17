@@ -16,7 +16,7 @@ In the admin panel, you can see the shortened links statistics sheet, when it wa
 While the site is running on an in-memory database, a full transition to PostgreSQL is planned in the future.
 
 ---
-### :candy: Using :
+### Using :
 -  https://ipgeolocation.io/ is used to determine geolocation.
 -  Mediator for CQRS
 -  Serilog

@@ -17,7 +17,7 @@ While the site is running on an in-memory database, a full transition to Postgre
 
 ---
 ### :candy: Using :
--  https://ip-api.com/ is used to determine geolocation.
+-  https://ipgeolocation.io/ is used to determine geolocation.
 -  Mediator for CQRS
 -  Serilog
 -  Blazor wasm

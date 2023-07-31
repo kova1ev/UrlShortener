@@ -22,4 +22,9 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="Application.UnitTests" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Authorization\Commands\" />
+	  <Folder Include="Users\Commands\UpdateUser\" />
+	</ItemGroup>
 </Project>

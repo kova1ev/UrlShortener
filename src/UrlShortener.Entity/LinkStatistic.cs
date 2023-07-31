@@ -7,8 +7,8 @@ public class LinkStatistic : EntityBase
     public int Clicks { get; set; }
     public string? Browser { get; set; }
     public string? Os { get; set; }
-    public virtual Geolocation? Geolocation { get; set; }
+    public Geolocation? Geolocation { get; set; }
 
     public Guid LinkId { get; set; }
-    public virtual Link Link { get; set; } = null!;
+    public Link Link { get; set; } = null!;
 }

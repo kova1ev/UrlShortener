@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Common.Domain.Links;
+﻿namespace UrlShortener.Application.Common.Domain;
 
 public class LinksRequestParameters : PageParameters
 {

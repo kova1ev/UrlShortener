@@ -17,7 +17,10 @@ public static class ConfigureAppDbContext
         {
             string connectionString = configuration["ConnectionStrings:PostgresSQL"]
                                       ?? throw new ArgumentNullException(nameof(configuration));
-            services.AddDbContext<AppDbContext>(options => { options.UseNpgsql(connectionString); });
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
+            });
         }
 
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());

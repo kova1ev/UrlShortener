@@ -18,9 +18,7 @@ public class UpdateLinkCommandValidationTests
     public static IEnumerable<object[]> ValidDataForValidation = new List<object[]>()
     {
         new object[] { "http://git.com", "goog" },
-        new object[] { "https://myspace.com", "" },
-        new object[] { "    ", "   " },
-        new object[] { "", "" },
+        new object[] { "https://myspace.com", null! },
         new object[] { null!, null! },
         new object[] { null!, "aaa" }
     };
@@ -43,6 +41,8 @@ public class UpdateLinkCommandValidationTests
     [Theory]
     [InlineData("google.com")]
     [InlineData("www.yandex.com")]
+    [InlineData("")]
+    [InlineData("    ")]
     public void VShould_return_ErrorsResult_When_UrlIsInvalid(string url)
     {
         //arrange
@@ -56,7 +56,7 @@ public class UpdateLinkCommandValidationTests
         Assert.NotEmpty(result.Errors);
 
         var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotUrl, errors);
+        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotCorrect, errors);
     }
 
     [Fact]
@@ -81,6 +81,7 @@ public class UpdateLinkCommandValidationTests
     }
 
     [Theory]
+    [InlineData("")]
     [InlineData("1w")] // few letters < 3
     [InlineData("asdfgjgkgkdldudlfyfuljdnsjedfdfgfg")] // many letters > 30
     public void Should_return_ErrorsResult_When_AliasLengthIsInvalid(string alias)
@@ -102,7 +103,8 @@ public class UpdateLinkCommandValidationTests
 
     [Theory]
     [InlineData("fgg  df   gf")]
-    [InlineData("fg gdf")]
+    [InlineData("  fg gdf  ")]
+    [InlineData("    ")]
     public void Should_return_ErrorsResult_WhenAliasContainWhiteSpace(string alias)
     {
         //arrange

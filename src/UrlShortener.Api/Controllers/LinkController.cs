@@ -25,32 +25,31 @@ public class LinkController : ApiControllerBase
     {
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = nameof(GetLinkById))]
     [ProducesResponseType(typeof(LinkDetailsResponse), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    public async Task<ActionResult> GetById([FromRoute] Guid id)
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> GetLinkById([FromRoute] Guid id)
     {
         var cancellationToken = HttpContext.RequestAborted;
         var result = await Mediator.Send(new GetLinkByIdQuery(id), cancellationToken);
         if (result.IsSuccess == false)
-            return NoContent();
+            return NotFound();
         return Ok(result.Value);
     }
 
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetLinks))]
     [ProducesResponseType(typeof(FilteredPagedData<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult> GetLinks([FromQuery] LinksRequestParameters requestParameters)
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result = await Mediator
-            .Send(new GetLinksQuery(requestParameters), cancellationToken);
+        var result = await Mediator.Send(new GetLinksQuery(requestParameters), cancellationToken);
         return Ok(result.Value);
     }
 
-    [HttpGet("popular")]
+    [HttpGet("popular", Name = nameof(GetMostPopularLinks))]
     [ProducesResponseType(typeof(IEnumerable<LinkCompactResponse>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult> GetMostPopular()
+    public async Task<ActionResult> GetMostPopularLinks()
     {
         var cancellationToken = HttpContext.RequestAborted;
         var result = await Mediator.Send(new GetMostRedirectedLinksQuery(), cancellationToken);
@@ -63,17 +62,16 @@ public class LinkController : ApiControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(LinkCreatedResponse), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> CreteLink([FromBody] CreateLinkRequest createLinkRequest)
+    public async Task<IActionResult> CreteLink([FromBody] CreateLinkCommand createLinkCommand)
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result = await Mediator.Send(new CreateLinkCommand(createLinkRequest.UrlAddress, createLinkRequest.Alias),
-            cancellationToken);
+        var result = await Mediator.Send(createLinkCommand, cancellationToken);
         if (result.IsSuccess == false)
             return BadRequest(ApiErrors.ToBadRequest(result));
         return Ok(result.Value);
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{id:guid}", Name = nameof(DeleteLink))]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
@@ -85,15 +83,13 @@ public class LinkController : ApiControllerBase
         return NoContent();
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut(Name = nameof(UpdateLink))]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> UpdateLink([FromRoute] Guid id, [FromBody] UpdateLinkRequest updateLinkRequest)
+    public async Task<IActionResult> UpdateLink([FromBody] UpdateLinkCommand updateLinkCommand)
     {
         var cancellationToken = HttpContext.RequestAborted;
-        var result =
-            await Mediator.Send(new UpdateLinkCommand(id, updateLinkRequest.UrlAddress, updateLinkRequest.Alias),
-                cancellationToken);
+        var result = await Mediator.Send(updateLinkCommand, cancellationToken);
         if (result.IsSuccess == false)
             return BadRequest(ApiErrors.ToBadRequest(result));
         return NoContent();

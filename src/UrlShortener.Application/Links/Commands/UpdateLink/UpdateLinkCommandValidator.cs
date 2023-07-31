@@ -13,7 +13,7 @@ public sealed class UpdateLinkCommandValidator : AbstractValidator<UpdateLinkCom
         RuleFor(c => c.UrlAddress)
             .MustUrlAddress()
             .When(c => c.UrlAddress != null)
-            .WithMessage(LinkValidationErrorMessage.UrlAddressIsNotUrl);
+            .WithMessage(LinkValidationErrorMessage.UrlAddressIsNotCorrect);
 
         RuleFor(c => c.Alias)
             .Length(3, 30)
@@ -21,7 +21,7 @@ public sealed class UpdateLinkCommandValidator : AbstractValidator<UpdateLinkCom
             .WithMessage(LinkValidationErrorMessage.AliasBadRange);
 
         RuleFor(c => c.Alias)
-            .Matches(@"^\S*$")
+            .Must(alias=>alias!.Contains(' ') == false)
             .When(c => c.Alias != null)
             .WithMessage(LinkValidationErrorMessage.AliasHaveWhitespace);
     }

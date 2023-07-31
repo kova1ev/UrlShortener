@@ -17,7 +17,7 @@ public class GlobalStatisticsController : ApiControllerBase
     {
     }
 
-    [HttpGet("totalcount")]
+    [HttpGet("totalcount",Name = nameof(GetTotalLinkCount))]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTotalLinkCount()
     {
@@ -27,7 +27,7 @@ public class GlobalStatisticsController : ApiControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("weekcount")]
+    [HttpGet("weekcount",Name = nameof(GetLastWeekLinkCount))]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLastWeekLinkCount([FromQuery] DateOnly? start, [FromQuery] DateOnly? end)
     {

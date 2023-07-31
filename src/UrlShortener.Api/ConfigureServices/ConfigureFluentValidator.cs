@@ -8,5 +8,6 @@ public static class ConfigureFluentValidator
     public static void AddFluentValidationService(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(ApplicationAssembly.Assembly);
+        ValidatorOptions.Global.LanguageManager.Enabled = false;
     }
 }

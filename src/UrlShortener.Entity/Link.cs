@@ -7,5 +7,9 @@ public class Link : EntityBase
     public string? UrlShort { get; set; }
     public DateTime DateTimeCreated { get; private set; } = DateTime.UtcNow;
 
-    public virtual LinkStatistic? LinkStatistic { get; set; }
+    public LinkStatistic? LinkStatistic { get; set; }
+
+    public User? User { get; set; }
+
+    public Guid? UserId { get; set; }
 }

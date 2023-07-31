@@ -12,8 +12,8 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
 
         RuleFor(c => c.UrlAddress)
             .MustUrlAddress()
-            .When(c => c.UrlAddress != null)
-            .WithMessage(LinkValidationErrorMessage.UrlAddressIsNotUrl);
+            .When(c => c.UrlAddress != null!)
+            .WithMessage(LinkValidationErrorMessage.UrlAddressIsNotCorrect);
 
         RuleFor(c => c.Alias)
             .Length(3, 30)
@@ -21,7 +21,7 @@ public sealed class CreateLinkCommandValidator : AbstractValidator<CreateLinkCom
             .WithMessage(LinkValidationErrorMessage.AliasBadRange);
 
         RuleFor(c => c.Alias)
-            .Matches(@"^\S*$")
+            .Must(alias => alias!.Contains(' ') == false)
             .When(c => c.Alias != null)
             .WithMessage(LinkValidationErrorMessage.AliasHaveWhitespace);
     }

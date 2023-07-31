@@ -16,7 +16,6 @@ public class CreateLinkCommandValidationTests
     [Theory]
     [InlineData("http://git.com", "goog")]
     [InlineData("https://google.com", null)]
-    [InlineData("https://myspace.com", "")]
     public void Should_return_SuccessResult_When_dataIsValid(string url, string? alias)
     {
         //arrange
@@ -46,17 +45,17 @@ public class CreateLinkCommandValidationTests
         Assert.NotEmpty(result.Errors);
 
         var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
-        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotUrl, errors);
+        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotCorrect, errors);
         Assert.Single(errors);
     }
 
     [Theory]
     [InlineData("")]
-    [InlineData(null)]
     [InlineData("      ")]
-    public void Should_return_ErrorsResult_When_UrlIsWhiteSpaceOrNull(string? url)
+    public void Should_return_ErrorsResult_When_UrlIsWhiteSpace(string? url)
     {
         //arrange
+        var expectedErrorsCount = 2;
         var alias = "goog";
         var request = new CreateLinkCommand(url!, alias);
 
@@ -69,10 +68,12 @@ public class CreateLinkCommandValidationTests
 
         var errors = result.Errors.Select(s => s.ErrorMessage).ToArray();
         Assert.Contains(LinkValidationErrorMessage.UrlAddressRequired, errors);
-        Assert.Single(errors);
+        Assert.Contains(LinkValidationErrorMessage.UrlAddressIsNotCorrect, errors);
+        Assert.Equal(expectedErrorsCount,errors.Length);
     }
 
     [Theory]
+    [InlineData("")]
     [InlineData("1w")] // few letters < 3
     [InlineData("asdfgjgkgkdldudlfyfuljdnsjedfdfgfg")] // many letters > 30
     public void Should_return_ErrorsResult_When_AliasLengthIsInvalid(string alias)
@@ -93,6 +94,7 @@ public class CreateLinkCommandValidationTests
     }
 
     [Theory]
+    [InlineData("      ")]
     [InlineData("fgg  df   gf")]
     [InlineData("fg gdf")]
     public void Should_return_ErrorsResult_WhenAliasContainWhiteSpace(string alias)

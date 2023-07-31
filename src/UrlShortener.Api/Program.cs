@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 using UrlShortener.Api.Authentication;
 using UrlShortener.Api.ConfigureServices;
 using UrlShortener.Api.Filters;
@@ -8,6 +9,8 @@ using UrlShortener.Api.Middleware;
 using UrlShortener.Application.Common;
 using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Interfaces;
+using UrlShortener.Data;
+using UrlShortener.Entity;
 
 namespace UrlShortener.Api;
 
@@ -28,6 +31,7 @@ public class Program
         });
         builder.Services.Configure<MvcOptions>(options =>
         {
+            options.Filters.Add(new ProducesAttribute("application/json"));
             options.Filters.Add(typeof(ValidateModelStateFilter));
             options.RespectBrowserAcceptHeader = true;
             options.ReturnHttpNotAcceptable = true;
@@ -35,9 +39,8 @@ public class Program
 
         builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.ConfigKey));
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigKey));
-        builder.Services.Configure<User>(builder.Configuration.GetSection("Admin"));
 
-        builder.Services.AddScoped<TokenProvider, TokenProvider>();
+        builder.Services.AddScoped<ITokenProvider, JwtTokenProvider>();
         builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
 
         builder.Services.AddAppDbContext(builder.Configuration);
@@ -45,8 +48,9 @@ public class Program
         builder.Services.AddFluentValidationService();
         builder.Services.AddMediatRServices();
 
+        builder.Services.AddIdentity();
         builder.Services.AddAuthentication(builder.Configuration);
-        builder.Services.AddAuthorization();
+
 
         builder.Services.AddSwagger();
         builder.AddSerilog();
@@ -82,6 +86,9 @@ public class Program
         // WASM 
         // app.MapFallbackToFile("index.html");
 
+
+        SeedData.SeedIdentityAsync(app).ConfigureAwait(false);
+        
         app.Run();
     }
 }

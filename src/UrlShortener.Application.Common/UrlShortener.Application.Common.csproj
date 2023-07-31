@@ -15,4 +15,10 @@
     <ProjectReference Include="..\UrlShortener.Entity\UrlShortener.Entity.csproj" />
   </ItemGroup>
 
+
+
+  <ItemGroup>
+    <Folder Include="Utility\" />
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Data.EntityConfiguration;
 using UrlShortener.Entity;
 
 namespace UrlShortener.Data;
 
-public class AppDbContext : DbContext, IAppDbContext
+public class AppDbContext : IdentityDbContext<User,IdentityRole<Guid>,Guid>, IAppDbContext
 {
     public DbSet<Link> Links { get; set; } = null!;
     public DbSet<LinkStatistic> LinkStatistics { get; set; } = null!;
@@ -20,7 +22,6 @@ public class AppDbContext : DbContext, IAppDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSnakeCaseNamingConvention();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

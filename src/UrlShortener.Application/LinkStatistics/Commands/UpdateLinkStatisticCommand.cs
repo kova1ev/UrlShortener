@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Common.Result;
 
 namespace UrlShortener.Application.LinkStatistics.Commands;

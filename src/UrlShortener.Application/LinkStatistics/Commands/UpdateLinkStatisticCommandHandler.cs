@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Common.Exceptions;
 using UrlShortener.Application.Interfaces;
 

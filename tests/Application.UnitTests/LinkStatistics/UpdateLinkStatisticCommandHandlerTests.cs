@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Common.Exceptions;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.LinkStatistics.Commands;
 using UrlShortener.Entity;
-using Geolocation = UrlShortener.Application.Common.Domain.Geolocation;
+using Geolocation = UrlShortener.Application.Common.Dto.Geolocation;
 
 namespace Application.UnitTests.LinkStatistics;
 

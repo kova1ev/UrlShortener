@@ -1,6 +1,6 @@
 ﻿using Application.UnitTests.Utility;
-using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Links.Queries.GetMostRedirectedLinks;
+using UrlShortener.Application.Responses;
 
 namespace Application.UnitTests.Links.Queries;
 

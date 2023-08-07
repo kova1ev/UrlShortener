@@ -1,7 +1,7 @@
 ﻿using Application.UnitTests.Utility;
-using UrlShortener.Application.Common.Domain;
-using UrlShortener.Application.Common.Domain.Links;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Links.Queries.GetLinks;
+using UrlShortener.Application.Responses;
 
 namespace Application.UnitTests.Links.Queries;
 

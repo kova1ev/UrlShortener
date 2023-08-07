@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Links.Commands.CreateLink;
+using UrlShortener.Application.Responses;
 
 namespace Application.UnitTests.Links.Commands;
 

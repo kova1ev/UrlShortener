@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Common.Constants;
-using UrlShortener.Application.Common.Domain.Links;
 using UrlShortener.Application.Common.Result;
 using UrlShortener.Application.Interfaces;
+using UrlShortener.Application.Responses;
 
 namespace UrlShortener.Application.Links.Queries.GetLinkByShortName;
 

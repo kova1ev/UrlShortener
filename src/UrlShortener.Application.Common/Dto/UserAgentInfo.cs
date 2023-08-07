@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Common.Domain;
+﻿namespace UrlShortener.Application.Common.Dto;
 
 public class UserAgentInfo
 {

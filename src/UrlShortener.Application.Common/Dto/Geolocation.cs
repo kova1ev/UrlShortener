@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace UrlShortener.Application.Common.Domain;
+namespace UrlShortener.Application.Common.Dto;
 
 public class Geolocation
 {

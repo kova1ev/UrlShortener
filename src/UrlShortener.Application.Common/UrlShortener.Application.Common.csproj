@@ -17,8 +17,5 @@
 
 
 
-  <ItemGroup>
-    <Folder Include="Utility\" />
-  </ItemGroup>
 
 </Project>

@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Models;
-using UrlShortener.Application.Common.Domain;
-using UrlShortener.Application.Common.Domain.Links;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Links.Commands.CreateLink;
 using UrlShortener.Application.Links.Commands.DeleteLink;
 using UrlShortener.Application.Links.Commands.UpdateLink;
 using UrlShortener.Application.Links.Queries.GetLinkById;
 using UrlShortener.Application.Links.Queries.GetLinks;
 using UrlShortener.Application.Links.Queries.GetMostRedirectedLinks;
+using UrlShortener.Application.Responses;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -26,8 +26,8 @@ public class LinkController : ApiControllerBase
     }
 
     [HttpGet("{id:guid}", Name = nameof(GetLinkById))]
-    [ProducesResponseType(typeof(LinkDetailsResponse), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(LinkDetailsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetLinkById([FromRoute] Guid id)
     {
         var cancellationToken = HttpContext.RequestAborted;
@@ -39,7 +39,7 @@ public class LinkController : ApiControllerBase
 
 
     [HttpGet(Name = nameof(GetLinks))]
-    [ProducesResponseType(typeof(FilteredPagedData<LinkDetailsResponse>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(FilteredPagedData<LinkDetailsResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult> GetLinks([FromQuery] LinksRequestParameters requestParameters)
     {
         var cancellationToken = HttpContext.RequestAborted;
@@ -48,7 +48,7 @@ public class LinkController : ApiControllerBase
     }
 
     [HttpGet("popular", Name = nameof(GetMostPopularLinks))]
-    [ProducesResponseType(typeof(IEnumerable<LinkCompactResponse>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<LinkCompactResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult> GetMostPopularLinks()
     {
         var cancellationToken = HttpContext.RequestAborted;
@@ -60,8 +60,8 @@ public class LinkController : ApiControllerBase
     //  COMMANDS
     [AllowAnonymous]
     [HttpPost]
-    [ProducesResponseType(typeof(LinkCreatedResponse), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(LinkCreatedResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreteLink([FromBody] CreateLinkCommand createLinkCommand)
     {
         var cancellationToken = HttpContext.RequestAborted;
@@ -72,8 +72,8 @@ public class LinkController : ApiControllerBase
     }
 
     [HttpDelete("{id:guid}", Name = nameof(DeleteLink))]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> DeleteLink([FromRoute] Guid id)
     {
         var cancellationToken = HttpContext.RequestAborted;
@@ -84,8 +84,8 @@ public class LinkController : ApiControllerBase
     }
 
     [HttpPut(Name = nameof(UpdateLink))]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateLink([FromBody] UpdateLinkCommand updateLinkCommand)
     {
         var cancellationToken = HttpContext.RequestAborted;

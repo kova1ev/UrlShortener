@@ -26,11 +26,15 @@ public static class ConfigureAuthenticationService
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ClockSkew = TimeSpan.FromMinutes(1), 
+                    ValidateLifetime = true,
+                    
                     ValidateIssuer = true,
                     ValidIssuer = jwtOptions.Issuer,
+                    
                     ValidateAudience = true,
                     ValidAudience = jwtOptions.Audience,
-                    ValidateLifetime = true,
+                    
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                 };

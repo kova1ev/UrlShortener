@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 using UrlShortener.Application.Common;
-using UrlShortener.Application.Common.Domain;
+using UrlShortener.Application.Common.Dto;
 using UrlShortener.Application.Interfaces;
 
 namespace UrlShortener.Api.Infrastructure;

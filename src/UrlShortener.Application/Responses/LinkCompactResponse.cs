@@ -1,6 +1,6 @@
 ﻿using UrlShortener.Entity;
 
-namespace UrlShortener.Application.Common.Domain.Links;
+namespace UrlShortener.Application.Responses;
 
 public class LinkCompactResponse
 {

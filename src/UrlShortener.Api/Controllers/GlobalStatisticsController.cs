@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Application.GlobalStatistics.Queries.GetLinksCountByTime;
 using UrlShortener.Application.GlobalStatistics.Queries.GetTotalLinksCount;
+using UrlShortener.Entity;
 
 namespace UrlShortener.Api.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = RoleConstant.Administrator)]
+// [Authorize]
 [ApiKeyAuthorize]
 [Route("api/statistic")]
 public class GlobalStatisticsController : ApiControllerBase
@@ -17,7 +19,7 @@ public class GlobalStatisticsController : ApiControllerBase
     {
     }
 
-    [HttpGet("totalcount",Name = nameof(GetTotalLinkCount))]
+    [HttpGet("totalcount", Name = nameof(GetTotalLinkCount))]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTotalLinkCount()
     {
@@ -27,7 +29,7 @@ public class GlobalStatisticsController : ApiControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("weekcount",Name = nameof(GetLastWeekLinkCount))]
+    [HttpGet("weekcount", Name = nameof(GetLastWeekLinkCount))]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLastWeekLinkCount([FromQuery] DateOnly? start, [FromQuery] DateOnly? end)
     {

@@ -20,7 +20,7 @@ public class RedirectController : ApiControllerBase
     }
 
     //https://mysite/r/{alias}
-    [HttpGet("{alias}",Name = nameof(RedirectTo))]
+    [HttpGet("{alias}", Name = nameof(RedirectTo))]
     public async Task<IActionResult> RedirectTo([FromRoute] string alias)
     {
         var cancellationToken = HttpContext.RequestAborted;

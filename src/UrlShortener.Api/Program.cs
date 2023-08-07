@@ -7,7 +7,6 @@ using UrlShortener.Api.Filters;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Middleware;
 using UrlShortener.Application.Common;
-using UrlShortener.Application.Common.Domain;
 using UrlShortener.Application.Interfaces;
 using UrlShortener.Data;
 using UrlShortener.Entity;
@@ -27,6 +26,7 @@ public class Program
         builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
         builder.Services.Configure<JsonOptions>(options =>
         {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
         builder.Services.Configure<MvcOptions>(options =>
@@ -40,7 +40,7 @@ public class Program
         builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.ConfigKey));
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigKey));
 
-        builder.Services.AddScoped<ITokenProvider, JwtTokenProvider>();
+        builder.Services.AddScoped<ITokenService, JwtTokenService>();
         builder.Services.AddHttpClient<IGeolocationService, GeolocationService>();
 
         builder.Services.AddAppDbContext(builder.Configuration);

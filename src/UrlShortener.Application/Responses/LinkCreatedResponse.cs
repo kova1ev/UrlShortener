@@ -1,4 +1,4 @@
-﻿namespace UrlShortener.Application.Common.Domain.Links;
+﻿namespace UrlShortener.Application.Responses;
 
 public sealed class LinkCreatedResponse
 {

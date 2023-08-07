@@ -5,7 +5,13 @@ using System.Net;
 using UrlShortener.Api.Attributes;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.Api.Models;
+using UrlShortener.Application.Authorization.Commands.Login;
+using UrlShortener.Application.Authorization.Commands.RefreshToken;
+using UrlShortener.Application.Users.Commands.CreateUser;
 using UrlShortener.Application.Users.Queries;
+using YamlDotNet.Core.Tokens;
+using Microsoft.AspNetCore.Http;
+using UrlShortener.Application.Authorization.Commands.RevokeRefreshToken;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -14,35 +20,54 @@ namespace UrlShortener.Api.Controllers;
 [Route("api/auth")]
 public class AuthorizationController : ApiControllerBase
 {
-    private readonly TokenProvider _tokenProvider;
-
-    public AuthorizationController(IMediator mediator, TokenProvider jwtTokenProvider)
-        : base(mediator)
+    public AuthorizationController(IMediator mediator) : base(mediator)
     {
-        _tokenProvider = jwtTokenProvider;
+    }
+
+    [HttpPost("login")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login([FromBody] LoginCommand login)
+    {
+        var cancellationToken = HttpContext.RequestAborted;
+        var result = await Mediator.Send(login, cancellationToken);
+        if (result.IsSuccess == false)
+        {
+            return BadRequest(ApiErrors.ToBadRequest(result));
+        }
+
+        return Ok(result.Value);
     }
 
 
-    [HttpPost("token")]
-    [ProducesResponseType(typeof(AuthResponse), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(ApiErrors), (int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Login([FromBody] Login login)
+    [HttpPost("refresh-jwttoken")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshAccessTokenCommand refreshAccessTokenCommand)
     {
-        var result = await Mediator.Send(new GetValidUserQuery(login.Email, login.Password));
-        if (result.IsSuccess == false) return BadRequest(ApiErrors.ToBadRequest(result));
+        var cancellationToken = HttpContext.RequestAborted;
+        var result = await Mediator.Send(refreshAccessTokenCommand, cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
 
-        var token = _tokenProvider.CreateToken(result.Value);
-
-        return Ok(new AuthResponse { Token = token });
+        return BadRequest(ApiErrors.ToBadRequest(result));
     }
 
     [Authorize]
-    [HttpGet]
-    public IActionResult Check()
+    [HttpPost("revoke/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrors), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Revoke([FromRoute] Guid id)
     {
-        //todo check valid token
-        return Ok(true);
+        var cancellationToken = HttpContext.RequestAborted;
+        var result = await Mediator.Send(new RevokeRefreshTokenCommand(id), cancellationToken);
+        if (result.IsSuccess == false)
+        {
+            return BadRequest(ApiErrors.ToBadRequest(result));
+        }
+
+        return Ok();
     }
-
-
 }
